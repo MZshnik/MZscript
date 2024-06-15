@@ -30,9 +30,9 @@ $sendMessage[
 Choose menu:
 $if[$message[0]==mod]
 You choose moderation
-$elif[$message[0]==mod]
+$elif[$message[0]==inf]
 You choose info
-$elif[$message[0]==mod]
+$elif[$message[0]==eco]
 You choose economy
 $else
 !help moderation
