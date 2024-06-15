@@ -62,4 +62,6 @@ $endif]
 - More functions from BDFD
 - More custom functions
 - Documentation
-<!-- ## In the Future🚀 -->
+## In the Future🚀
+- Easy-to-Use User mods
+- Help for modders and contributors
