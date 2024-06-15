@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "MZscript"
 version = "0.1.0"
 dependencies = [
-  "disnake>2.9.2; os_name != 'nt'"
+  "disnake>=2.9.2"
 ]
 requires-python = ">=3.8"
 authors = [
