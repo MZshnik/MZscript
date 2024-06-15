@@ -1,9 +1,12 @@
 # MZscript
 ## Improved BDFD interpreter in Python
 #### Supporting Python 3.10 and newer
-#### pip install git+https://github.com/MZshnik/MZscript
+## Instaling💻
+```
+pip install git+https://github.com/MZshnik/MZscript
+```
 
-## First step
+## First step🎉
 #### Create your first command:
 ```py
 from MZscript import MZclient
@@ -38,3 +41,24 @@ $else
 $endif]
 """)
 ```
+
+#### Use one of this functions:
+| Function        | Full support | No args | Can be no/with args |
+| :-------------- |------------: | :-: | :- |
+|$if|+|-|-
+|$elif|+|-|-
+|$else|+|+|-
+|$stop|-|+|-
+|$addButton|-|-|-
+|$sendMessage|+|-|+
+|$channelID|+|+|-
+|$eval|+|-|-
+|$message|+|-|+
+|$text|+|-|-
+|$message|+|-|-
+|$prefix|-|-|-
+## In Developing🔨
+- Database
+- More functions from BDFD
+- More custom functions
+<!-- ## In the Future🚀 -->
