@@ -1,0 +1,20 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "MZscript"
+version = "0.1.0"
+dependencies = [
+  "disnake>2.9.2; os_name != 'nt'"
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "MZshnik"}
+]
+description = "Improved BDFD interpreter in Python"
+readme = "README.md"
+license = {file = "LICENSE.txt"}
+classifiers = [
+  "Programming Language :: Python"
+]
