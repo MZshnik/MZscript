@@ -9,7 +9,7 @@ pip install git+https://github.com/MZshnik/MZscript
 ## First step🎉
 #### Create your first command:
 ```py
-from MZscript import MZClient
+from MZscript import MZclient
 
 bot = MZClient()
 
@@ -30,9 +30,9 @@ $sendMessage[
 Choose menu:
 $if[$message[0]==mod]
 You choose moderation
-$elif[$message[0]==inf]
+$elif[$message[0]==mod]
 You choose info
-$elif[$message[0]==eco]
+$elif[$message[0]==mod]
 You choose economy
 $else
 !help moderation
@@ -62,6 +62,4 @@ $endif]
 - More functions from BDFD
 - More custom functions
 - Documentation
-## In the Future🚀
-- Easy-to-Use User mods
-- Help for modders and contributors
+<!-- ## In the Future🚀 -->

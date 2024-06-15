@@ -22,14 +22,14 @@ class BDFDApp(CommandsHandler):
             "$stop",
             "$addbutton",
             "$sendmessage",
-            "$channelID",
+            "$channelid",
             "$text",
             "$eval",
             "$message",
             "$prefix"
         ]
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
-        self.no_arg_funcs = ["$else", "$channelID"]
+        self.no_arg_funcs = ["$else", "$channelid"]
         self.can_be_no_arg = ["$message"]
         self.saved_vars = {}
         # with open("variables.json") as f:
@@ -196,8 +196,8 @@ class CommandsHandler(BDFDApp):
                 if brackets == 0:
                     chunks.append(addCommand+i)
                     return entry[len(addCommand):]
-            elif (addCommand in self.no_arg_funcs or addCommand in ["$stop", "$endif"]) or (addCommand+i in self.can_be_no_arg):
-                if addCommand == "$else":
+            elif addCommand+i in self.no_arg_funcs or addCommand+i in ["$stop", "$endif"] or (addCommand+i in self.can_be_no_arg and len(addCommand+i)==len(entry)):
+                if addCommand+i == "$else":
                     chunks.append((addCommand+i).replace("$else", "$elif[True]"))
                 else:
                     chunks.append(addCommand+i)
@@ -342,9 +342,9 @@ class MZClient:
         for i in self.user_commands.keys():
             if splited_command[0] == i:
                 message.content = " ".join(splited_command[1:])
-                time1 = perf_counter()
+                # time1 = perf_counter()
                 await self.run_code(self.user_commands[i], message)
-                print(perf_counter()-time1)
+                # print(perf_counter()-time1)
 
     def run(self, token: str):
         self.bot.run(token)
