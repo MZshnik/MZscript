@@ -1,5 +1,7 @@
 # MZscript
-Improved BDFD interpreter in Python
+## Improved BDFD interpreter in Python
+#### Supporting Python 3.10 and newer
+#### pip install git+https://github.com/MZshnik/MZscript
 
 ## First step
 #### Create your first command:
