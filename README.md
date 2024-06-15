@@ -61,4 +61,5 @@ $endif]
 - Database
 - More functions from BDFD
 - More custom functions
+- Documentation
 <!-- ## In the Future🚀 -->
