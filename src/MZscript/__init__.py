@@ -1,1 +1,1 @@
-from .MZscript import MZClient
+from .main import MZClient

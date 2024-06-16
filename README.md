@@ -1,9 +1,13 @@
 # MZscript
 ## Improved BDFD interpreter in Python
-#### Supporting Python 3.10 and newer
+#### Supporting Python 3.8 and newer
 ## Instaling💻
 ```
 pip install git+https://github.com/MZshnik/MZscript
+```
+## Updating📥
+```
+pip install --update git+https://github.com/MZshnik/MZscript
 ```
 
 ## First step🎉
@@ -41,28 +45,51 @@ $else
 $endif]
 """)
 ```
+#### Use variables:
+```py
+bot.add_command(name="!set-prefix", code="""
+$setVar[prefix;$message[0]]
+$sendMessage[Prefix setted to "$message[0]"]
+""")
 
-#### Use one of this functions:
+bot.add_command(name="!get-prefix", code="""
+$sendMessage[Prefix is "$getVar[prefix]"]
+""")
+
+bot.add_command(name="$getVar[prefix]help", code="""
+$sendMessage[
+$getVar[prefix]help moderation
+$getVar[prefix]help info
+$getVar[prefix]help economy
+]""")
+```
+
+#### List of all functions
 | Function        | Full support | No args | Can be no/with args |
 | :-------------- |------------: | :-: | :- |
 |$if|+|-|-
 |$elif|+|-|-
 |$else|+|+|-
+|$endif|-|+|-
 |$stop|-|+|-
-|$addButton|-|-|-
-|$sendMessage|+|-|+
-|$channelID|+|+|-
-|$eval|+|-|-
-|$message|+|-|+
-|$text|+|-|-
+|$eval|-|-|-
+|$sendMessage|+|-|-
 |$message|+|-|-
-|$prefix|-|-|-
+|$addButton|-|-|-
+|$channelID|+|+|-
+|$text|+|-|-
+|$getVar|+|-|-
+|$setVar|+|-|-
+|$getMemberVar|+|-|-
+|$setMemberVar|+|-|-
+|$getGuildVar|+|-|-
+|$setGuildVar|+|-|-
+|$getUserVar|+|-|-
+|$setUserVar|+|-|-
 ## In Developing🔨
-- Database
 - More functions from BDFD
 - More custom functions
 - Documentation
-<<<<<<< HEAD
 ## In the Future🚀
 - Most usefull $eval
 - $pyeval
