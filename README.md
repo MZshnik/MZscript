@@ -85,6 +85,7 @@ $getVar[prefix]help economy
 |$stop|-|+|-
 |$eval|-|-|-
 |$sendMessage|+|-|-
+|$sendEmbed|+|-|-
 |$message|+|-|-
 |$addButton|-|-|-
 |$channelID|+|+|-

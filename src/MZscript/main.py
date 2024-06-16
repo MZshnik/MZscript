@@ -91,6 +91,7 @@ class BDFDApp(CommandsHandler):
             "$eval",
 
             "$sendmessage",
+            "$sendembed",
             "$message",
             "$addbutton",
             "$channelid",
@@ -110,15 +111,137 @@ class BDFDApp(CommandsHandler):
         ]
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         self.no_arg_funcs = ["$else", "$channelid"]
-        self.can_be_no_arg = ["$message", "$updateCommands"]
+        self.can_be_no_arg = ["$message", "$updatecommands"]
 
-    async def func_console(self, ctx: disnake.message.Message = None, args: str = None):
-        if args is None or len(args) == 0:
-            return
-        print(await self.is_have_commands(args, ctx))
+    async def func_if(self, ctx: disnake.message.Message, args: str):
+        if args.lower() == "true":
+            return True
+        elif args.lower() == "false":
+            return False
+        choices = ["==", ">=", "<=", "!=", "<", ">"]
+        operator_mapping = {
+            "==": lambda x, y: x == y,
+            "!=": lambda x, y: x != y,
+            ">": lambda x, y: x > y,
+            ">=": lambda x, y: x >= y,
+            "<": lambda x, y: x < y,
+            "<=": lambda x, y: x <= y,
+        }
+        for i in choices:
+            if i in args:
+                if i in ["==", "!="]:
+                    vals = args.split(i)
+                    val1 = vals[0].strip()
+                    val2 = vals[1].strip()
+                else:
+                    vals = args.split(i)
+                    val1 = int(vals[0])
+                    val2 = int(vals[1])
+                val1 = await self.is_have_commands(val1, ctx)
+                val2 = await self.is_have_commands(val2, ctx)
+                if operator_mapping.get(i, lambda x, y: None)(val1, val2):
+                    return True
+                else:
+                    return False
+        return False
 
-    async def func_updatecommands(self, ctx: disnake.message.Message, args: str):
-        await self.update_commands()
+    async def func_elif(self, ctx: disnake.message.Message, args: str): # return result from $if (DRY)
+        return await self.func_if(ctx, args)
+
+    async def func_else(self, ctx: disnake.message.Message): # all $else function translated to $elif[True] for better output because he have brackets
+        return "$elif[True]"
+
+    async def func_stop(self, ctx: disnake.message.Message): # nvm, this function will be made in the future
+        return "STOPIT"
+
+    async def func_eval(self, ctx: disnake.message.Message, args: str): # its unstability function. try not use it
+        chunks = await self.get_chunks(args)
+        for i in chunks:
+            if i.startswith("$"):
+                args = await self.client.run_code(args, ctx)
+                args = await self.client.run_code(args, ctx)
+                return args
+        else:
+            return args
+
+    async def func_sendmessage(self, ctx: disnake.message.Message, args: str): # send message to provided channel or ctx
+        try:
+            args_list = await self.get_args(args)
+            if len(args_list) == 2:
+                channel = ctx.guild.get_channel(int(await self.is_have_commands(args_list[0], ctx)))
+                if channel:
+                    await channel.send(await self.is_have_commands(args_list[1], ctx))
+                else:
+                    raise SyntaxError(f"Can't find channel \"{args_list[0]}\"")
+            elif len(args_list) == 1:
+                result = await self.is_have_commands(args_list[0], ctx)
+                await ctx.channel.send(result)
+        except Exception as e:
+            raise SyntaxError("$sendMessage: Cannot send empty message")
+
+    async def func_sendembed(self, ctx: disnake.message.Message, args: str):
+        args_list = await self.get_args(args)
+        if len(args_list) < 1:
+            raise ValueError(f"$sendEmbed needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+
+        embed = disnake.Embed()
+        content = None
+        if len(args_list) > 1 and len(args_list[1]) > 0:
+            content = await self.is_have_commands(args_list[1], ctx)
+        if len(args_list) > 2 and len(args_list[2]) > 0:
+            embed.title = await self.is_have_commands(args_list[2], ctx)
+        if len(args_list) > 3 and len(args_list[3]) > 0:
+            embed.description = await self.is_have_commands(args_list[3], ctx)
+        if len(args_list) > 4 and len(args_list[4]) > 0:
+            icon_url = None
+            if len(args_list) > 5 and len(args_list[5]) > 0:
+                icon_url = await self.is_have_commands(args_list[5], ctx)
+            embed.set_footer(await self.is_have_commands(args_list[4], ctx), icon_url)
+        if len(args_list) > 6 and len(args_list[6]) > 0:
+            try:
+                embed.color = disnake.Colour(int((await self.is_have_commands(args_list[6], ctx)).replace("#", "0x"), 16))
+            except:
+                embed.color = disnake.Colour(int("0x"+(await self.is_have_commands(args_list[6], ctx)).replace("#", "0x"), 16))
+        if len(args_list) > 7 and len(args_list[7]) > 0:
+            embed.set_thumbnail(await self.is_have_commands(args_list[7], ctx))
+        if len(args_list) > 8 and len(args_list[8]) > 0:
+            embed.set_image(await self.is_have_commands(args_list[8], ctx))
+        if len(args_list) > 9 and len(args_list[9]) > 0:
+            url = None
+            if len(args_list) > 10 and len(args_list[10]) > 0:
+                url = await self.is_have_commands(args_list[10], ctx)
+            icon_url = None
+            if len(args_list) > 11 and len(args_list[11]) > 0:
+                icon_url = await self.is_have_commands(args_list[11], ctx)
+            embed.set_author(name=await self.is_have_commands(args_list[9], ctx), url=url, icon_url=icon_url)
+        channel = ctx.channel
+        if len(args_list[0]) > 0:
+            try:
+                channel = ctx.guild.get_channel(int(await self.is_have_commands(args_list[0], ctx)))
+            except Exception as e:
+                print(e)
+                raise SyntaxError(f"Cannot find channel \"{args_list[0]}\"")
+        if not embed.description:
+            raise SyntaxError(f"Cannot send embed without description: {args}")
+        if content:
+            await channel.send(content=content, embed=embed)
+        else:
+            await channel.send(embed=embed)
+
+    async def func_message(self, ctx: disnake.message.Message, args: str = ""):
+        if len(args) == 0:
+            return ctx.content
+        return ctx.content.split(" ")[int(args)]
+
+    async def func_addbutton(self, ctx: disnake.message.Message, args: str): # test and fun function
+        print(f"addButton with args: {args}")
+        return "penis is good"
+
+    async def func_channelid(self, ctx: disnake.message.Message):
+        return str(ctx.channel.id)
+
+    async def func_text(self, ctx: disnake.message.Message, args: str):
+        return args
 
     async def func_getvar(self, ctx: disnake.message.Message, args: str):
         result = await self.is_have_commands(args, ctx)
@@ -230,86 +353,13 @@ class BDFDApp(CommandsHandler):
             args_list.append(ctx.author.id)
         await self.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
 
-    async def func_message(self, ctx: disnake.message.Message, args: str = ""):
-        if len(args) == 0:
-            return ctx.content
-        return ctx.content.split(" ")[int(args)]
+    async def func_updatecommands(self, ctx: disnake.message.Message, args: str):
+        await self.update_commands()
 
-    async def func_eval(self, ctx: disnake.message.Message, args: str): # its unstability function. try not use it
-        chunks = await self.get_chunks(args)
-        for i in chunks:
-            if i.startswith("$"):
-                args = await self.client.run_code(args, ctx)
-                args = await self.client.run_code(args, ctx)
-                return args
-        else:
-            return args
-
-    async def func_if(self, ctx: disnake.message.Message, args: str):
-        if args.lower() == "true":
-            return True
-        elif args.lower() == "false":
-            return False
-        choices = ["==", ">=", "<=", "!=", "<", ">"]
-        operator_mapping = {
-            "==": lambda x, y: x == y,
-            "!=": lambda x, y: x != y,
-            ">": lambda x, y: x > y,
-            ">=": lambda x, y: x >= y,
-            "<": lambda x, y: x < y,
-            "<=": lambda x, y: x <= y,
-        }
-        for i in choices:
-            if i in args:
-                if i in ["==", "!="]:
-                    vals = args.split(i)
-                    val1 = vals[0].strip()
-                    val2 = vals[1].strip()
-                else:
-                    vals = args.split(i)
-                    val1 = int(vals[0])
-                    val2 = int(vals[1])
-                val1 = await self.is_have_commands(val1, ctx)
-                val2 = await self.is_have_commands(val2, ctx)
-                if operator_mapping.get(i, lambda x, y: None)(val1, val2):
-                    return True
-                else:
-                    return False
-        return False
-
-    async def func_else(self, ctx: disnake.message.Message): # all $else function translated to $elif[True] for better output because he have brackets
-        return "$elif[True]"
-
-    async def func_stop(self, ctx: disnake.message.Message): # nvm, this function will be made in the future
-        return "STOPIT"
-
-    async def func_elif(self, ctx: disnake.message.Message, args: str): # return result from $if (DRY)
-        return await self.func_if(ctx, args)
-
-    async def func_addbutton(self, ctx: disnake.message.Message, args: str): # test and fun function
-        print(f"addButton with args: {args}")
-        return "penis is good"
-
-    async def func_sendmessage(self, ctx: disnake.message.Message, args: str): # send message to provided channel or ctx
-        try:
-            args_list = await self.get_args(args)
-            if len(args_list) == 2:
-                channel = ctx.guild.get_channel(int(await self.is_have_commands(args_list[0])))
-                if channel:
-                    await channel.send(await self.is_have_commands(args_list[1], ctx))
-                else:
-                    raise SyntaxError(f"Can't find channel \"{args_list[0]}\"")
-            elif len(args_list) == 1:
-                result = await self.is_have_commands(args_list[0], ctx)
-                await ctx.channel.send(result)
-        except Exception as e:
-            raise SyntaxError("$sendMessage: Cannot send empty message")
-
-    async def func_channelid(self, ctx: disnake.message.Message):
-        return ctx.channel.id
-
-    async def func_text(self, ctx: disnake.message.Message, args: str):
-        return args
+    async def func_console(self, ctx: disnake.message.Message = None, args: str = None):
+        if args is None or len(args) == 0:
+            return
+        print(await self.is_have_commands(args, ctx))
 
 class CommandsHandler(BDFDApp):
     def __init__(self, client: MZClient):
@@ -376,12 +426,12 @@ class CommandsHandler(BDFDApp):
         splited = entry.split("[")
         try:
             if len(splited) > 1:
-                if splited[0] in self.can_be_no_arg or splited[0] in self.logic_funcs:
+                if splited[0].lower() in self.can_be_no_arg or splited[0].lower() in self.logic_funcs:
                     result = await self.funcs[splited[0].lower()](ctx, "[".join(splited[1:])[:-1])
                 else:
                     result = await self.funcs[splited[0].lower()](ctx, "[".join(splited[1:])[:-1])
             else:
-                if splited[0] in self.no_arg_funcs or splited[0] in self.can_be_no_arg:
+                if splited[0].lower() in self.no_arg_funcs or splited[0].lower() in self.can_be_no_arg:
                     result = await self.funcs[splited[0].lower()](ctx)
         except:
             raise SyntaxError(f"Cant complete this function: {splited[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly.")
@@ -439,8 +489,8 @@ class CommandsHandler(BDFDApp):
                 if brackets == 0:
                     chunks.append(addCommand+i)
                     return entry[len(addCommand):]
-            elif addCommand+i in self.no_arg_funcs or addCommand+i in ["$stop", "$endif"] or (addCommand+i in self.can_be_no_arg and len(addCommand+i)==len(entry)):
-                if addCommand+i == "$else":
+            elif (addCommand+i).lower() in self.no_arg_funcs or (addCommand+i).lower() in ["$stop", "$endif"] or (addCommand+i in self.can_be_no_arg and len(addCommand+i)==len(entry)):
+                if (addCommand+i).lower() == "$else":
                     chunks.append((addCommand+i).replace("$else", "$elif[True]"))
                 else:
                     chunks.append(addCommand+i)
@@ -568,7 +618,7 @@ class CommandsHandler(BDFDApp):
         return "".join(new_chunks)
 
 class MZClient:
-    def __init__(self, intents: str = "all", on_ready: str = None):
+    def __init__(self, intents: str = "all", on_ready: str = "$console[Bot is ready]"):
         self.funcs = CommandsHandler(self)
         if intents.lower() == "all":
             intents = disnake.Intents.all()
@@ -621,7 +671,6 @@ class MZClient:
         if self.user_on_ready:
             await self.run_code(self.user_on_ready)
         await self.funcs.update_commands()
-        print("Bot ready for work")
 
     async def on_message(self, message: disnake.message.Message):
         if message.author == self.bot.user:
