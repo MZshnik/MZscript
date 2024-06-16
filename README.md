@@ -68,6 +68,3 @@ $endif]
 - $pyeval
 - Support of mods
 - Сontributers support
-=======
-<!-- ## In the Future🚀 -->
->>>>>>> 8fc758121a1d8059872a69e85557be77528edfc2
