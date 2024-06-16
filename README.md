@@ -9,7 +9,7 @@ pip install git+https://github.com/MZshnik/MZscript
 ## First step🎉
 #### Create your first command:
 ```py
-from MZscript import MZClient
+from MZscript.MZscript import MZClient
 
 bot = MZClient()
 
@@ -62,8 +62,12 @@ $endif]
 - More functions from BDFD
 - More custom functions
 - Documentation
+<<<<<<< HEAD
 ## In the Future🚀
 - Most usefull $eval
 - $pyeval
 - Support of mods
 - Сontributers support
+=======
+<!-- ## In the Future🚀 -->
+>>>>>>> 8fc758121a1d8059872a69e85557be77528edfc2
