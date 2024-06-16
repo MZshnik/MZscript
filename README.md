@@ -8,7 +8,7 @@ pip install git+https://github.com/MZshnik/MZscript
 ```
 ## Updating📥
 ```
-pip install --update git+https://github.com/MZshnik/MZscript
+pip install --upgrade git+https://github.com/MZshnik/MZscript
 ```
 
 ## First step🎉
