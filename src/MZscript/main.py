@@ -104,11 +104,21 @@ class BDFDApp(CommandsHandler):
             "$setguildvar",
             "$getuservar",
             "$setuservar",
-
+            
+            "$updatecommands",
+            "$console"
         ]
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         self.no_arg_funcs = ["$else", "$channelid"]
-        self.can_be_no_arg = ["$message"]
+        self.can_be_no_arg = ["$message", "$updateCommands"]
+
+    async def func_console(self, ctx: disnake.message.Message = None, args: str = None):
+        if args is None or len(args) == 0:
+            return
+        print(await self.is_have_commands(args, ctx))
+
+    async def func_updatecommands(self, ctx: disnake.message.Message, args: str):
+        await self.update_commands()
 
     async def func_getvar(self, ctx: disnake.message.Message, args: str):
         result = await self.is_have_commands(args, ctx)
@@ -284,7 +294,7 @@ class BDFDApp(CommandsHandler):
         try:
             args_list = await self.get_args(args)
             if len(args_list) == 2:
-                channel = ctx.guild.get_channel(int(args_list[0]))
+                channel = ctx.guild.get_channel(int(await self.is_have_commands(args_list[0])))
                 if channel:
                     await channel.send(await self.is_have_commands(args_list[1], ctx))
                 else:
@@ -319,6 +329,10 @@ class CommandsHandler(BDFDApp):
                 return await self.execute_chunks(chunks, ctx)
         else:
             return entry
+
+    async def update_commands(self):
+        for i in self.client.exec_on_start:
+            self.client.user_commands[i][0] = await self.is_have_commands(self.client.user_command_names[i], disnake.message.Message)
 
     async def get_args(self, entry: str, ctx: disnake.message.Message = None):
         """
@@ -408,6 +422,13 @@ class CommandsHandler(BDFDApp):
             raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
     async def find_command(self, entry: str, chunks: list):
+        """
+        ## Return first find command in the entry\n
+        ## and edit entry by deleting then command\n
+        ### Example:\n
+        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`\n
+        #### Output ` $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif`
+        """
         addCommand = ""
         brackets = 0
         for i in entry:
@@ -427,6 +448,12 @@ class CommandsHandler(BDFDApp):
             addCommand += i
 
     async def get_chunks(self, entry: str):
+        """
+        ## Return all chunks of code by splitting it with $ and []\n
+        ### Example:\n
+        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`\n
+        #### Output `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
+        """
         chunks = []
         checkCommands = True
         async def find_text():
@@ -455,7 +482,13 @@ class CommandsHandler(BDFDApp):
                     entry = entry[1:]
         return chunks
 
-    async def find_endif(self, chunks):
+    async def find_endif(self, chunks: list):
+        """
+        ## Find and return index of $endif in the chunks(list) by check if all $if's closed\n
+        ### Example:\n
+        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`\n
+        #### Output `4 (index in the list)`
+        """
         unclosedifs = 0
         counter = -1
         for i in chunks:
@@ -467,7 +500,16 @@ class CommandsHandler(BDFDApp):
             elif i.startswith("$if"):
                 unclosedifs += 1
 
-    async def find_elif(self, chunks, main_if: tuple, main_endif: tuple, ctx: disnake.message.Message):
+    async def find_elif(self, chunks: list, main_if: tuple, main_endif: tuple, ctx: disnake.message.Message):
+        """
+        ## Return chunks(list) with executed $if condition. Delete $if block if it return False or delete $elif condition if $if return True.
+        Replace $elif to $if if $if is False but $elif Found. If $elif not found but $if is True - all if block deleting.
+        If $if return True but $elif not found - $if and $endif deleting from chunks(list).
+        If $elif return False - all $if block from $if to $endif deleting.\n
+        ### Example:\n
+        #### Input `"$if[False] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`\n
+        #### Output `["$if[True]", "$sendMessage[Bye bye]", "$endif"]`
+        """
         unclosedifs = 0
         this_count = -1
         return_chunks = chunks.copy()
@@ -496,6 +538,12 @@ class CommandsHandler(BDFDApp):
         return return_chunks
 
     async def execute_chunks(self, old_chunks, ctx: disnake.message.Message):
+        """
+        ## Execute all chunks\n
+        ### Example:\n
+        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`\n
+        #### Output `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
+        """
         new_chunks = old_chunks.copy()
         while new_chunks:
             count = -1
@@ -529,13 +577,24 @@ class MZClient:
         else:
             raise ValueError("In intents you need to select \"all\" or \"default\" value")
         self.user_on_ready = on_ready
-        self.user_commands = {}
+        self.user_commands = []
+        self.user_command_names = []
         self.exec_on_start = []
         self.bot = commands.InteractionBot(intents=intents)
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
 
-    async def run_code(self, code, ctx: disnake.message.Message):
+    async def run_code(self, code: str, ctx: disnake.message.Message = None):
+        """
+        ## Async run provided code
+
+        #### Args:
+            code (`str`): Code with functions (example: `$getVar[prefix]`, `$if[1==1] $text[text1] $else $text[text2] $endif`)
+            ctx (`disnake.message.Message`): Context
+
+        #### Returns:
+            `str`: result of executed functions
+        """
         chunks = await self.funcs.get_chunks(code)
         await self.funcs.check_ifs(chunks)
         chunks = await self.funcs.execute_chunks(chunks, ctx)
@@ -544,28 +603,35 @@ class MZClient:
         return "" 
 
     def add_command(self, name: str, code: str):
-        self.user_commands[name] = code
+        """
+        ## Add command to handlering
+
+        #### Args:
+            name (`str`): Trigger what execute command if any person type it in chat. Can execute functions like name of command `$getVar[prefix]help` and finale command name will be view like `!help`
+            code (`str`): Code for execute when command invoked. For send message always use $sendMessage - plain text not send. Check docs for info about stable functions.
+        """
+        self.user_commands.append([name, code])
+        self.user_command_names.append(name)
         chunks = asyncio.run(self.funcs.get_chunks(name))
         for i in chunks:
             if i.startswith("$"):
-                self.exec_on_start.append(name)
+                self.exec_on_start.append(len(self.user_commands)-1)
 
     async def on_ready(self):
         if self.user_on_ready:
             await self.run_code(self.user_on_ready)
-        for i in self.exec_on_start:
-            self.user_commands[await self.run_code(i, disnake.message.Message)] = self.user_commands.pop(i)
+        await self.funcs.update_commands()
         print("Bot ready for work")
 
     async def on_message(self, message: disnake.message.Message):
         if message.author == self.bot.user:
             return
         splited_command = message.content.split(" ")
-        for i in self.user_commands.keys():
-            if splited_command[0] == i:
+        for i in self.user_commands:
+            if splited_command[0] == i[0]:
                 message.content = " ".join(splited_command[1:])
                 # time1 = perf_counter()
-                await self.run_code(self.user_commands[i], message)
+                await self.run_code(i[1], message)
                 # print(perf_counter()-time1)
 
     def run(self, token: str):
