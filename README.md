@@ -9,7 +9,7 @@ pip install git+https://github.com/MZshnik/MZscript
 ## First step🎉
 #### Create your first command:
 ```py
-from MZscript import MZClient
+from MZscript.MZscript import MZClient
 
 bot = MZClient()
 
