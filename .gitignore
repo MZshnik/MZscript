@@ -128,3 +128,4 @@ cython_debug/
 # ALL FOR ALL CASES
 main.py
 .vscode
+database.db

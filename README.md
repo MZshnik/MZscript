@@ -62,4 +62,8 @@ $endif]
 - More functions from BDFD
 - More custom functions
 - Documentation
-<!-- ## In the Future🚀 -->
+## In the Future🚀
+- Most usefull $eval
+- $pyeval
+- Support of mods
+- Сontributers support
