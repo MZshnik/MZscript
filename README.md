@@ -82,7 +82,6 @@ $getVar[prefix]help economy
 |$elif|+|-|-
 |$else|+|+|-
 |$endif|-|+|-
-|$stop|-|+|-
 |$eval|-|-|-
 |$sendMessage|+|-|-
 |$sendEmbed|+|-|-
