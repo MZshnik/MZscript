@@ -97,4 +97,4 @@ $console[Some guy send message in $channelInfo[name]]
 ```
 > It is worth saying that some events used by library by default. You can edit events in lib code if you want to control your events by self
 ## Now what about contributing?
-This menu will be added later. If any one want to contribute - just do it. I help you to do it or edit your code if it has some bugs or errors.
+View [this](/docs/CONTRIBUTING.md) file what describes what you need to contributing and made your own functions and events or modify library.

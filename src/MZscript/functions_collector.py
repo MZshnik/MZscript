@@ -1,12 +1,13 @@
 import disnake
-from disnake.ext import commands
 
 from functions_handler import FunctionsHandler
 
 
 class FunctionsCore(FunctionsHandler):
-    def __init__(self, client):
+    def __init__(self, client, db_warns: bool = False, debug_log: bool = False):
         super().__init__(client.bot)
+        self.db_warns = db_warns
+        self.debug_log = debug_log
         self.client = client
         self.sync_functions()
 
@@ -18,7 +19,7 @@ class FunctionsCore(FunctionsHandler):
             except NameError as e:
                 print(f"WARNING: for command \"{line}\" not exists function found.")
 
-    async def func_if(self, ctx: disnake.message.Message, args: str):
+    async def func_if(self, ctx, args: str):
         if args.lower() == "true":
             return True
         elif args.lower() == "false":
@@ -34,29 +35,25 @@ class FunctionsCore(FunctionsHandler):
         }
         for i in choices:
             if i in args:
+                vals = args.split(i)
                 if i in ["==", "!="]:
-                    vals = args.split(i)
                     val1 = vals[0].strip()
                     val2 = vals[1].strip()
                 else:
-                    vals = args.split(i)
                     val1 = int(vals[0])
                     val2 = int(vals[1])
                 val1 = await self.is_have_functions(val1, ctx)
                 val2 = await self.is_have_functions(val2, ctx)
-                if operator_mapping.get(i, lambda x, y: None)(val1, val2):
-                    return True
-                else:
-                    return False
+                return operator_mapping.get(i, lambda x, y: None)(val1, val2)
         return False
 
-    async def func_elif(self, ctx: disnake.message.Message, args: str): # return result from $if (DRY)
+    async def func_elif(self, ctx, args: str): # return result from $if (DRY)
         return await self.func_if(ctx, args)
 
-    async def func_else(self, ctx: disnake.message.Message): # all $else function translated to $elif[True] for better output because he have brackets
+    async def func_else(self, ctx): # all $else function translated to $elif[True] for better output because he have brackets
         return "$elif[True]"
 
-    async def func_eval(self, ctx: disnake.message.Message, args: str): # its unstability function. try not use it
+    async def func_eval(self, ctx, args: str): # its unstability function. try not use it
         chunks = await self.get_chunks(args)
         for i in chunks:
             if i.startswith("$"):
@@ -65,7 +62,7 @@ class FunctionsCore(FunctionsHandler):
         else:
             return args
 
-    async def func_sendmessage(self, ctx: disnake.message.Message, args: str):
+    async def func_sendmessage(self, ctx, args: str):
         args_list = await self.get_args(args)
         if len(args_list) < 1:
             raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
@@ -95,10 +92,7 @@ class FunctionsCore(FunctionsHandler):
                 icon_url = await self.is_have_functions(args_list[5], ctx)
             embed.set_footer(text=await self.is_have_functions(args_list[4], ctx), icon_url=icon_url)
         if len(args_list) > 6 and len(args_list[6]) > 0:
-            try:
-                embed.color = disnake.Colour(int((await self.is_have_functions(args_list[6], ctx)).replace("#", "0x"), 16))
-            except:
-                embed.color = disnake.Colour(int("0x"+(await self.is_have_functions(args_list[6], ctx)).replace("#", ""), 16))
+            embed.color = disnake.Colour(int("0x"+((await self.is_have_functions(args_list[6], ctx)).replace("#", "0x").replace("0x", "")), 16))
         if len(args_list) > 7 and len(args_list[7]) > 0:
             embed.set_thumbnail(await self.is_have_functions(args_list[7], ctx))
         if len(args_list) > 8 and len(args_list[8]) > 0:
@@ -112,6 +106,7 @@ class FunctionsCore(FunctionsHandler):
                 icon_url = await self.is_have_functions(args_list[11], ctx)
             embed.set_author(name=await self.is_have_functions(args_list[9], ctx), url=url, icon_url=icon_url)
         view = disnake.ui.View(timeout=None)
+
         async def add_button(entry: str):
             args_splited = await self.get_args(entry, ctx)
             style = args_splited[0]
@@ -132,18 +127,24 @@ class FunctionsCore(FunctionsHandler):
                 style = disnake.ButtonStyle.primary
             elif style.lower() == "link":
                 style = disnake.ButtonStyle.link
+            else:
+                raise ValueError("$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type.")
             view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
+
         async def add_field(entry: str):
-            args_splited = await self.get_args(entry, ctx)
+            args_splited = await self.get_args(await self.is_have_functions(entry), ctx)
+            if len(args_splited) < 2:
+                raise ValueError("$sendMessage: #addField: Name and value of field are required.")
             inline = False
             if len(args_splited) > 2:
                 inline = args_splited[2].lower() == "true"
             embed.add_field(args_splited[0], args_splited[1], inline=inline)
-        tag_funcs = {
-            "#addfield": add_field,
-            "#addbutton": add_button,
-            }
+
         if len(args_list) > 12:
+            tag_funcs = {
+                "#addfield": add_field,
+                "#addbutton": add_button,
+                }
             for tag in tag_funcs.keys():
                 for i in args_list[11:]:
                     if i.lower().startswith(tag):
@@ -197,30 +198,27 @@ class FunctionsCore(FunctionsHandler):
         return ""
 
     async def func_getvar(self, ctx, args: str):
-        result = await self.is_have_functions(args, ctx)
-        result = await self.database.get_global_var(result)
+        result = await self.database.get_global_var(await self.is_have_functions(args, ctx))
         if result:
             return result
-        else:
+        elif self.db_warns:
             print(f"WARNING: Value for global var \"{args}\" not provided (returning empty string)")
-            return ""
+        return ""
 
     async def func_setvar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
             raise ValueError(f"$setVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         await self.database.set_global_var(args_list[0], args_list[1])
 
+    async def func_delvar(self, ctx, args: str):
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
+        if len(args_list) < 1:
+            raise ValueError(f"$setVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        await self.database.set_global_var(args_list[0])
+
     async def func_getmembervar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
             raise ValueError(f"$getMemberVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
@@ -230,16 +228,12 @@ class FunctionsCore(FunctionsHandler):
         result = await self.database.get_value_from_member(args_list[2], args_list[1], args_list[0])
         if result:
             return result
-        else:
+        elif self.db_warns:
             print(f"WARNING: Value for member var \"{args_list[0]}\" not provided (returning empty string)")
-            return ""
+        return ""
 
     async def func_setmembervar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
             raise ValueError(f"$setMemberVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
@@ -248,12 +242,18 @@ class FunctionsCore(FunctionsHandler):
             args_list.append(ctx.guild.id)
         await self.database.set_value_of_member(args_list[3], args_list[2], args_list[0], args_list[1])
 
+    async def func_delmembervar(self, ctx, args: str):
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
+        if len(args_list) < 1:
+            raise ValueError(f"$detMemberVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) == 1:
+            args_list.append(ctx.author.id)
+        if len(args_list) == 2:
+            args_list.append(ctx.guild.id)
+        await self.database.del_value_of_member(args_list[2], args_list[1], args_list[0])
+
     async def func_getguildvar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
             raise ValueError(f"$getGuildVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
@@ -261,28 +261,28 @@ class FunctionsCore(FunctionsHandler):
         result = await self.database.get_value_from_guild(args_list[1], args_list[0])
         if result:
             return result
-        else:
+        elif self.db_warns:
             print(f"WARNING: Value for guild var \"{args_list[0]}\" not provided (returning empty string)")
-            return ""
+        return ""
 
     async def func_setguildvar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
             raise ValueError(f"$setVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
             args_list.append(ctx.guild.id)
         await self.database.set_value_of_guild(args_list[2], args_list[0], args_list[1])
 
+    async def func_delguildvar(self, ctx, args: str):
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
+        if len(args_list) < 1:
+            raise ValueError(f"$setVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) == 1:
+            args_list.append(ctx.guild.id)
+        await self.database.del_value_of_guild(args_list[1], args_list[0])
+
     async def func_getuservar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
             raise ValueError(f"$getUserVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
@@ -290,26 +290,45 @@ class FunctionsCore(FunctionsHandler):
         result = await self.database.get_value_from_user(args_list[1], args_list[0])
         if result:
             return result
-        else:
+        elif self.db_warns:
             print(f"WARNING: Value for user var \"{args_list[0]}\" not provided (returning empty string)")
-            return ""
+        return ""
 
     async def func_setuservar(self, ctx, args: str):
-        args_list = await self.get_args(args)
-        count = 0
-        for i in args_list:
-            args_list[count] = await self.is_have_functions(i, ctx)
-            count += 1
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
             raise ValueError(f"$setUserVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
             args_list.append(ctx.author.id)
         await self.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
 
+    async def func_deluservar(self, ctx, args: str):
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
+        if len(args_list) < 1:
+            raise ValueError(f"$setUserVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) == 1:
+            args_list.append(ctx.author.id)
+        await self.database.del_value_of_user(args_list[1], args_list[0])
+
     async def func_updatecommands(self, ctx, args: str):
         await self.client.update_commands()
 
-    async def func_console(self, ctx = None, args: str = None):
+    async def func_calculate(self, ctx, args: str):
+        args = await self.is_have_functions(args, ctx)
+        from ast import parse, walk, Name
+
+        def check_expression(expression):
+            for node in walk(parse(expression, mode='eval')):
+                if isinstance(node, Name):
+                    return False
+            return True
+
+        if check_expression(args.strip()):
+            return str(eval(args.strip()))
+        else:
+            raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
+
+    async def func_console(self, ctx, args: str = None):
         if args is None or len(args) == 0:
             return
         print(await self.is_have_functions(args, ctx))

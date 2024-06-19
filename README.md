@@ -1,7 +1,8 @@
 # MZscript
 ## Improved BDFD interpreter in Python
 ### [Documentation](/docs/DOCS.md)
-#### Work on (tested) Python 3.10 and newer
+### [Contribution](/docs/CONTRIBUTING.md)
+#### Works on (tested) Python 3.10 and newer
 ## Instaling💻
 ```
 pip install git+https://github.com/MZshnik/MZscript
@@ -11,7 +12,7 @@ pip install git+https://github.com/MZshnik/MZscript
 pip install --upgrade git+https://github.com/MZshnik/MZscript
 ```
 
-## First step🎉
+## First steps🎉
 #### Create your first command:
 ```py
 from MZscript import MZClient
@@ -92,6 +93,27 @@ $console[Button "$customID" dosnot set]
 $endif
 """)
 ```
+#### Make lvl system:
+```py
+bot.add_command(name="!lvl", code="""
+$if[$getUserVar[lvl]==]
+$setUserVar[lvl;1]
+$endif
+$sendMessage[Your lvl: $getUserVar[lvl]($getUserVar[exp]/100 xp to lvl up)]""")
+
+bot.add_event(name="message", code="""
+$if[$getUserVar[lvl]==]
+$setUserVar[lvl;1]
+$endif
+$if[$getUserVar[exp]==]
+$setUserVar[exp;0]
+$endif
+$setUserVar[exp;$calculate[$getUserVar[exp]+2]]
+$if[$calculate[$getUserVar[exp]/100]==1]
+$setUserVar[lvl;$calculate[$getUserVar[lvl]+1]]
+$endif
+""")
+```
 
 #### List of all functions
 | Function        | Full support | No args | Can be no/with args |
@@ -99,7 +121,7 @@ $endif
 |$if|+|-|-
 |$elif|+|-|-
 |$else|+|+|-
-|$endif|-|+|-
+|$endif|+|+|-
 |$eval|-|-|-
 |$sendMessage|+|-|-
 |$message|+|-|-
@@ -109,13 +131,18 @@ $endif
 |$defer|+|+|-
 |$getVar|+|-|-
 |$setVar|+|-|-
+|$delVar|+|-|-
 |$getMemberVar|+|-|-
 |$setMemberVar|+|-|-
-|$getGuildVar|+|-|-
+|$delMemberVar|+|-|-
+|$gelGuildVar|+|-|-
 |$setGuildVar|+|-|-
+|$delGuildVar|+|-|-
 |$getUserVar|+|-|-
 |$setUserVar|+|-|-
+|$delUserVar|+|-|-
 |$updateCommands|+|-|+
+|$calculate|+|-|-
 |$console|+|-|-
 #### List of functions tags:
 | Function | Tags |
@@ -130,10 +157,10 @@ $endif
 - More functions from BDFD
 - More custom functions
 - Documentation
+- Сontributing
 ## In the Future🚀
 - Most usefull $eval
 - $pyeval
 - Support of mods
-- Сontributers support
 
 #### Repository and first lines of code by [MZshnik](https://github.com/MZshnik)

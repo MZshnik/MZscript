@@ -1,4 +1,3 @@
-import disnake
 from disnake.ext import commands
 
 from database import Database
@@ -30,14 +29,19 @@ class FunctionsHandler:
 
             "$getvar",
             "$setvar",
+            "$delvar",
             "$getmembervar",
             "$setmembervar",
+            "$delmembervar",
             "$getguildvar",
             "$setguildvar",
+            "$delguildvar",
             "$getuservar",
             "$setuservar",
+            "$deluservar",
             
             "$updatecommands",
+            "$calculate",
             "$console"
         ]
         # dont touch this list

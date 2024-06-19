@@ -17,6 +17,11 @@ class Database:
     - `await set_value_of_member` copy from get_value_from_member but sets provided value by var_name
     - `await set_value_of_guild` copy from get_value_of_guild but sets provided value by var_name
     - `await set_value_of_user` copy from get_value_of_user but sets provided value by var_name
+    #### Deleters: del value from DB, return nothing
+    - `await del_global_var` copy from get_global_var but delets var
+    - `await set_value_of_member` copy from get_value_from_member but delets var
+    - `await set_value_of_guild` copy from get_value_of_guild but delets var
+    - `await set_value_of_user` copy from get_value_of_user but delets var
     """
     def __init__(self):
         self.connection = sqlite3.connect("database.db")
@@ -82,4 +87,20 @@ class Database:
             self.cursor.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, 0, user_id))
         else:
             self.cursor.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (0, user_id, var_name, var_value))
+        self.connection.commit()
+
+    async def del_global_var(self, var_name: str):
+        self.cursor.execute("DELETE FROM users WHERE var_name = ?", (var_name))
+        self.connection.commit()
+
+    async def del_value_of_member(self, guild_id: str, user_id: str, var_name: str):
+        self.cursor.execute("DELETE FROM user WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, user_id))
+        self.connection.commit()
+
+    async def del_value_of_guild(self, guild_id: str, var_name: str):
+        self.cursor.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, 0))
+        self.connection.commit()
+
+    async def del_value_of_user(self, user_id: str, var_name: str):
+        self.cursor.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, 0, user_id))
         self.connection.commit()
