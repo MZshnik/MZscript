@@ -54,7 +54,7 @@ bot.add_command(name="$getVar[prefix]set-prefix", code="""
 $if[$message[0]==]
 $setVar[prefix;$message[0]]
 $sendMessage[Prefix setted to "$message[0]"]
-$updateCommands[]
+$updateCommands[] <-- update command names
 $else
 $sendMessage[Type some prefix, like: !, ?, #...]
 $endif
@@ -74,6 +74,24 @@ $getVar[prefix]help info
 $getVar[prefix]help economy
 ]""")
 ```
+#### Create buttons with events
+```py
+bot.add_command(name="!button", code="""
+$sendMessage[
+Content;Title;Description;footer;;0058CF;;;;; <-- embed args
+;#addButton[primary;Amogus;False;amogus] <-- embed tags
+;#addField[Amogus;Click me] <-- another tag
+]""")
+
+bot.add_event(name="button", code="""
+$defer <-- defer button response
+$if[$customID==amogus]
+$sendMessage[New amogus in $channelInfo[name]]
+$else
+$console[Button "$customID" dosnot set]
+$endif
+""")
+```
 
 #### List of all functions
 | Function        | Full support | No args | Can be no/with args |
@@ -84,11 +102,11 @@ $getVar[prefix]help economy
 |$endif|-|+|-
 |$eval|-|-|-
 |$sendMessage|+|-|-
-|$sendEmbed|+|-|-
 |$message|+|-|-
-|$addButton|-|-|-
-|$channelID|+|+|-
+|$channelInfo|+|-|-
 |$text|+|-|-
+|$customID|+|+|-
+|$defer|+|+|-
 |$getVar|+|-|-
 |$setVar|+|-|-
 |$getMemberVar|+|-|-
@@ -99,6 +117,15 @@ $getVar[prefix]help economy
 |$setUserVar|+|-|-
 |$updateCommands|+|-|+
 |$console|+|-|-
+#### List of functions tags:
+| Function | Tags |
+| -------- | ---- |
+|$sendMessage | #addButton, #addField |
+#### List of events:
+| Name | Description |
+| -------- | ---- |
+|message | Activated when anyone send message |
+|button | Activated when anyone press button from bot |
 ## In Developing🔨
 - More functions from BDFD
 - More custom functions

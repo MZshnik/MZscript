@@ -20,10 +20,12 @@ class MZClient:
         self.user_commands = []
         self.user_command_names = []
         self.exec_on_start = []
+        self.user_events = {"message": None, "button": None}
         self.bot = commands.InteractionBot(intents=intents)
         self.funcs = FunctionsCore(self)
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
+        self.bot.add_listener(self.on_button_click, disnake.Event.button_click)
 
     async def update_commands(self):
         """
@@ -67,12 +69,18 @@ class MZClient:
             if i.startswith("$"):
                 self.exec_on_start.append(len(self.user_commands)-1)
 
+    def add_event(self, name: str, code: str):
+        if name in self.user_events.keys():
+            self.user_events[name] = code
+
     async def on_ready(self):
         if self.user_on_ready:
             await self.run_code(self.user_on_ready)
         await self.update_commands()
 
     async def on_message(self, message: disnake.message.Message):
+        if self.user_events["message"]:
+            await self.run_code(self.user_events["message"], message)
         if message.author == self.bot.user:
             return
         splited_command = message.content.split(" ")
@@ -80,6 +88,10 @@ class MZClient:
             if splited_command[0] == i[0]:
                 message.content = " ".join(splited_command[1:])
                 await self.run_code(i[1], message)
+
+    async def on_button_click(self, inter: disnake.MessageInteraction):
+        if self.user_events["button"]:
+            await self.run_code(self.user_events["button"], inter)
 
     def run(self, token: str):
         self.bot.run(token)

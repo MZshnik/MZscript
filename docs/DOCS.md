@@ -82,5 +82,19 @@ About some functions:
 - $message - return all author message if you dont specify arguments (just $message). If you want to get first argument - $message[0], if second - $message[1] and etc.
 - $channelID - return id of channel where command was invoked
 > I think now a lot of functions is not usable, but later will change
+### [Functions tags](/README.md?tab=readme-ov-file#list-of-functions-tags)
+Tags is some under settings to function. They are provided after all arguments of function.
+Now we have only 2 tags on 1 function, this is a description:
+- #addButton - adds button to $sendMessage, args: `style, label, is disabled, customID, url, emoji, row`
+- #addField - adds field to embed in $sendMessage, args: `name, value, is inline`
+More tags will be added soon
+### [Events](/README.md?tab=readme-ov-file#list-of-events)
+Events is more important thing in bot developering. You can add event in your code easily:
+```py
+bot.add_event(name="message", code="""
+$console[Some guy send message in $channelInfo[name]]
+"""
+```
+> It is worth saying that some events used by library by default. You can edit events in lib code if you want to control your events by self
 ## Now what about contributing?
 This menu will be added later. If any one want to contribute - just do it. I help you to do it or edit your code if it has some bugs or errors.

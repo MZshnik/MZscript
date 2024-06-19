@@ -56,47 +56,29 @@ class FunctionsCore(FunctionsHandler):
     async def func_else(self, ctx: disnake.message.Message): # all $else function translated to $elif[True] for better output because he have brackets
         return "$elif[True]"
 
-    async def func_stop(self, ctx: disnake.message.Message): # nvm, this function will be made in the future
-        return "STOPIT"
-
     async def func_eval(self, ctx: disnake.message.Message, args: str): # its unstability function. try not use it
         chunks = await self.get_chunks(args)
         for i in chunks:
             if i.startswith("$"):
                 args = await self.client.run_code(args, ctx)
-                args = await self.client.run_code(args, ctx)
-                return args
+                return await self.client.run_code(args, ctx)
         else:
             return args
 
-    async def func_sendmessage(self, ctx: disnake.message.Message, args: str): # send message to provided channel or ctx
-        try:
-            args_list = await self.get_args(args)
-            if len(args_list) == 2:
-                channel = ctx.guild.get_channel(int(await self.is_have_functions(args_list[0], ctx)))
-                if channel:
-                    await channel.send(await self.is_have_functions(args_list[1], ctx))
-                else:
-                    raise SyntaxError(f"Can't find channel \"{args_list[0]}\"")
-            elif len(args_list) == 1:
-                result = await self.is_have_functions(args_list[0], ctx)
-                await ctx.channel.send(result)
-        except Exception as e:
-            raise SyntaxError("$sendMessage: Cannot send empty message")
-
-    async def func_sendembed(self, ctx: disnake.message.Message, args: str):
+    async def func_sendmessage(self, ctx: disnake.message.Message, args: str):
         args_list = await self.get_args(args)
         if len(args_list) < 1:
-            raise ValueError(f"$sendEmbed needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
 
         channel = ctx.channel
-        if isinstance(args_list[0], int):
+        if args_list[0].isdigit():
             try:
-                channel = ctx.guild.get_channel(int(await self.is_have_functions(args_list[0], ctx)))
-                args_list.insert(0, channel)
+                channel = self.client.bot.get_channel(int(await self.is_have_functions(args_list[0], ctx)))
             except Exception as e:
                 print(e)
-                raise SyntaxError(f"Cannot find channel \"{args_list[0]}\"")
+                raise SyntaxError(f"$sendMessage: Cannot find channel \"{args_list[0]}\"")
+        else:
+            args_list.insert(0, channel)
         embed = disnake.Embed()
         content = None
         if len(args_list) > 1 and len(args_list[1]) > 0:
@@ -105,11 +87,13 @@ class FunctionsCore(FunctionsHandler):
             embed.title = await self.is_have_functions(args_list[2], ctx)
         if len(args_list) > 3 and len(args_list[3]) > 0:
             embed.description = await self.is_have_functions(args_list[3], ctx)
+            if not embed.description:
+                raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
         if len(args_list) > 4 and len(args_list[4]) > 0:
             icon_url = None
             if len(args_list) > 5 and len(args_list[5]) > 0:
                 icon_url = await self.is_have_functions(args_list[5], ctx)
-            embed.set_footer(await self.is_have_functions(args_list[4], ctx), icon_url)
+            embed.set_footer(text=await self.is_have_functions(args_list[4], ctx), icon_url=icon_url)
         if len(args_list) > 6 and len(args_list[6]) > 0:
             try:
                 embed.color = disnake.Colour(int((await self.is_have_functions(args_list[6], ctx)).replace("#", "0x"), 16))
@@ -127,29 +111,92 @@ class FunctionsCore(FunctionsHandler):
             if len(args_list) > 11 and len(args_list[11]) > 0:
                 icon_url = await self.is_have_functions(args_list[11], ctx)
             embed.set_author(name=await self.is_have_functions(args_list[9], ctx), url=url, icon_url=icon_url)
+        view = disnake.ui.View(timeout=None)
+        async def add_button(entry: str):
+            args_splited = await self.get_args(entry, ctx)
+            style = args_splited[0]
+            label = args_splited[1]
+            disabled = args_splited[2]
+            custom_id = args_splited[3]
+            url = None
+            emoji = None
+            row = None
+
+            if style.lower() == "secondary":
+                style = disnake.ButtonStyle.secondary
+            elif style.lower() == "success":
+                style = disnake.ButtonStyle.success
+            elif style.lower() == "danger":
+                style = disnake.ButtonStyle.danger
+            elif style.lower() == "primary":
+                style = disnake.ButtonStyle.primary
+            elif style.lower() == "link":
+                style = disnake.ButtonStyle.link
+            view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
+        async def add_field(entry: str):
+            args_splited = await self.get_args(entry, ctx)
+            inline = False
+            if len(args_splited) > 2:
+                inline = args_splited[2].lower() == "true"
+            embed.add_field(args_splited[0], args_splited[1], inline=inline)
+        tag_funcs = {
+            "#addfield": add_field,
+            "#addbutton": add_button,
+            }
+        if len(args_list) > 12:
+            for tag in tag_funcs.keys():
+                for i in args_list[11:]:
+                    if i.lower().startswith(tag):
+                        await tag_funcs[tag](i[len(tag)+1:-1])
         if not embed.description:
-            raise SyntaxError(f"Cannot send embed without description: {args}")
-        if content:
-            await channel.send(content=content, embed=embed)
-        else:
-            await channel.send(embed=embed)
+            embed = None
+        await channel.send(content=content, embed=embed, view=view)
 
     async def func_message(self, ctx: disnake.message.Message, args: str = ""):
         if len(args) == 0:
             return ctx.content
         return ctx.content.split(" ")[int(args)]
 
-    async def func_addbutton(self, ctx: disnake.message.Message, args: str): # test and fun function
-        print(f"addButton with args: {args}")
-        return "penis is good"
-
     async def func_channelinfo(self, ctx: disnake.message.Message, args: str):
-        return str(ctx.channel.id)
+        args = await self.is_have_functions(args, ctx)
+        args_list = await self.get_args(args, ctx)
+        if len(args_list) > 2 or len(args_list) == 0:
+            raise ValueError("$channelInfo: To many or no args provided")
+        channel = ctx.channel
+        if args_list[0].isdigit():
+            try:
+                channel = self.client.bot.get_channel(int(await self.is_have_functions(args_list[0], ctx)))
+            except Exception as e:
+                print(e)
+                raise SyntaxError(f"$channelInfo: Cannot find channel \"{args_list[0]}\"")
+        else:
+            args_list.insert(0, channel)
+        params = {
+            "name": channel.name,
+            "guild": channel.guild.id,
+            "id": channel.id,
+            "category_id": channel.category_id,
+            "topic": channel.topic,
+            "position": channel.position,
+            "last_message": channel.last_message_id,
+            "slowmode_delay": channel.slowmode_delay,
+            "thread_slowmode": channel.default_thread_slowmode_delay,
+            "nsfw": str(channel.nsfw).lower(),
+            "auto_archive_duration": channel.default_auto_archive_duration
+            }
+        return str(params[args_list[1]])
 
     async def func_text(self, ctx: disnake.message.Message, args: str):
         return args
 
-    async def func_getvar(self, ctx: disnake.message.Message, args: str):
+    async def func_customid(self, ctx: disnake.MessageInteraction, args: str = None):
+        return ctx.component.custom_id
+
+    async def func_defer(self, ctx: disnake.MessageInteraction, args: str = None):
+        await ctx.response.defer()
+        return ""
+
+    async def func_getvar(self, ctx, args: str):
         result = await self.is_have_functions(args, ctx)
         result = await self.database.get_global_var(result)
         if result:
@@ -158,7 +205,7 @@ class FunctionsCore(FunctionsHandler):
             print(f"WARNING: Value for global var \"{args}\" not provided (returning empty string)")
             return ""
 
-    async def func_setvar(self, ctx: disnake.message.Message, args: str):
+    async def func_setvar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -168,7 +215,7 @@ class FunctionsCore(FunctionsHandler):
             raise ValueError(f"$setVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         await self.database.set_global_var(args_list[0], args_list[1])
 
-    async def func_getmembervar(self, ctx: disnake.message.Message, args: str):
+    async def func_getmembervar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -187,7 +234,7 @@ class FunctionsCore(FunctionsHandler):
             print(f"WARNING: Value for member var \"{args_list[0]}\" not provided (returning empty string)")
             return ""
 
-    async def func_setmembervar(self, ctx: disnake.message.Message, args: str):
+    async def func_setmembervar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -201,7 +248,7 @@ class FunctionsCore(FunctionsHandler):
             args_list.append(ctx.guild.id)
         await self.database.set_value_of_member(args_list[3], args_list[2], args_list[0], args_list[1])
 
-    async def func_getguildvar(self, ctx: disnake.message.Message, args: str):
+    async def func_getguildvar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -218,7 +265,7 @@ class FunctionsCore(FunctionsHandler):
             print(f"WARNING: Value for guild var \"{args_list[0]}\" not provided (returning empty string)")
             return ""
 
-    async def func_setguildvar(self, ctx: disnake.message.Message, args: str):
+    async def func_setguildvar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -230,7 +277,7 @@ class FunctionsCore(FunctionsHandler):
             args_list.append(ctx.guild.id)
         await self.database.set_value_of_guild(args_list[2], args_list[0], args_list[1])
 
-    async def func_getuservar(self, ctx: disnake.message.Message, args: str):
+    async def func_getuservar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -247,7 +294,7 @@ class FunctionsCore(FunctionsHandler):
             print(f"WARNING: Value for user var \"{args_list[0]}\" not provided (returning empty string)")
             return ""
 
-    async def func_setuservar(self, ctx: disnake.message.Message, args: str):
+    async def func_setuservar(self, ctx, args: str):
         args_list = await self.get_args(args)
         count = 0
         for i in args_list:
@@ -259,10 +306,10 @@ class FunctionsCore(FunctionsHandler):
             args_list.append(ctx.author.id)
         await self.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
 
-    async def func_updatecommands(self, ctx: disnake.message.Message, args: str):
+    async def func_updatecommands(self, ctx, args: str):
         await self.client.update_commands()
 
-    async def func_console(self, ctx: disnake.message.Message = None, args: str = None):
+    async def func_console(self, ctx = None, args: str = None):
         if args is None or len(args) == 0:
             return
         print(await self.is_have_functions(args, ctx))

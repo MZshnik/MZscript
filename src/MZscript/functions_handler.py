@@ -18,15 +18,15 @@ class FunctionsHandler:
             "$if",
             "$elif",
             "$else",
-            "$stop",
             "$eval",
 
             "$sendmessage",
-            "$sendembed",
             "$message",
-            "$addbutton",
             "$channelinfo",
             "$text",
+
+            "$customid",
+            "$defer",
 
             "$getvar",
             "$setvar",
@@ -43,13 +43,13 @@ class FunctionsHandler:
         # dont touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         # add if func dont want to get args with []
-        self.no_arg_funcs = ["$else"]
+        self.no_arg_funcs = ["$else", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
         self.can_be_no_arg = ["$message", "$updatecommands"]
         # dict. with func names and func_<func-name> class methods
         self.funcs = {}
 
-    async def is_have_functions(self, entry: str, ctx: disnake.message.Message = None):
+    async def is_have_functions(self, entry: str, ctx = None):
         """
         ## Check if entry text has functions to execute.
         Usually used for execute arguments in functions like $sendMessage[$message] < $message is argument what will be executed
@@ -64,17 +64,19 @@ class FunctionsHandler:
         else:
             return entry
 
-    async def get_args(self, entry: str, ctx: disnake.message.Message = None):
+    async def get_args(self, entry: str, ctx = None):
         """
         ## Gets args from function
         ### Example:
-        #### Input `"$sendMessage[1234567890987654321;Hello World!]"`
+        #### Input `"1234567890987654321;Hello World!"`
         #### Output `["1234567890987654321", "Hello World!"]`
         """
         args_list = []
         brackets = 0
         while len(entry) > 0:
             brackets = 0
+
+            "$customid",
             addArg = ""
             for i in entry:
                 addArg += i
@@ -91,7 +93,7 @@ class FunctionsHandler:
                 break
         return args_list
 
-    async def execute_function(self, entry: str, ctx: disnake.message.Message):
+    async def execute_function(self, entry: str, ctx):
         """
         ## Execute function and return his result
         ### Example:
@@ -120,7 +122,7 @@ class FunctionsHandler:
         else:
             return ""
 
-    async def check_ifs(self, chunks):
+    async def check_ifs(self, chunks: list):
         """
         ## Check if all $if blocks closed or writed correctly
         ### Example:
@@ -169,7 +171,7 @@ class FunctionsHandler:
                 if brackets == 0:
                     chunks.append(addCommand+i)
                     return entry[len(addCommand):]
-            elif (addCommand+i).lower() in self.no_arg_funcs or (addCommand+i).lower() in ["$stop", "$endif"] or (addCommand+i in self.can_be_no_arg and len(addCommand+i)==len(entry)):
+            elif (addCommand+i).lower() in self.no_arg_funcs or (addCommand+i).lower() in ["$stop", "$endif"] or ((addCommand+i).lower() in self.can_be_no_arg and len(addCommand+i)==len(entry)):
                 if (addCommand+i).lower() == "$else":
                     chunks.append((addCommand+i).replace("$else", "$elif[True]"))
                 else:
@@ -230,7 +232,7 @@ class FunctionsHandler:
             elif i.startswith("$if"):
                 unclosedifs += 1
 
-    async def find_elif(self, chunks: list, main_if: tuple, main_endif: tuple, ctx: disnake.message.Message):
+    async def find_elif(self, chunks: list, main_if: tuple, main_endif: tuple, ctx):
         """
         ## Return chunks(list) with executed $if condition.\n
         Delete $if block if it return False or delete $elif condition if $if return True.\n
@@ -268,7 +270,7 @@ class FunctionsHandler:
                 return_chunks = return_chunks[:main_if[1]] + return_chunks[main_endif+1:]
         return return_chunks
 
-    async def execute_chunks(self, old_chunks, ctx: disnake.message.Message):
+    async def execute_chunks(self, old_chunks, ctx):
         """
         ## Execute all chunks
         ### Example:
