@@ -187,6 +187,32 @@ class FunctionsCore(FunctionsHandler):
             }
         return str(params[args_list[1]])
 
+    async def func_userinfo(self, ctx: disnake.message.Message, args: str):
+        args = await self.is_have_functions(args, ctx)
+        args_list = await self.get_args(args, ctx)
+        if len(args_list) > 2 or len(args_list) == 0:
+            raise ValueError("$userInfo: To many or no args provided")
+        user = ctx.author
+        if args_list[0].isdigit():
+            try:
+                user = self.client.bot.get_user(int(await self.is_have_functions(args_list[0], ctx)))
+            except Exception as e:
+                print(e)
+                raise SyntaxError(f"$userInfo: Cannot find user \"{args_list[0]}\"")
+        else:
+            args_list.insert(0, user)
+        params = {
+            "name": user.name,
+            "id": user.id,
+            "avatar": user.avatar,
+            "dm": user.dm_channel,
+            "created": int(user.created_at.timestamp()),
+            "global": user.global_name,
+            "bot": user.bot,
+            "system": user.system
+            }
+        return str(params[args_list[1]])
+
     async def func_text(self, ctx: disnake.message.Message, args: str):
         return args
 

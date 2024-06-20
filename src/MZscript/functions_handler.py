@@ -22,6 +22,7 @@ class FunctionsHandler:
             "$sendmessage",
             "$message",
             "$channelinfo",
+            "$userinfo",
             "$text",
 
             "$customid",

@@ -126,6 +126,7 @@ $endif
 |$sendMessage|+|-|-
 |$message|+|-|-
 |$channelInfo|+|-|-
+|$userInfo|+|-|-
 |$text|+|-|-
 |$customID|+|+|-
 |$defer|+|+|-
