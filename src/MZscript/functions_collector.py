@@ -63,14 +63,14 @@ class FunctionsCore(FunctionsHandler):
             return args
 
     async def func_sendmessage(self, ctx, args: str):
-        args_list = await self.get_args(args)
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
             raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
 
         channel = ctx.channel
         if args_list[0].isdigit():
             try:
-                channel = self.client.bot.get_channel(int(await self.is_have_functions(args_list[0], ctx)))
+                channel = self.client.bot.get_channel(int(args_list[0]))
             except Exception as e:
                 print(e)
                 raise SyntaxError(f"$sendMessage: Cannot find channel \"{args_list[0]}\"")
@@ -79,32 +79,32 @@ class FunctionsCore(FunctionsHandler):
         embed = disnake.Embed()
         content = None
         if len(args_list) > 1 and len(args_list[1]) > 0:
-            content = await self.is_have_functions(args_list[1], ctx)
+            content = args_list[1]
         if len(args_list) > 2 and len(args_list[2]) > 0:
-            embed.title = await self.is_have_functions(args_list[2], ctx)
+            embed.title = args_list[2]
         if len(args_list) > 3 and len(args_list[3]) > 0:
-            embed.description = await self.is_have_functions(args_list[3], ctx)
+            embed.description = args_list[3]
             if not embed.description:
                 raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
         if len(args_list) > 4 and len(args_list[4]) > 0:
             icon_url = None
             if len(args_list) > 5 and len(args_list[5]) > 0:
-                icon_url = await self.is_have_functions(args_list[5], ctx)
-            embed.set_footer(text=await self.is_have_functions(args_list[4], ctx), icon_url=icon_url)
+                icon_url = args_list[5]
+            embed.set_footer(text=args_list[4], icon_url=icon_url)
         if len(args_list) > 6 and len(args_list[6]) > 0:
-            embed.color = disnake.Colour(int("0x"+((await self.is_have_functions(args_list[6], ctx)).replace("#", "0x").replace("0x", "")), 16))
+            embed.color = disnake.Colour(int("0x"+(args_list[6].replace("#", "0x").replace("0x", "")), 16))
         if len(args_list) > 7 and len(args_list[7]) > 0:
-            embed.set_thumbnail(await self.is_have_functions(args_list[7], ctx))
+            embed.set_thumbnail(args_list[7])
         if len(args_list) > 8 and len(args_list[8]) > 0:
-            embed.set_image(await self.is_have_functions(args_list[8], ctx))
+            embed.set_image(args_list[8])
         if len(args_list) > 9 and len(args_list[9]) > 0:
             url = None
             if len(args_list) > 10 and len(args_list[10]) > 0:
-                url = await self.is_have_functions(args_list[10], ctx)
+                url = args_list[10]
             icon_url = None
             if len(args_list) > 11 and len(args_list[11]) > 0:
-                icon_url = await self.is_have_functions(args_list[11], ctx)
-            embed.set_author(name=await self.is_have_functions(args_list[9], ctx), url=url, icon_url=icon_url)
+                icon_url = args_list[11]
+            embed.set_author(name=args_list[9], url=url, icon_url=icon_url)
         view = disnake.ui.View(timeout=None)
 
         async def add_button(entry: str):
@@ -132,7 +132,7 @@ class FunctionsCore(FunctionsHandler):
             view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
 
         async def add_field(entry: str):
-            args_splited = await self.get_args(await self.is_have_functions(entry), ctx)
+            args_splited = await self.get_args(entry, ctx)
             if len(args_splited) < 2:
                 raise ValueError("$sendMessage: #addField: Name and value of field are required.")
             inline = False

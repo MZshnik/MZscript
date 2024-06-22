@@ -215,8 +215,11 @@ class FunctionsHandler:
                 if entry[0] == "$":
                     entry = await self.find_function(entry, chunks)
                     checkCommands = False
-                if len(entry) != 0:
-                    entry = entry[1:]
+                if entry:
+                    if len(entry) != 0:
+                        entry = entry[1:]
+                else:
+                    return chunks
         return chunks
 
     async def find_endif(self, chunks: list):
