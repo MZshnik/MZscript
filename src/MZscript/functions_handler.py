@@ -1,11 +1,11 @@
 from disnake.ext import commands
 
-from database import Database
+from .database import Database
 
 
 class FunctionsHandler:
     """
-    ## Main class for handlering functions like $if, $sendMessage, $console and etc.\n
+    ## Main class for handlering functions like $if, $sendMessage, $console and etc.
     #### Check docs for better explaining what you need to do if you want add command
     """
     def __init__(self, bot: commands.InteractionBot):

@@ -3,7 +3,7 @@ import asyncio
 import disnake
 from disnake.ext import commands
 
-from functions_collector import FunctionsCore
+from .functions_collector import FunctionsCore
 
 
 class MZClient:
