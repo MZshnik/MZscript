@@ -68,7 +68,7 @@ class FunctionsCore(FunctionsHandler):
             raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
 
         channel = ctx.channel
-        if args_list[0].isdigit():
+        if args_list[0].isdigit() and len(args_list) > 1:
             try:
                 channel = self.client.bot.get_channel(int(args_list[0]))
             except Exception as e:
