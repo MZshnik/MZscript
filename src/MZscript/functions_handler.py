@@ -43,7 +43,9 @@ class FunctionsHandler:
             
             "$updatecommands",
             "$calculate",
-            "$console"
+            "$console",
+            
+			"$kick"
         ]
         # dont touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
