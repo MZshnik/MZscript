@@ -45,7 +45,9 @@ class FunctionsHandler:
             "$calculate",
             "$console",
             
-			"$kick"
+			"$kick",
+            
+			"$addreaction"
         ]
         # dont touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
@@ -83,7 +85,7 @@ class FunctionsHandler:
         while len(entry) > 0:
             brackets = 0
 
-            "$customid",
+            "$customid"
             addArg = ""
             for i in entry:
                 addArg += i
