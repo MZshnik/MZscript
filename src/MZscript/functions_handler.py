@@ -1,16 +1,9 @@
-from disnake.ext import commands
-
-from .database import Database
-
-
 class FunctionsHandler:
     """
     ## Main class for handlering functions like $if, $sendMessage, $console and etc.
     #### Check docs for better explaining what you need to do if you want add command
     """
-    def __init__(self, bot: commands.InteractionBot):
-        self.bot = bot
-        self.database = Database()
+    def __init__(self):
         # every function from this list need to have same self.func_functionname
         # all functions need to be in lower case, including self.func_funcitonname
         self.all_funcs = [
@@ -24,6 +17,8 @@ class FunctionsHandler:
             "$channelinfo",
             "$userinfo",
             "$text",
+
+            "$kick"
 
             "$customid",
             "$defer",
@@ -43,9 +38,7 @@ class FunctionsHandler:
             
             "$updatecommands",
             "$calculate",
-            "$console",
-            
-			"$kick"
+            "$console"
         ]
         # dont touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
@@ -55,6 +48,9 @@ class FunctionsHandler:
         self.can_be_no_arg = ["$message", "$updatecommands"]
         # dict. with func names and func_<func-name> class methods
         self.funcs = {}
+
+    def sync_functions(self, functions):
+        self.funcs = functions
 
     async def is_have_functions(self, entry: str, ctx = None):
         """
@@ -82,8 +78,6 @@ class FunctionsHandler:
         brackets = 0
         while len(entry) > 0:
             brackets = 0
-
-            "$customid",
             addArg = ""
             for i in entry:
                 addArg += i
@@ -126,8 +120,7 @@ class FunctionsHandler:
             raise SyntaxError(f"Cant complete this function: {splited[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly.")
         if result:
             return result
-        else:
-            return ""
+        return ""
 
     async def check_ifs(self, chunks: list):
         """

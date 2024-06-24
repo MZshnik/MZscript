@@ -45,6 +45,30 @@ And some params for use:
 |`self.client`|Main MZClient class what sets in `__init__` methode|
 > More params maybe descrubed or added later  
 You also can read in-code-docs with examples of use cases
+#### Creating new files
+1. Create new file in [functions](/src/MZscript/Functions/) directory or create new folder in this dir and create file with this [rules](/docs/CONTRIBUTING.md#projest-hierarhi-and-files)  
+2. Insert this setup code to new file
+```py
+import disnake
+
+from src.MZscript.functions_handler import FunctionsHandler
+
+
+class Functions(FunctionsHandler):
+    def __init__(self, handler):
+        super().__init__()
+        self.client = handler.client
+        self.bot = handler.client.bot
+
+    # create new funcs like this:
+    async def func_newfunc(self, ctx, args: str):
+        ... # some code of function
+
+def setup(handler):
+    return Functions(handler)
+```
+3. Register new file in [`__init__.py`](/src/MZscript/Functions/__init__.py) like other modules  
+Next steps writed in this [header](https://github.com/MZshnik/MZscript/blob/main/docs/CONTRIBUTING.md#creating-new-function)
 ### What about events
 This topic will be created later
 ### Modify library
