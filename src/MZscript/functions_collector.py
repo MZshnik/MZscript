@@ -18,13 +18,14 @@ class FunctionsCore(FunctionsHandler):
     def load_functions(self):
         functions = []
         tempmods = []
-        for i in os.listdir(os.getcwd()+"\\src\\MZscript\\Functions"):
-            if i.endswith(".py") and i != "__init__.py":
-                exec(f"""
-tempmod = {i[:-3]}.setup(self)
+        for i in os.walk(os.getcwd()+"\\src\\MZscript\\Functions"):
+            for j in i[2]:
+                if j.endswith(".py") and j != "__init__.py":
+                    exec(f"""
+tempmod = {j[:-3]}.setup(self)
 tempmods.append(tempmod)
-for i in inspect.getmembers(tempmod, inspect.ismethod):
-    functions.append(i)""")
+for k in inspect.getmembers(tempmod, inspect.ismethod):
+    functions.append(k)""")
         for line in self.all_funcs:
             try:
                 for i in functions:
