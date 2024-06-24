@@ -14,6 +14,7 @@ class FunctionsHandler:
 
             "$sendmessage",
             "$message",
+            "$addreaction"
             "$channelinfo",
             "$userinfo",
             "$text",
