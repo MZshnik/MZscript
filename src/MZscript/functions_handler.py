@@ -19,7 +19,7 @@ class FunctionsHandler:
             "$userinfo",
             "$text",
 
-            "$kick"
+            "$kick",
 
             "$customid",
             "$defer",
