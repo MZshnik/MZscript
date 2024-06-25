@@ -11,9 +11,10 @@ class Functions(FunctionsHandler):
 
     async def func_if(self, ctx, args: str):
         """
-        $if[condition]
-        Example:
-        $if[$userInfo[id]==700061502089986139]"""
+        `$if[condition]`
+        #### Example:
+        `$if[$userInfo[id]==700061502089986139]`
+        """
         if args.lower() == "true":
             return True
         elif args.lower() == "false":
@@ -43,9 +44,9 @@ class Functions(FunctionsHandler):
 
     async def func_elif(self, ctx, args: str): # return result from $if (DRY)
         """
-        $elif[condition]
-        Example:
-        $elif[$message[0]==hello]
+        `$elif[condition]`
+        #### Example:
+        `$elif[$message[0]==hello]`
         """
         return await self.func_if(ctx, args)
 
@@ -55,9 +56,9 @@ class Functions(FunctionsHandler):
 
     async def func_eval(self, ctx, args: str): # its unstability function. try not use it
         """
-        $eval[code to eval]
-        Example:
-        $eval[$message]
+        `$eval[code to eval]`
+        #### Example:
+        `$eval[$message]`
         """
         chunks = await self.get_chunks(args)
         for i in chunks:

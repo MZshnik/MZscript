@@ -24,6 +24,7 @@ class FunctionsHandler:
             "$customid",
             "$defer",
 
+            "$var",
             "$getvar",
             "$setvar",
             "$delvar",
