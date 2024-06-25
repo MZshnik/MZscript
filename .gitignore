@@ -129,3 +129,4 @@ cython_debug/
 testmain.py
 .vscode
 database.db
+variables.json
