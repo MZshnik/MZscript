@@ -124,12 +124,15 @@ $endif
 |$endif|+|+|-
 |$eval|-|-|-
 |$sendMessage|+|-|-
+|$addReaction|+|-|-
 |$message|+|-|-
 |$channelInfo|+|-|-
 |$userInfo|+|-|-
 |$text|+|-|-
+|$kick|+|-|-
 |$customID|+|+|-
 |$defer|+|+|-
+|$var|+|-|-
 |$getVar|+|-|-
 |$setVar|+|-|-
 |$delVar|+|-|-

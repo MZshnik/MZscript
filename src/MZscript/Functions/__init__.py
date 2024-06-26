@@ -1,3 +1,4 @@
+from .Core import *
 from .Info import *
 from .Message import *
 from .Moderation import *

@@ -1,6 +1,6 @@
 import disnake
 
-from src.MZscript.functions_handler import FunctionsHandler
+from MZscript.functions_handler import FunctionsHandler
 
 
 class Functions(FunctionsHandler):
@@ -10,6 +10,11 @@ class Functions(FunctionsHandler):
         self.bot = handler.client.bot
 
     async def func_sendmessage(self, ctx, args: str):
+        """
+        `$sendMessage[message]`
+        #### Example:
+        `$sendMessage[hello]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
             raise ValueError(f'$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: "{args}"')
