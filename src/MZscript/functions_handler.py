@@ -11,14 +11,19 @@ class FunctionsHandler:
             "$elif",
             "$else",
             "$eval",
+            
+            "$channelinfo",
+            "$guildinfo",
+            "$roleinfo",
+            "$userinfo",
 
             "$sendmessage",
             "$message",
             "$addreaction",
-            "$channelinfo",
-            "$userinfo",
             "$text",
 
+			"$ban",
+			"$unban",
             "$kick",
 
             "$customid",

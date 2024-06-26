@@ -12,7 +12,7 @@ class Functions(FunctionsHandler):
     async def func_sendmessage(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f'$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: "{args}"')
 
         channel = ctx.channel
         if args_list[0].isdigit() and len(args_list) > 1:
@@ -20,7 +20,7 @@ class Functions(FunctionsHandler):
                 channel = self.bot.get_channel(int(args_list[0]))
             except Exception as e:
                 print(e)
-                raise SyntaxError(f"$sendMessage: Cannot find channel \"{args_list[0]}\"")
+                raise SyntaxError(f'$sendMessage: Cannot find channel "{args_list[0]}"')
         else:
             args_list.insert(0, channel)
         embed = disnake.Embed()
@@ -32,14 +32,14 @@ class Functions(FunctionsHandler):
         if len(args_list) > 3 and len(args_list[3]) > 0:
             embed.description = args_list[3]
             if not embed.description:
-                raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
+                raise SyntaxError(f'$sendEmbed: Cannot send embed without description: {args}')
         if len(args_list) > 4 and len(args_list[4]) > 0:
             icon_url = None
             if len(args_list) > 5 and len(args_list[5]) > 0:
                 icon_url = args_list[5]
             embed.set_footer(text=args_list[4], icon_url=icon_url)
         if len(args_list) > 6 and len(args_list[6]) > 0:
-            embed.color = disnake.Colour(int("0x"+(args_list[6].replace("#", "0x").replace("0x", "")), 16))
+            embed.color = disnake.Colour(int('0x'+(args_list[6].replace('#', '0x').replace('0x', '')), 16))
         if len(args_list) > 7 and len(args_list[7]) > 0:
             embed.set_thumbnail(args_list[7])
         if len(args_list) > 8 and len(args_list[8]) > 0:
@@ -64,33 +64,33 @@ class Functions(FunctionsHandler):
             emoji = None
             row = None
 
-            if style.lower() == "secondary":
+            if style.lower() == 'secondary':
                 style = disnake.ButtonStyle.secondary
-            elif style.lower() == "success":
+            elif style.lower() == 'success':
                 style = disnake.ButtonStyle.success
-            elif style.lower() == "danger":
+            elif style.lower() == 'danger':
                 style = disnake.ButtonStyle.danger
-            elif style.lower() == "primary":
+            elif style.lower() == 'primary':
                 style = disnake.ButtonStyle.primary
-            elif style.lower() == "link":
+            elif style.lower() == 'link':
                 style = disnake.ButtonStyle.link
             else:
-                raise ValueError("$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type.")
-            view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
+                raise ValueError('$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type.')
+            view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == 'true', custom_id=custom_id, url=url, emoji=emoji, row=row))
 
         async def add_field(entry: str):
             args_splited = await self.get_args(entry, ctx)
             if len(args_splited) < 2:
-                raise ValueError("$sendMessage: #addField: Name and value of field are required.")
+                raise ValueError('$sendMessage: #addField: Name and value of field are required.')
             inline = False
             if len(args_splited) > 2:
-                inline = args_splited[2].lower() == "true"
+                inline = args_splited[2].lower() == 'true'
             embed.add_field(args_splited[0], args_splited[1], inline=inline)
 
         if len(args_list) > 12:
             tag_funcs = {
-                "#addfield": add_field,
-                "#addbutton": add_button,
+                '#addfield': add_field,
+                '#addbutton': add_button,
                 }
             for tag in tag_funcs.keys():
                 for i in args_list[11:]:
