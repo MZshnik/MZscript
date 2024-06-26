@@ -11,9 +11,9 @@ class FunctionsHandler:
             "$elif",
             "$else",
             "$eval",
-            
-            "$channelinfo",
+
             "$guildinfo",
+            "$channelinfo",
             "$roleinfo",
             "$userinfo",
 
@@ -22,8 +22,8 @@ class FunctionsHandler:
             "$addreaction",
             "$text",
 
-			"$ban",
-			"$unban",
+            "$ban",
+            "$unban",
             "$kick",
 
             "$customid",
@@ -42,7 +42,7 @@ class FunctionsHandler:
             "$getuservar",
             "$setuservar",
             "$deluservar",
-            
+
             "$updatecommands",
             "$calculate",
             "$console"
@@ -285,7 +285,7 @@ class FunctionsHandler:
         ## Execute all chunks
         ### Example:
         #### Input `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
-        #### Output `` (if $message[0] return hello)
+        #### Output `` (if $message[0] == hello send message "Hello World!")
         """
         new_chunks = old_chunks.copy()
         while new_chunks:

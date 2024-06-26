@@ -11,7 +11,8 @@ class Functions(FunctionsHandler):
 
     async def func_if(self, ctx, args: str):
         """
-        `$if[condition]`
+        `$if[condition]`\n
+        Compares 2 provided values between them
         #### Example:
         `$if[$userInfo[id]==700061502089986139]`
         """
@@ -32,33 +33,38 @@ class Functions(FunctionsHandler):
             if i in args:
                 vals = args.split(i)
                 if i in ["==", "!="]:
-                    val1 = vals[0].strip()
-                    val2 = vals[1].strip()
+                    val1 = await self.is_have_functions(vals[0].strip(), ctx)
+                    val2 = await self.is_have_functions(vals[1].strip(), ctx)
                 else:
-                    val1 = int(vals[0])
-                    val2 = int(vals[1])
-                val1 = await self.is_have_functions(val1, ctx)
-                val2 = await self.is_have_functions(val2, ctx)
+                    val1 = int(await self.is_have_functions(vals[0], ctx))
+                    val2 = int(await self.is_have_functions(vals[1], ctx))
                 return operator_mapping.get(i, lambda x, y: None)(val1, val2)
         return False
 
     async def func_elif(self, ctx, args: str): # return result from $if (DRY)
         """
-        `$elif[condition]`
+        `$elif[condition]`\n
+        Copy of $if
         #### Example:
         `$elif[$message[0]==hello]`
         """
         return await self.func_if(ctx, args)
 
-    async def func_else(self, ctx): # all $else function translated to $elif[True] for better output because he have brackets
-        "No args"
-        return "$elif[True]"
+    async def func_else(self, ctx): # all $else function translated to $elif[true] for better output because he have brackets
+        """
+        `$else`\n
+        No args. Cope of $elif[true]
+        #### Example:
+        `$if[$message==hello]`
+        """
+        return "$elif[true]"
 
     async def func_eval(self, ctx, args: str): # its unstability function. try not use it
         """
-        `$eval[code to eval]`
+        `$eval[code to eval]`\n
+        Execute provided code
         #### Example:
-        `$eval[$message]`
+        `$eval[$sendMessage[$message]]`
         """
         chunks = await self.get_chunks(args)
         for i in chunks:

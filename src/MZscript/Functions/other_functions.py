@@ -44,7 +44,7 @@ class Functions(FunctionsHandler):
         from ast import Name, parse, walk
 
         def check_expression(expression):
-            for node in walk(parse(expression, mode='eval')):
+            for node in walk(parse(expression, mode="eval")):
                 if isinstance(node, Name):
                     return False
             return True

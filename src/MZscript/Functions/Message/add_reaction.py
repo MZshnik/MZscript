@@ -1,6 +1,6 @@
 import disnake
 
-from src.MZscript.functions_handler import FunctionsHandler
+from MZscript.functions_handler import FunctionsHandler
 
 class AddReaction(FunctionsHandler):
     def __init__(self, handler):
@@ -19,7 +19,7 @@ class AddReaction(FunctionsHandler):
                     guild = self.bot.get_guild(int(args_list[0]))
                 args_list.insert(0, guild)
             except:
-                raise SyntaxError(f'$addReaction: Cannot find guild "{args_list[0]}"')
+                raise SyntaxError(f"$addReaction: Cannot find guild \"{args_list[0]}\"")
         else:
             args_list.insert(0, guild)
 

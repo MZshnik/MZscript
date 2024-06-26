@@ -95,6 +95,6 @@ bot.add_event(name="message", code="""
 $console[Some guy send message in $channelInfo[name]]
 """
 ```
-> It is worth saying that some events used by library by default. You can edit events in lib code if you want to control your events by self
+> It is worth saying that some events used by library by default. You can edit events in lib code if you want to control events by self
 ## Now what about contributing?
 View [this](/docs/CONTRIBUTING.md) file what describes what you need to contributing and made your own functions and events or modify library.

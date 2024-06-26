@@ -1,6 +1,6 @@
 import disnake
 
-from src.MZscript.functions_handler import FunctionsHandler
+from MZscript.functions_handler import FunctionsHandler
 
 class FuncUnban(FunctionsHandler):
     def __init__(self, handler):
@@ -21,7 +21,7 @@ class FuncUnban(FunctionsHandler):
                     args_list.insert(0, guild)
             except Exception as e:
                 print(e)
-                raise SyntaxError(f'$unban: Cannot find guild "{args_list[0]}"')
+                raise SyntaxError(f"$unban: Cannot find guild \"{args_list[0]}\"")
         else:
             args_list.insert(0, guild)
         

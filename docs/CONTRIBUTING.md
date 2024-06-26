@@ -51,7 +51,7 @@ You also can read in-code-docs with examples of use cases
 ```py
 import disnake
 
-from src.MZscript.functions_handler import FunctionsHandler
+from MZscript.functions_handler import FunctionsHandler
 
 
 class Functions(FunctionsHandler):
