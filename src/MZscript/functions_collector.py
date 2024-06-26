@@ -18,7 +18,7 @@ class FunctionsCore(FunctionsHandler):
     def load_functions(self):
         functions = []
         tempmods = []
-        for i in os.walk(os.getcwd()+"\\src\\MZscript\\Functions"):
+        for i in os.walk(os.path.dirname(__file__)+"\\Functions"):
             for j in i[2]:
                 if j.endswith(".py") and j != "__init__.py":
                     exec(f"""

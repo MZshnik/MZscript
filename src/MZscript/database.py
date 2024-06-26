@@ -36,9 +36,10 @@ class Database:
     def __init__(self):
         self.json = {}
         if os.path.exists("variables.json"):
-            with open("variables.json", "r+") as f:
+            with open("variables.json", 'r') as f:
                 self.json = json.load(f)
                 self.json["temp"] = {}
+            with open("variables.json", 'w') as f:
                 json.dump(self.json, f, indent=4)
         else:
             with open("variables.json", 'w') as f:
