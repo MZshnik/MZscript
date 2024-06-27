@@ -6,7 +6,7 @@ from MZscript.functions_handler import FunctionsHandler
 class Functions(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
-        self.client = handler.client
+        self.handler = handler
         self.bot = handler.client.bot
 
     async def func_var(self, ctx, args: str):
@@ -27,17 +27,17 @@ class Functions(FunctionsHandler):
         if args_list[0] not in ["get", "set", "del"]:
             args_list.insert(0, "get")
         if args_list[0] == "get":
-            result = await self.client.database.get_json_var(args_list[1], time)
+            result = await self.handler.database.get_json_var(args_list[1], time)
         elif args_list[0] == "set":
-            result = await self.client.database.set_json_var(args_list[1], args_list[2], time)
+            result = await self.handler.database.set_json_var(args_list[1], args_list[2], time)
         elif args_list[0] == "del":
-            result = await self.client.database.del_json_var(args_list[1], time)
+            result = await self.handler.database.del_json_var(args_list[1], time)
         if result:
             return result
         return ""
 
     async def func_getvar(self, ctx, args: str):
-        result = await self.client.database.get_global_var(await self.is_have_functions(args, ctx))
+        result = await self.handler.database.get_global_var(await self.is_have_functions(args, ctx))
         if result:
             return result
         elif self.db_warns:
@@ -47,24 +47,24 @@ class Functions(FunctionsHandler):
     async def func_setvar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
-        await self.client.database.set_global_var(args_list[0], args_list[1])
+            raise ValueError(f"$setVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+        await self.handler.database.set_global_var(args_list[0], args_list[1])
 
     async def func_delvar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$setVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
-        await self.client.database.set_global_var(args_list[0])
+            raise ValueError(f"$setVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        await self.handler.database.set_global_var(args_list[0])
 
     async def func_getmembervar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$getMemberVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$getMemberVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         if len(args_list) == 2:
             args_list.append(ctx.guild.id)
-        result = await self.client.database.get_value_from_member(args_list[2], args_list[1], args_list[0])
+        result = await self.handler.database.get_value_from_member(args_list[2], args_list[1], args_list[0])
         if result:
             return result
         elif self.db_warns:
@@ -74,30 +74,30 @@ class Functions(FunctionsHandler):
     async def func_setmembervar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setMemberVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$setMemberVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
             args_list.append(ctx.author.id)
         if len(args_list) == 3:
             args_list.append(ctx.guild.id)
-        await self.client.database.set_value_of_member(args_list[3], args_list[2], args_list[0], args_list[1])
+        await self.handler.database.set_value_of_member(args_list[3], args_list[2], args_list[0], args_list[1])
 
     async def func_delmembervar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$detMemberVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$detMemberVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         if len(args_list) == 2:
             args_list.append(ctx.guild.id)
-        await self.client.database.del_value_of_member(args_list[2], args_list[1], args_list[0])
+        await self.handler.database.del_value_of_member(args_list[2], args_list[1], args_list[0])
 
     async def func_getguildvar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$getGuildVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$getGuildVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.guild.id)
-        result = await self.client.database.get_value_from_guild(args_list[1], args_list[0])
+        result = await self.handler.database.get_value_from_guild(args_list[1], args_list[0])
         if result:
             return result
         elif self.db_warns:
@@ -107,26 +107,26 @@ class Functions(FunctionsHandler):
     async def func_setguildvar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$setVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
             args_list.append(ctx.guild.id)
-        await self.client.database.set_value_of_guild(args_list[2], args_list[0], args_list[1])
+        await self.handler.database.set_value_of_guild(args_list[2], args_list[0], args_list[1])
 
     async def func_delguildvar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$setVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$setVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.guild.id)
-        await self.client.database.del_value_of_guild(args_list[1], args_list[0])
+        await self.handler.database.del_value_of_guild(args_list[1], args_list[0])
 
     async def func_getuservar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$getUserVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$getUserVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
-        result = await self.client.database.get_value_from_user(args_list[1], args_list[0])
+        result = await self.handler.database.get_value_from_user(args_list[1], args_list[0])
         if result:
             return result
         elif self.db_warns:
@@ -136,18 +136,18 @@ class Functions(FunctionsHandler):
     async def func_setuservar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setUserVar needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$setUserVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 2:
             args_list.append(ctx.author.id)
-        await self.client.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
+        await self.handler.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
 
     async def func_deluservar(self, ctx, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$setUserVar needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            raise ValueError(f"$setUserVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
-        await self.client.database.del_value_of_user(args_list[1], args_list[0])
+        await self.handler.database.del_value_of_user(args_list[1], args_list[0])
 
 def setup(handler):
     return Functions(handler)

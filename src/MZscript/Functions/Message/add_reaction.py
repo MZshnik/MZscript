@@ -5,7 +5,7 @@ from MZscript.functions_handler import FunctionsHandler
 class AddReaction(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
-        self.client = handler.client
+        self.handler = handler
         self.bot = handler.client.bot
 
     async def func_addreaction(self, ctx: disnake.message.Message, args: str):

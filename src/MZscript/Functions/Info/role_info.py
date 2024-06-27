@@ -5,7 +5,7 @@ from MZscript.functions_handler import FunctionsHandler
 class RoleInfo(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
-        self.client = handler.client
+        self.handler = handler
         self.bot = handler.client.bot
 
     # [roleid;params]

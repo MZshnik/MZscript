@@ -6,7 +6,7 @@ from MZscript.functions_handler import FunctionsHandler
 class Functions(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
-        self.client = handler.client
+        self.handler = handler
         self.bot = handler.client.bot
 
     async def func_sendmessage(self, ctx: disnake.message.Message, args: str):

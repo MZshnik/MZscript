@@ -6,7 +6,7 @@ from MZscript.functions_handler import FunctionsHandler
 class Functions(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
-        self.client = handler.client
+        self.handler = handler
         self.bot = handler.client.bot
 
     async def func_if(self, ctx, args: str):
@@ -69,8 +69,8 @@ class Functions(FunctionsHandler):
         chunks = await self.get_chunks(args)
         for i in chunks:
             if i.startswith("$"):
-                args = await self.client.run_code(args, ctx)
-                return await self.client.run_code(args, ctx)
+                args = await self.handler.client.run_code(args, ctx)
+                return await self.handler.client.run_code(args, ctx)
         else:
             return args
 
