@@ -72,7 +72,7 @@ class Functions(FunctionsHandler):
         for i in args_list.copy()[::-1]:
             counter -= 1
             for tag in tag_funcs.keys():
-                if i.lower().startswith(tag):
+                if str(i).lower().startswith(tag):
                     await tag_funcs[tag](i[len(tag)+1:-1])
                     args_list.pop(counter)
         content = None
