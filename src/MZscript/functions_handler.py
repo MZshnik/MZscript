@@ -27,6 +27,8 @@ class FunctionsHandler:
             "$unban",
             "$kick",
 
+            "$hasrole",
+
             "$customid",
             "$defer",
 

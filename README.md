@@ -141,6 +141,7 @@ $endif
 |$unban|-|-|-
 |$kick|-|-|-
 |$customID|+|+|-
+|$hasRole|-|-|-
 |$defer|+|+|-
 |$var|-|-|-
 |$getVar|+|-|-
