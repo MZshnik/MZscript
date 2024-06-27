@@ -40,7 +40,7 @@ class Functions(FunctionsHandler):
         result = await self.handler.database.get_global_var(await self.is_have_functions(args, ctx))
         if result:
             return result
-        elif self.db_warns:
+        elif self.handler.db_warns:
             print(f"WARNING: Value for global var \"{args}\" not provided (returning empty string)")
         return ""
 
@@ -67,7 +67,7 @@ class Functions(FunctionsHandler):
         result = await self.handler.database.get_value_from_member(args_list[2], args_list[1], args_list[0])
         if result:
             return result
-        elif self.db_warns:
+        elif self.handler.db_warns:
             print(f"WARNING: Value for member var \"{args_list[0]}\" not provided (returning empty string)")
         return ""
 
@@ -100,7 +100,7 @@ class Functions(FunctionsHandler):
         result = await self.handler.database.get_value_from_guild(args_list[1], args_list[0])
         if result:
             return result
-        elif self.db_warns:
+        elif self.handler.db_warns:
             print(f"WARNING: Value for guild var \"{args_list[0]}\" not provided (returning empty string)")
         return ""
 
@@ -129,7 +129,7 @@ class Functions(FunctionsHandler):
         result = await self.handler.database.get_value_from_user(args_list[1], args_list[0])
         if result:
             return result
-        elif self.db_warns:
+        elif self.handler.db_warns:
             print(f"WARNING: Value for user var \"{args_list[0]}\" not provided (returning empty string)")
         return ""
 
