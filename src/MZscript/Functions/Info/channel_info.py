@@ -8,7 +8,7 @@ class ChannelInfo(FunctionsHandler):
         self.client = handler.client
         self.bot = handler.client.bot
 
-	# [channelid;params]
+	# [channelid;param]
     async def func_channelinfo(self, ctx: disnake.message.Message, args: str):
         args = await self.is_have_functions(args, ctx)
         args_list = await self.get_args(args, ctx)
@@ -29,7 +29,7 @@ class ChannelInfo(FunctionsHandler):
             else:
                 id = int(args_list[0].replace("<#", "").replace(">", ""))
                 channel = await self.bot.fetch_channel(id)
- 
+
         params = {
             "category": channel.category.id,
             "created": int(channel.created_at.timestamp()),
@@ -44,11 +44,11 @@ class ChannelInfo(FunctionsHandler):
             "thread_slowmode": channel.default_thread_slowmode_delay,
             "auto_archive_duration": channel.default_auto_archive_duration,
             "topic": channel.topic,
-            "bitrate": channel.bitrate,
-            "user_limit": channel.user_limit,
-            "region": channel.rtc_region
+            "bitrate": channel.bitrate if channel.type == "voice" else "",
+            "user_limit": channel.user_limit if channel.type == "voice" else "",
+            "region": channel.rtc_region if channel.type == "voice" else ""
         }
-        
+
         return str(params[args_list[1]])
 
 def setup(handler):

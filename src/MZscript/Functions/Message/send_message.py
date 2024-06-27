@@ -29,34 +29,6 @@ class Functions(FunctionsHandler):
         else:
             args_list.insert(0, channel)
         embed = disnake.Embed()
-        content = None
-        if len(args_list) > 1 and len(args_list[1]) > 0:
-            content = args_list[1]
-        if len(args_list) > 2 and len(args_list[2]) > 0:
-            embed.title = args_list[2]
-        if len(args_list) > 3 and len(args_list[3]) > 0:
-            embed.description = args_list[3]
-            if not embed.description:
-                raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
-        if len(args_list) > 4 and len(args_list[4]) > 0:
-            icon_url = None
-            if len(args_list) > 5 and len(args_list[5]) > 0:
-                icon_url = args_list[5]
-            embed.set_footer(text=args_list[4], icon_url=icon_url)
-        if len(args_list) > 6 and len(args_list[6]) > 0:
-            embed.color = disnake.Colour(int("0x"+(args_list[6].replace("#", "0x").replace("0x", "")), 16))
-        if len(args_list) > 7 and len(args_list[7]) > 0:
-            embed.set_thumbnail(args_list[7])
-        if len(args_list) > 8 and len(args_list[8]) > 0:
-            embed.set_image(args_list[8])
-        if len(args_list) > 9 and len(args_list[9]) > 0:
-            url = None
-            if len(args_list) > 10 and len(args_list[10]) > 0:
-                url = args_list[10]
-            icon_url = None
-            if len(args_list) > 11 and len(args_list[11]) > 0:
-                icon_url = args_list[11]
-            embed.set_author(name=args_list[9], url=url, icon_url=icon_url)
         view = disnake.ui.View(timeout=None)
 
         async def add_button(entry: str):
@@ -92,15 +64,46 @@ class Functions(FunctionsHandler):
                 inline = args_splited[2].lower() == "true"
             embed.add_field(args_splited[0], args_splited[1], inline=inline)
 
-        if len(args_list) > 12:
-            tag_funcs = {
-                "#addfield": add_field,
-                "#addbutton": add_button,
-                }
+        tag_funcs = {
+            "#addfield": add_field,
+            "#addbutton": add_button,
+            }
+        counter = len(args_list)
+        for i in args_list.copy()[::-1]:
+            counter -= 1
             for tag in tag_funcs.keys():
-                for i in args_list[11:]:
-                    if i.lower().startswith(tag):
-                        await tag_funcs[tag](i[len(tag)+1:-1])
+                if i.lower().startswith(tag):
+                    await tag_funcs[tag](i[len(tag)+1:-1])
+                    args_list.pop(counter)
+        content = None
+        if len(args_list) > 1 and len(args_list[1]) > 0:
+            content = args_list[1]
+        if len(args_list) > 2 and len(args_list[2]) > 0:
+            embed.title = args_list[2]
+        if len(args_list) > 3 and len(args_list[3]) > 0:
+            embed.description = args_list[3]
+            if not embed.description:
+                raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
+        if len(args_list) > 4 and len(args_list[4]) > 0:
+            icon_url = None
+            if len(args_list) > 5 and len(args_list[5]) > 0:
+                icon_url = args_list[5]
+            embed.set_footer(text=args_list[4], icon_url=icon_url)
+        if len(args_list) > 6 and len(args_list[6]) > 0:
+            embed.color = disnake.Colour(int("0x"+(args_list[6].replace("#", "0x").replace("0x", "")), 16))
+        if len(args_list) > 7 and len(args_list[7]) > 0:
+            embed.set_thumbnail(args_list[7])
+        if len(args_list) > 8 and len(args_list[8]) > 0:
+            embed.set_image(args_list[8])
+        if len(args_list) > 9 and len(args_list[9]) > 0:
+            url = None
+            if len(args_list) > 10 and len(args_list[10]) > 0:
+                url = args_list[10]
+            icon_url = None
+            if len(args_list) > 11 and len(args_list[11]) > 0:
+                icon_url = args_list[11]
+            embed.set_author(name=args_list[9], url=url, icon_url=icon_url)
+
         if not embed.description:
             embed = None
         await channel.send(content=content, embed=embed, view=view)

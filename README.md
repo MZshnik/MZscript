@@ -49,8 +49,14 @@ $endif]
 ```
 #### Change prefix with variables:
 ```py
-bot = MZClient(on_ready="$if[$getVar[prefix]==] $setVar[prefix;!] $endif")
-# insert code in to on_ready is necessary. Now it can give warning in first start, but dont worry:)
+# insert code in to on_ready is necessary
+bot = MZClient(on_ready="""
+$if[$getVar[prefix]==]
+$setVar[prefix;!]
+$endif
+$console[Bot is ready]
+""")
+
 bot.add_command(name="$getVar[prefix]set-prefix", code="""
 $if[$message[0]==]
 $setVar[prefix;$message[0]]
