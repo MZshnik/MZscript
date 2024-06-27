@@ -129,7 +129,7 @@ $endif
 |$else|+|+|-
 |$endif|+|+|-
 |$eval|-|-|-
-|$guildInfo|-|-|-
+|$guildInfo|+|-|-
 |$channelInfo|+|-|-
 |$roleInfo|-|-|-
 |$userInfo|+|-|-
