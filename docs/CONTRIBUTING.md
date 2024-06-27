@@ -2,8 +2,8 @@
 This text has describing what you need to know if you want contribute to this repository.
 > And if you want write something in locale, very usufull! But in the end
 ## Projest hierarhi and files
-So, projest hierarhi looks like this:  
-`projest dir`  
+So, project hierarhi looks like this:  
+`project dir`  
 __.MZscript__  
 `general dirs:`  
 __.MZscript/docs__  
