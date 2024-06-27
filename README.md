@@ -129,20 +129,20 @@ $endif
 |$else|+|+|-
 |$endif|+|+|-
 |$eval|-|-|-
-|$guildInfo|+|-|-
+|$guildInfo|-|-|-
 |$channelInfo|+|-|-
-|$roleInfo|+|-|-
+|$roleInfo|-|-|-
 |$userInfo|+|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
 |$message|+|-|-
 |$text|+|-|-
-|$ban|+|-|-
-|$unban|+|-|-
-|$kick|+|-|-
+|$ban|-|-|-
+|$unban|-|-|-
+|$kick|-|-|-
 |$customID|+|+|-
 |$defer|+|+|-
-|$var|+|-|-
+|$var|-|-|-
 |$getVar|+|-|-
 |$setVar|+|-|-
 |$delVar|+|-|-
@@ -158,10 +158,11 @@ $endif
 |$updateCommands|+|-|+
 |$calculate|+|-|-
 |$console|+|-|-
+> Full support means is function 100% works/tested
 #### List of functions tags:
 | Function | Tags |
 | -------- | ---- |
-|$sendMessage | #addButton, #addField |
+|$sendMessage | #addButton, #addField, #addReaction |
 #### List of events:
 | Name | Description |
 | -------- | ---- |

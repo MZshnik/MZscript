@@ -9,7 +9,7 @@ class Functions(FunctionsHandler):
         self.client = handler.client
         self.bot = handler.client.bot
 
-    async def func_sendmessage(self, ctx, args: str):
+    async def func_sendmessage(self, ctx: disnake.message.Message, args: str):
         """
         `$sendMessage[message]`
         #### Example:
@@ -23,6 +23,9 @@ class Functions(FunctionsHandler):
         if args_list[0].isdigit() and len(args_list) > 1:
             try:
                 channel = self.bot.get_channel(int(args_list[0]))
+                if not channel:
+                    channel = ctx.channel
+                    args_list.insert(0, channel)
             except Exception as e:
                 print(e)
                 raise SyntaxError(f"$sendMessage: Cannot find channel \"{args_list[0]}\"")
@@ -64,9 +67,17 @@ class Functions(FunctionsHandler):
                 inline = args_splited[2].lower() == "true"
             embed.add_field(args_splited[0], args_splited[1], inline=inline)
 
+        isAddReaction = False
+        reactions = []
+        async def add_reaction(entry: str):
+            nonlocal isAddReaction
+            isAddReaction = True
+            reactions.append(entry)
+
         tag_funcs = {
             "#addfield": add_field,
             "#addbutton": add_button,
+            "#addreaction": add_reaction
             }
         counter = len(args_list)
         for i in args_list.copy()[::-1]:
@@ -83,7 +94,7 @@ class Functions(FunctionsHandler):
         if len(args_list) > 3 and len(args_list[3]) > 0:
             embed.description = args_list[3]
             if not embed.description:
-                raise SyntaxError(f"$sendEmbed: Cannot send embed without description: {args}")
+                raise SyntaxError(f"$sendMessage: Cannot send embed without description: {args}")
         if len(args_list) > 4 and len(args_list[4]) > 0:
             icon_url = None
             if len(args_list) > 5 and len(args_list[5]) > 0:
@@ -106,7 +117,10 @@ class Functions(FunctionsHandler):
 
         if not embed.description:
             embed = None
-        await channel.send(content=content, embed=embed, view=view)
+        message = await channel.send(content=content, embed=embed, view=view)
+        if isAddReaction:
+            for i in reactions:
+                await message.add_reaction(i)
 
 def setup(handler):
     return Functions(handler)
