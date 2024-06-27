@@ -16,6 +16,7 @@ class FunctionsHandler:
             "$channelinfo",
             "$roleinfo",
             "$userinfo",
+            "$useringuild",
 
             "$sendmessage",
             "$message",

@@ -1,6 +1,7 @@
 import disnake
 
-from MZscript.functions_handler import FunctionsHandler
+from ...functions_handler import FunctionsHandler
+
 
 class FuncBan(FunctionsHandler):
     def __init__(self, handler):

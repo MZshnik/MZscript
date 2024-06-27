@@ -1,6 +1,6 @@
 import disnake
 
-from MZscript.functions_handler import FunctionsHandler
+from src.MZscript.functions_handler import FunctionsHandler
 
 
 class Functions(FunctionsHandler):

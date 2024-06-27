@@ -1,6 +1,7 @@
 import disnake
 
-from MZscript.functions_handler import FunctionsHandler
+from ...functions_handler import FunctionsHandler
+
 
 class ChannelInfo(FunctionsHandler):
     def __init__(self, handler):
@@ -10,8 +11,8 @@ class ChannelInfo(FunctionsHandler):
 
 	# [channelid;param]
     async def func_channelinfo(self, ctx: disnake.message.Message, args: str):
-        args = await self.is_have_functions(args, ctx)
-        args_list = await self.get_args(args, ctx)
+        args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
+
 
         if len(args_list) > 2 or len(args_list) == 0:
             raise ValueError("$channelInfo: To many or no args provided")

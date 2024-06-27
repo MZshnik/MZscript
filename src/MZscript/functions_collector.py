@@ -33,9 +33,9 @@ for k in inspect.getmembers(tempmod, inspect.ismethod):
                         self.funcs[line] = i[1]
                         break
                 else:
-                    print(f"WARNING: for command \"{line}\" not exists function found.")
+                    print(f"WARNING: For function \"{line}\" not exists command found.")
             except NameError as e:
-                print(f"WARNING: for command \"{line}\" not exists function found.")
+                print(f"WARNING: For function \"{line}\" not exists command found.")
         self.sync_functions(self.funcs)
         for i in tempmods:
             i.sync_functions(self.funcs)
