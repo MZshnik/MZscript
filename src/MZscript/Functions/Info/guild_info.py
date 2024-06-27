@@ -8,7 +8,6 @@ class GuildInfo(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    # [guildid?;params]
     async def func_guildinfo(self, ctx: disnake.message.Message, args: str):
         args = await self.is_have_functions(args, ctx)
         args_list = await self.get_args(args, ctx)
@@ -17,9 +16,13 @@ class GuildInfo(FunctionsHandler):
             raise ValueError("$guildInfo: To many or no args provided")
 
         guild = ctx.guild
-        if args_list[0].isdigit():
+        if args_list[0].isdigit() and len(args_list) > 1:
             try:
                 guild = self.bot.get_guild(int(await self.is_have_functions(args_list[0], ctx)))
+                if not guild:
+                    guild = self.bot.fetch_guild(int(await self.is_have_functions(args_list[0], ctx)))
+                if not guild:
+                    raise SyntaxError(f"$guildInfo: Cannot find guild \"{args_list[0]}\"")
             except Exception as e:
                 print(e)
                 raise SyntaxError(f"$guildInfo: Cannot find guild \"{args_list[0]}\"")
@@ -31,7 +34,7 @@ class GuildInfo(FunctionsHandler):
             "banner": guild.banner,
             "categories": guild.categories,
             "channels": guild.channels,
-            "created": int(guild.created_at.timestamp()),
+            "created": str(guild.created_at.timestamp()),
             "description": guild.description,
             "emoji_limit": guild.emoji_limit,
             "emojis": guild.emojis,
