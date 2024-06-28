@@ -16,8 +16,11 @@ class FunctionsHandler:
             "$channelinfo",
             "$roleinfo",
             "$userinfo",
-            "$useringuild",
+
+            "$ismemberexists",
             "$isroleexists",
+            "$isuserexists",
+            "$isguildexists",
 
             "$sendmessage",
             "$message",
