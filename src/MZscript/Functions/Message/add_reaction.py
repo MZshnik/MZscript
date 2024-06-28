@@ -10,7 +10,14 @@ class AddReaction(FunctionsHandler):
         self.bot = handler.client.bot
 
     async def func_addreaction(self, ctx: disnake.message.Message, args: str):
+        """
+        `$addReaction[(channel;message);emoji]`
+        #### Example:
+        `$addReaction[😎]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
+        if len(args_list) > 3 or len(args_list) == 0:
+            raise ValueError("$addReaction: Too many or no args provided")
 
         channel = ctx.channel
         if args_list[0].isdigit() and len(args_list) > 1:

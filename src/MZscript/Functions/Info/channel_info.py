@@ -9,13 +9,17 @@ class ChannelInfo(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-	# [channelid;param]
     async def func_channelinfo(self, ctx: disnake.message.Message, args: str):
+        """
+        `$channelInfo[(channel);param]`
+        #### Example:
+        `$channelInfo[id]`
+        #### Example 2:
+        `$channelInfo[951193622429184000;name]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
-
-
         if len(args_list) > 2 or len(args_list) == 0:
-            raise ValueError("$channelInfo: To many or no args provided")
+            raise ValueError("$channelInfo: Too many or no args provided")
 
         channel = ctx.channel
         if args_list[0].isdigit():
@@ -38,16 +42,16 @@ class ChannelInfo(FunctionsHandler):
             "name": channel.name,
             "id": channel.id,
             "type": channel.type,
-            "last_message": channel.last_message.id,
             "position": channel.position,
-            "nsfw": str(channel.nsfw).lower(),
-            "slowmode_delay": channel.slowmode_delay,
-            "thread_slowmode": channel.default_thread_slowmode_delay,
-            "auto_archive_duration": channel.default_auto_archive_duration,
-            "topic": channel.topic,
-            "bitrate": channel.bitrate if channel.type == "voice" else "",
-            "user_limit": channel.user_limit if channel.type == "voice" else "",
-            "region": channel.rtc_region if channel.type == "voice" else ""
+            "last_message": channel.last_message.id if channel.type == disnake.ChannelType.text else "",
+            "nsfw": str(channel.nsfw).lower() if channel.type == disnake.ChannelType.text else "",
+            "slowmode_delay": channel.slowmode_delay if channel.type == disnake.ChannelType.text else "",
+            "thread_slowmode": channel.default_thread_slowmode_delay if channel.type == disnake.ChannelType.text else "",
+            "auto_archive_duration": channel.default_auto_archive_duration if channel.type == disnake.ChannelType.text else "",
+            "topic": channel.topic if channel.type == disnake.ChannelType.text else "",
+            "bitrate": channel.bitrate if channel.type == disnake.ChannelType.voice else "",
+            "user_limit": channel.user_limit if channel.type == disnake.ChannelType.voice else "",
+            "region": channel.rtc_region if channel.type == disnake.ChannelType.voice else ""
         }
 
         return str(params[args_list[1]])

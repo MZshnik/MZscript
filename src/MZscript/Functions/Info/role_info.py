@@ -15,7 +15,7 @@ class RoleInfo(FunctionsHandler):
 
 
         if len(args_list) > 2 or len(args_list) == 0:
-            raise ValueError("$roleInfo: To many or no args provided")
+            raise ValueError("$roleInfo: Too many or no args provided")
 
         role = ctx.guild.get_role(args_list[0])
         if args_list[0].isdigit():

@@ -53,7 +53,7 @@ class Functions(FunctionsHandler):
     async def func_else(self, ctx): # all $else function translated to $elif[true] for better output because he have brackets
         """
         `$else`\n
-        No args. Cope of $elif[true]
+        No args. Copy of $elif[true]
         #### Example:
         `$if[$message==hello]`
         """

@@ -10,10 +10,16 @@ class GuildInfo(FunctionsHandler):
         self.bot = handler.client.bot
 
     async def func_guildinfo(self, ctx: disnake.message.Message, args: str):
+        """
+        `$guildInfo[(guild);param]`
+        #### Example:
+        `$guildInfo[name]`
+        #### Example 2:
+        `$guildInfo[796504104565211187;icon]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
-
         if len(args_list) > 2 or len(args_list) == 0:
-            raise ValueError("$guildInfo: To many or no args provided")
+            raise ValueError("$guildInfo: Too many or no args provided")
 
         guild = ctx.guild
         if args_list[0].isdigit() and len(args_list) > 1:

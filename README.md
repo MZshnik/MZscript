@@ -127,13 +127,15 @@ $endif
 |$if|+|-|-
 |$elif|+|-|-
 |$else|+|+|-
+|$stop|-|+|-
 |$endif|+|+|-
 |$eval|-|-|-
 |$guildInfo|+|-|-
 |$channelInfo|+|-|-
 |$roleInfo|-|-|-
-|$userInGuild|+|-|-
 |$userInfo|+|-|-
+|$userInGuild|-|-|-
+|$hasRole|-|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
 |$message|+|-|-
@@ -142,7 +144,6 @@ $endif
 |$unban|-|-|-
 |$kick|-|-|-
 |$customID|+|+|-
-|$hasRole|-|-|-
 |$defer|+|+|-
 |$var|-|-|-
 |$getVar|+|-|-

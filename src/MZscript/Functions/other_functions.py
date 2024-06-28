@@ -11,7 +11,7 @@ class Functions(FunctionsHandler):
 
     async def func_message(self, ctx: disnake.message.Message, args: str = ""):
         """
-        `$message[arg number]`
+        `$message[(arg number)]`
         #### Example:
         `$message`
         #### Example 2:
@@ -50,7 +50,10 @@ class Functions(FunctionsHandler):
             return True
 
         if check_expression(args.strip()):
-            return str(eval(args.strip()))
+            try:
+                return str(eval(args.strip()))
+            except:
+                raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
         else:
             raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
 

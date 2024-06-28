@@ -11,9 +11,11 @@ class Functions(FunctionsHandler):
 
     async def func_sendmessage(self, ctx: disnake.message.Message, args: str):
         """
-        `$sendMessage[message]`
+        `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon)]`
         #### Example:
         `$sendMessage[hello]`
+        #### Example 2:
+        `$sendMessage[$userInfo[dm];;Welcome!;Welcome to new guild "$guildInfo[name]";;;0058CF]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
@@ -83,7 +85,7 @@ class Functions(FunctionsHandler):
         for i in args_list.copy()[::-1]:
             counter -= 1
             for tag in tag_funcs.keys():
-                if str(i).lower().startswith(tag):
+                if str(i).lower().startswith(tag.lower()):
                     await tag_funcs[tag](i[len(tag)+1:-1])
                     args_list.pop(counter)
         content = None

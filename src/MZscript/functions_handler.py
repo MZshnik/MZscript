@@ -51,7 +51,7 @@ class FunctionsHandler:
             "$console"
         ]
         # dont touch this list
-        self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
+        self.logic_funcs = ["$if", "$elif", "$else", "$stop", "$endif"]
         # add if func dont want to get args with []
         self.no_arg_funcs = ["$else", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
@@ -163,7 +163,7 @@ class FunctionsHandler:
         if ifs < elses:
             raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
-    async def find_function(self, entry: str, chunks: list):
+    async def finds_function(self, entry: str, chunks: list):
         """
         ## Return first find command in the entry
         ## and edit entry by deleting then command
@@ -218,7 +218,7 @@ class FunctionsHandler:
                 if len(entry) == 0:
                     break
                 if entry[0] == "$":
-                    entry = await self.find_function(entry, chunks)
+                    entry = await self.finds_function(entry, chunks)
                     checkCommands = False
                 if entry:
                     if len(entry) != 0:
@@ -227,7 +227,7 @@ class FunctionsHandler:
                     return chunks
         return chunks
 
-    async def find_endif(self, chunks: list):
+    async def finds_endif(self, chunks: list):
         """
         ## Find and return index of $endif in the chunks(list) by check if all $if's closed
         ### Example:
@@ -245,7 +245,7 @@ class FunctionsHandler:
             elif i.startswith("$if"):
                 unclosedifs += 1
 
-    async def find_elif(self, chunks: list, main_if: tuple, main_endif: tuple, ctx):
+    async def finds_elif(self, chunks: list, main_if: tuple, main_endif: tuple, ctx):
         """
         ## Return chunks(list) with executed $if condition.\n
         Delete $if block if it return False or delete $elif condition if $if return True.\n
@@ -299,12 +299,18 @@ class FunctionsHandler:
                 main_endif = None
                 if chunk.startswith("$if"):
                     main_if = (await self.execute_function(chunk, ctx), count)
-                    main_endif = await self.find_endif(new_chunks)
-                    new_chunks = await self.find_elif(new_chunks, main_if, main_endif, ctx)
+                    main_endif = await self.finds_endif(new_chunks)
+                    new_chunks = await self.finds_elif(new_chunks, main_if, main_endif, ctx)
                     break
                 else:
+                    if chunk.lower().startswith("$stop"):
+                        new_chunks[count] = ""
+                        del new_chunks[count-1:]
+                        while new_chunks.count("") > 0:
+                            new_chunks.remove("")
+                        return "".join(new_chunks)
                     for i in self.all_funcs:
-                        if chunk.lower().startswith(i):
+                        if chunk.lower().startswith(i.lower()):
                             new_chunks[count] = await self.execute_function(chunk, ctx)
                             break
             else:
