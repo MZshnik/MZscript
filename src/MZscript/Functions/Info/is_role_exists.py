@@ -36,7 +36,7 @@ class isRoleExists(FunctionsHandler):
         if args_list[0].isdigit():
                 role = guild.get_role(int(args_list[0]))
         else:
-            raise SyntaxError(f"$userInGuild: Role Id \"{args_list[0]}\", not integer")
+            raise SyntaxError(f"$isRoleExists: Role Id \"{args_list[0]}\", not integer")
         
         if role:
             return "true"
