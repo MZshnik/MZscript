@@ -21,6 +21,7 @@ class FunctionsHandler:
             "$isroleexists",
             "$isuserexists",
             "$isguildexists",
+            "$isnumber",
 
             "$sendmessage",
             "$message",
