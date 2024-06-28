@@ -132,10 +132,11 @@ $endif
 |$guildInfo|+|-|-
 |$channelInfo|+|-|-
 |$roleInfo|-|-|-
-|$userInGuild|+|-|-
 |$userInfo|+|-|-
+|$isMemberExists|+|-|-
 |$isRoleExists|+|-|-
 |$isRoleExists|+|-|-
+|$isGuildExists|+|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
 |$message|+|-|-
