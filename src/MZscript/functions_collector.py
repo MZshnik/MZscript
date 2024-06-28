@@ -2,9 +2,10 @@ import inspect
 import os
 
 from .database import Database
-from .Functions import *
 from .functions_handler import FunctionsHandler
-
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))
 
 class FunctionsCore(FunctionsHandler):
     def __init__(self, client, db_warns: bool = False, debug_log: bool = False):
@@ -18,10 +19,14 @@ class FunctionsCore(FunctionsHandler):
     def load_functions(self):
         functions = []
         tempmods = []
-        for i in os.walk(os.path.dirname(__file__)+"/Functions"):
+        for i in [i for i in os.walk(os.path.dirname(__file__)+"/Functions") if not i[0].endswith("__pycache__")]:
             for j in i[2]:
                 if j.endswith(".py") and j != "__init__.py":
                     exec(f"""
+try:
+    from .Functions.{i[0].replace(os.path.dirname(i[0]), "").replace("/", "").replace("\\", "")} import {j[:-3]} 
+except:
+    from .Functions import {j[:-3]}
 tempmod = {j[:-3]}.setup(self)
 tempmods.append(tempmod)
 for k in inspect.getmembers(tempmod, inspect.ismethod):
