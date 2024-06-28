@@ -134,6 +134,7 @@ $endif
 |$roleInfo|-|-|-
 |$userInGuild|+|-|-
 |$userInfo|+|-|-
+|$isRoleExists|+|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
 |$message|+|-|-

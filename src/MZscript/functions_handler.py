@@ -17,6 +17,7 @@ class FunctionsHandler:
             "$roleinfo",
             "$userinfo",
             "$useringuild",
+            "$isroleexists",
 
             "$sendmessage",
             "$message",
