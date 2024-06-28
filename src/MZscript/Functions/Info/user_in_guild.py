@@ -14,18 +14,29 @@ class UserInGuild(FunctionsHandler):
         
         if len(args_list) < 1 or len(args_list) == 0:
             raise ValueError("$userInGuild: To few or no args provided")
-        if not args_list[0].isdigit():
-            raise SyntaxError(f"$userInGuild: User id: \"{args_list[0]}\", not int")
-        if len(args_list) >= 2:
-            if not args_list[1].isdigit():
-                raise SyntaxError(f"$userInGuild: Guild id: \"{args_list[1]}\", not int")
-            guild = self.bot.get_guild(int(await self.is_have_functions(args_list[1], ctx)))
-            if not guild:
-                raise SyntaxError(f"$userInGuild: Cannot find guild \"{await self.is_have_functions(args_list[1], ctx)}\"")
+        guild = ctx.guild
+        if len(args_list) > 1:
+            if args_list[1].isdigit():
+                try:
+                    guild = self.bot.get_guild(int(args_list[1]))
+                    if not guild:
+                        guild = await self.bot.fetch_guild(int(args_list[1]))
+                    if not guild:
+                        guild = ctx.guild
+                        args_list.insert(1, guild)
+                except Exception as e:
+                    print(e)
+                    raise SyntaxError(f"$userInGuild: Cannot find guild \"{args_list[1]}\"")
+            else:
+                raise SyntaxError(f"$userInGuild: Cannot find guild \"{args_list[1]}\"")
         else:
-            guild = self.bot.get_guild(ctx.guild.id)
+            args_list.insert(1, guild)
+
         
-        user = guild.get_member(int(await self.is_have_functions(args_list[0], ctx)))
+        if args_list[0].isdigit():
+                user = await guild.get_or_fetch_member(int(args_list[0]))
+        else:
+            raise SyntaxError(f"$userInGuild: User Id \"{args_list[0]}\", not integer")
         
         if user:
             return "true"
