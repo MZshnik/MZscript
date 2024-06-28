@@ -134,8 +134,9 @@ $endif
 |$channelInfo|+|-|-
 |$roleInfo|-|-|-
 |$userInfo|+|-|-
-|$userInGuild|-|-|-
-|$hasRole|-|-|-
+|$isMemberExists|-|-|-
+|$isRoleExists|-|-|-
+|$isGuildExists|-|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
 |$message|+|-|-
