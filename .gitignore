@@ -127,6 +127,7 @@ cython_debug/
 
 # ALL FOR ALL CASES
 testmain.py
+test.py
 .vscode
 database.db
 variables.json

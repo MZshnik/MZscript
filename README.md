@@ -132,6 +132,7 @@ $endif
 |$guildInfo|+|-|-
 |$channelInfo|+|-|-
 |$roleInfo|-|-|-
+|$userInGuild|+|-|-
 |$userInfo|+|-|-
 |$sendMessage|+|-|-
 |$addReaction|+|-|-
