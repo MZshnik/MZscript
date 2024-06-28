@@ -30,6 +30,10 @@ class FunctionsHandler:
             "$ban",
             "$unban",
             "$kick",
+            
+            "$lowercase",
+            "$uppercase",
+            "$titlecase",
 
             "$hasrole",
 
