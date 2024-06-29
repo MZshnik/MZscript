@@ -27,6 +27,7 @@ class FunctionsHandler:
             "$message",
             "$addreaction",
             "$text",
+            "$replacetext",
 
             "$ban",
             "$unban",
@@ -196,6 +197,9 @@ class FunctionsHandler:
                 else:
                     chunks.append(addCommand+i)
                 return entry[len(addCommand):]
+            elif (addCommand).lower() in self.can_be_no_arg and i==";" and brackets == 0:
+                chunks.append(addCommand)
+                return entry[len(addCommand)-1:]
             addCommand += i
 
     async def get_chunks(self, entry: str):
