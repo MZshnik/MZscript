@@ -9,7 +9,7 @@ class AddReaction(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    async def func_addreaction(self, ctx: disnake.message.Message, args: str):
+    async def func_addreaction(self, ctx: disnake.Message, args: str):
         """
         `$addReaction[(channel;message);emoji]`
         #### Example:

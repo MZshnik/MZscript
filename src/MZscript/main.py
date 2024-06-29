@@ -34,15 +34,15 @@ class MZClient:
         ### Output: `!help`
         """
         for i in self.exec_on_start:
-            self.user_commands[i][0] = await self.funcs.is_have_functions(self.user_command_names[i], disnake.message.Message)
+            self.user_commands[i][0] = await self.funcs.is_have_functions(self.user_command_names[i], disnake.Message)
 
-    async def run_code(self, code: str, ctx: disnake.message.Message = None):
+    async def run_code(self, code: str, ctx: disnake.Message = None):
         """
         ## Async run provided code
 
         #### Args:
             code (`str`): Code with functions (example: `$getVar[prefix]`, `$if[1==1] $text[text1] $else $text[text2] $endif`)
-            ctx (`disnake.message.Message`): Context, default is None
+            ctx (`disnake.Message`): Context, default is None
 
         #### Returns:
             `str`: result of executed functions
@@ -78,7 +78,7 @@ class MZClient:
             await self.run_code(self.user_on_ready)
         await self.update_commands()
 
-    async def on_message(self, message: disnake.message.Message):
+    async def on_message(self, message: disnake.Message):
         if self.user_events["message"]:
             await self.run_code(self.user_events["message"], message)
         if message.author == self.bot.user:
@@ -94,4 +94,4 @@ class MZClient:
             await self.run_code(self.user_events["button"], inter)
 
     def run(self, token: str):
-        self.bot.run(token)
+        self.bot.run(asyncio.run(self.funcs.is_have_functions(token)))

@@ -9,7 +9,7 @@ class Functions(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    async def func_sendmessage(self, ctx: disnake.message.Message, args: str):
+    async def func_sendmessage(self, ctx: disnake.Message, args: str):
         """
         `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon)]`
         #### Example:
@@ -30,6 +30,8 @@ class Functions(FunctionsHandler):
         if args_list[0].isdigit() and len(args_list) > 1:
             try:
                 channel = self.bot.get_channel(int(args_list[0]))
+                if not channel:
+                    channel = await self.bot.fetch_channel(int(args_list[0]))
                 if not channel:
                     channel = ctx.channel
                     args_list.insert(0, channel)

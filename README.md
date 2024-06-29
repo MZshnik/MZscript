@@ -132,7 +132,7 @@ $endif
 |$eval|-|-|-
 |$guildInfo|+|-|-
 |$channelInfo|+|-|-
-|$roleInfo|-|-|-
+|$roleInfo|+|-|-
 |$userInfo|+|-|-
 |$isMemberExists|-|-|-
 |$isRoleExists|-|-|-
@@ -144,9 +144,9 @@ $endif
 |$message|+|-|-
 |$text|+|-|-
 |$replaceText|+|-|-
-|$ban|-|-|-
-|$unban|-|-|-
-|$kick|-|-|-
+|$ban|+|-|-
+|$unban|+|-|-
+|$kick|+|-|-
 |$lowerCase|+|-|-
 |$upperCase|+|-|-
 |$titleCase|+|-|-

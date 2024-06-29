@@ -9,28 +9,47 @@ class RoleInfo(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    # [roleid;params]
-    async def func_roleinfo(self, ctx: disnake.message.Message, args: str):
+    async def func_roleinfo(self, ctx: disnake.Message, args: str):
+        """
+        `$userInfo[(guild;user);param]`
+        #### Example:
+        `$userInfo[id]`
+        #### Example 2:
+        `$userInfo[700061502089986139;name]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
-
-
-        if len(args_list) > 2 or len(args_list) == 0:
+        if len(args_list) > 3 or len(args_list) == 0:
             raise ValueError("$roleInfo: Too many or no args provided")
 
-        role = ctx.guild.get_role(args_list[0])
-        if args_list[0].isdigit():
+        guild = ctx.guild
+        if args_list[0].isdigit() and len(args_list) > 1:
             try:
-                role = ctx.guild.get_role(int(await self.is_have_functions(args_list[0], ctx)))
+                guild = self.bot.get_guild(int(args_list[0]))
+                if not guild:
+                    guild = await self.bot.fetch_guild(int(args_list[0]))
+                if not guild:
+                    guild = ctx.guild
+                    args_list.insert(0, guild)
             except Exception as e:
                 print(e)
-                raise SyntaxError(f"$roleInfo: Cannot find role \"{args_list[0]}\"")
+                raise SyntaxError(f"$roleInfo: Cannot find guild \"{args_list[0]}\"")
         else:
-            if len(args_list) == 1:
-                args_list.insert(0, role)
-            else:
-                id = int(args_list[0].replace("<@&", "").replace(">", ""))
-                role = ctx.guild.get_role(id)
-                
+            args_list.insert(0, guild)
+
+        role = None
+        if args_list[1].isdigit():
+            try:
+                role = guild.get_role(int(args_list[1]))
+                if not role:
+                    role = await guild.fetch_role(int(args_list[1]))
+                if not role:
+                    raise SyntaxError(f"$roleInfo: Cannot find role \"{args_list[1]}\"")
+            except Exception as e:
+                print(e)
+                raise SyntaxError(f"$roleInfo: Cannot find role \"{args_list[1]}\"")
+        else:
+            raise SyntaxError(f"$roleInfo: Cannot find role \"{args_list[1]}\"")
+
         params = {
             "color": role.color,
             "created": int(role.created_at.timestamp()),
@@ -44,7 +63,7 @@ class RoleInfo(FunctionsHandler):
             "tags": role.tags
         }
 
-        return str(params[args_list[1]])
+        return str(params[args_list[2]])
 
 def setup(handler):
     return RoleInfo(handler)

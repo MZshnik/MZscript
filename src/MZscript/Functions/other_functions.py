@@ -9,7 +9,7 @@ class Functions(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    async def func_message(self, ctx: disnake.message.Message, args: str = ""):
+    async def func_message(self, ctx: disnake.Message, args: str = ""):
         """
         `$message[(arg number)]`
         #### Example:
@@ -21,7 +21,7 @@ class Functions(FunctionsHandler):
             return ctx.content
         return ctx.content.split(" ")[int(args)]
 
-    async def func_text(self, ctx: disnake.message.Message, args: str):
+    async def func_text(self, ctx: disnake.Message, args: str):
         """
         `$text[text]`
         #### Example:

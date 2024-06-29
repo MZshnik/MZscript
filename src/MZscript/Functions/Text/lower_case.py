@@ -9,7 +9,7 @@ class Functions(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    async def func_lowercase(self, ctx: disnake.message.Message, args: str):
+    async def func_lowercase(self, ctx: disnake.Message, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) > 1 or len(args_list) == 0:
             error_msg = "$upperCase: Too many or no args provided"

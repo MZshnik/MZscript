@@ -11,7 +11,7 @@ class Functions(FunctionsHandler):
 
     async def func_var(self, ctx, args: str):
         """
-        `$var[name;time]`
+        `$var[(mode);name;(newvalue);time]`
         #### Example:
         `$var[lastuser]`
         #### Example 2:

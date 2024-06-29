@@ -9,7 +9,7 @@ class ChannelInfo(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    async def func_channelinfo(self, ctx: disnake.message.Message, args: str):
+    async def func_channelinfo(self, ctx: disnake.Message, args: str):
         """
         `$channelInfo[(channel);param]`
         #### Example:

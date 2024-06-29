@@ -34,7 +34,7 @@ __All funcs return `str` type: result of executing or empty string__, interprete
 This methode writs in lowercase only in Functions file class.  
 After adding function, __ONLY after adding, register it__ in `__init__` methode of FunctionsHandler class from [functions_handler](/src/MZscript/functions_handler.py?FunctionsHandler). Add function to `self.all_funcs` after all and if your function no arg or can be no arg - add it to same lists(`self.no_arg_funcs` and `self.can_be_no_arg`).
 
-From template you can see `args: str` argument in simple function, `str` type for arguments is always provided. `ctx` argument can be `disnake.message.Message`(by default) or other context-exists types. So, please, dont set type `disnake.message.Message` if your command can work without it - set `ctx = None`, or if it is interaction function - set `ctx: disnake.AppCmdInter` (` = None` if not required). Delet `args` param if your function in `no_arg_funcs` or set `args: str = None` if it can be no args.
+From template you can see `args: str` argument in simple function, `str` type for arguments is always provided. `ctx` argument can be `disnake.Message`(by default) or other context-exists types. So, please, dont set type `disnake.Message` if your command can work without it - set `ctx = None`, or if it is interaction function - set `ctx: disnake.AppCmdInter` (` = None` if not required). Delet `args` param if your function in `no_arg_funcs` or set `args: str = None` if it can be no args.
 
 For creating $function you can use some methods to save time and easily job:
 |`self.`Methode|Description|
@@ -65,8 +65,7 @@ class Functions(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    # create new funcs like this:
-    async def func_newfunc(self, ctx: disnake.message.Message, args: str):
+    async def func_newfunc(self, ctx: disnake.Message, args: str):
         ... # some code of function
 
 def setup(handler):
