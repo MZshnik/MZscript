@@ -1,6 +1,7 @@
 import disnake
 
-from MZscript.functions_handler import FunctionsHandler
+from ...functions_handler import FunctionsHandler
+
 
 class Functions(FunctionsHandler):
     def __init__(self, handler):
@@ -9,6 +10,11 @@ class Functions(FunctionsHandler):
         self.bot = handler.client.bot
 
     async def func_hasrole(self, ctx: disnake.message.Message, args: str):
+        """
+        `$hasRole[(guild;user);role]`
+        #### Example:
+        `$hasRole[855478215266533426]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) == 0:
             raise ValueError(f"$hasRole: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
@@ -28,17 +34,8 @@ class Functions(FunctionsHandler):
         else:
             args_list.insert(0, guild)
 
-        role = None
-        try:
-            role = guild.get_role(int(args_list[2]))
-            if not role:
-                raise SyntaxError(f"$hasRole: Cannot find role \"{args_list[2]}\"")
-        except Exception as e:
-            print(e)
-            raise SyntaxError(f"$hasRole: Cannot find role \"{args_list[2]}\"")
-
         user = await guild.get_or_fetch_member(int(ctx.author.id))
-        if args_list[1].isdigit() and len(args_list) > 1:
+        if args_list[1].isdigit() and len(args_list) > 2:
             try:
                 user = await guild.get_or_fetch_member(int(args_list[1]))
                 if not user:
@@ -48,6 +45,15 @@ class Functions(FunctionsHandler):
                 raise SyntaxError(f"$hasRole: Cannot find user \"{args_list[1]}\"")
         else:
             args_list.insert(1, user)
+
+        role = None
+        try:
+            role = guild.get_role(int(args_list[2]))
+            if not role:
+                raise SyntaxError(f"$hasRole: Cannot find role \"{args_list[2]}\"")
+        except Exception as e:
+            print(e)
+            raise SyntaxError(f"$hasRole: Cannot find role \"{args_list[2]}\"")
 
         if role in user.roles:
             return "true"

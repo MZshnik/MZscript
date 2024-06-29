@@ -19,7 +19,12 @@ class Functions(FunctionsHandler):
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\""
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            else:
+                await ctx.channel.send(error_msg)
+                return True
 
         channel = ctx.channel
         if args_list[0].isdigit() and len(args_list) > 1:

@@ -1,1 +1,1 @@
-from . import hasrole
+from . import has_role

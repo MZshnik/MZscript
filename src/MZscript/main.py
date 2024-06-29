@@ -7,7 +7,7 @@ from .functions_collector import FunctionsCore
 
 
 class MZClient:
-    def __init__(self, intents: str = "all", on_ready: str = "$console[Bot is ready]", db_warns: bool = False, debug_log: bool = False):
+    def __init__(self, intents: str = "all", on_ready: str = "$console[Bot is ready]", db_warns: bool = False, debug_log: bool = False, debug_console: bool = True):
         if isinstance(intents, disnake.Intents):
             pass
         elif intents.lower() == "all":
@@ -22,7 +22,7 @@ class MZClient:
         self.exec_on_start = []
         self.user_events = {"message": None, "button": None}
         self.bot = commands.InteractionBot(intents=intents)
-        self.funcs = FunctionsCore(self, db_warns, debug_log)
+        self.funcs = FunctionsCore(self, db_warns, debug_log, debug_console)
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
         self.bot.add_listener(self.on_button_click, disnake.Event.button_click)

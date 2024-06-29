@@ -55,7 +55,7 @@ class Functions(FunctionsHandler):
         `$else`\n
         No args. Copy of $elif[true]
         #### Example:
-        `$if[$message==hello]`
+        `$if[$message==hello] $sendMessage[Hello!] $else $sendMessage[Password?] $endif`
         """
         return "$elif[true]"
 

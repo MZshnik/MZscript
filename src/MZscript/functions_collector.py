@@ -7,10 +7,11 @@ from .functions_handler import FunctionsHandler
 
 
 class FunctionsCore(FunctionsHandler):
-    def __init__(self, client, db_warns: bool = False, debug_log: bool = False):
+    def __init__(self, client, db_warns: bool, debug_log: bool, debug_console: bool):
         super().__init__()
         self.db_warns = db_warns
         self.debug_log = debug_log
+        self.debug_console = debug_console
         self.client = client
         self.database = Database()
         self.load_functions()
@@ -18,6 +19,7 @@ class FunctionsCore(FunctionsHandler):
     def load_functions(self):
         functions = []
         tempmods = []
+        self.all_funcs = [i.lower() for i in self.all_funcs]
         for i in os.walk(os.path.dirname(__file__)+"/Functions"):
             for j in i[2]:
                 if j.endswith(".py") and j != "__init__.py":
@@ -29,7 +31,7 @@ for k in inspect.getmembers(tempmod, inspect.ismethod):
         for line in self.all_funcs:
             try:
                 for i in functions:
-                    if i[0][5:].lower() == line[1:].lower():
+                    if i[0][5:].lower() == line[1:]:
                         self.funcs[line] = i[1]
                         break
                 else:

@@ -9,10 +9,16 @@ class Functions(FunctionsHandler):
         self.handler = handler
         self.bot = handler.client.bot
 
-    # [text]
     async def func_uppercase(self, ctx: disnake.message.Message, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        
+        if len(args_list) > 1 or len(args_list) == 0:
+            error_msg = "$upperCase: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            else:
+                await ctx.channel.send(error_msg)
+                return True
+
         return args_list[0].upper()
         
 def setup(handler):

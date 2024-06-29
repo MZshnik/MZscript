@@ -5,7 +5,6 @@ class FunctionsHandler:
     """
     def __init__(self):
         # every function from this list need to have same self.func_functionname
-        # all functions need to be in lower case, including self.func_funcitonname
         self.all_funcs = [
             "$if",
             "$elif",
@@ -16,6 +15,7 @@ class FunctionsHandler:
             "$channelinfo",
             "$roleinfo",
             "$userinfo",
+            "$hasrole",
 
             "$ismemberexists",
             "$isroleexists",
@@ -32,12 +32,10 @@ class FunctionsHandler:
             "$ban",
             "$unban",
             "$kick",
-            
+
             "$lowercase",
             "$uppercase",
             "$titlecase",
-
-            "$hasrole",
 
             "$customid",
             "$defer",
@@ -66,7 +64,7 @@ class FunctionsHandler:
         self.no_arg_funcs = ["$else", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
         self.can_be_no_arg = ["$message", "$updatecommands"]
-        # dict. with func names and func_<func-name> class methods
+        # dict. with func names and func_<func-name> methods, generated automaticly
         self.funcs = {}
 
     def sync_functions(self, functions):
@@ -137,7 +135,7 @@ class FunctionsHandler:
                 if splited[0].lower() in self.no_arg_funcs or splited[0].lower() in self.can_be_no_arg:
                     result = await self.funcs[splited[0].lower()](ctx)
         except:
-            raise SyntaxError(f"Cant complete this function: {splited[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly.")
+            raise SyntaxError(f"Cant complete this function: {splited[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly. Most useful message in top of error.")
         if result:
             return result
         return ""
@@ -325,7 +323,14 @@ class FunctionsHandler:
                     for i in self.all_funcs:
                         if chunk.lower().startswith(i.lower()):
                             new_chunks[count] = await self.execute_function(chunk, ctx)
-                            break
+                            if new_chunks[count] != True:
+                                break
+                            # stop function if error. To create error - return True in function
+                            new_chunks[count] = ""
+                            del new_chunks[count-1:]
+                            while new_chunks.count("") > 0:
+                                new_chunks.remove("")
+                            return "".join(new_chunks)
             else:
                 break
         while new_chunks.count("") > 0:
