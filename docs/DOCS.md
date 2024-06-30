@@ -120,6 +120,7 @@ Example loading from path, test bot folder:
 //Commands  
 ///command.py  
 ///another.py  
+//main.py
 
 #### Loading with `bot.load_command`
 ```py
