@@ -63,7 +63,9 @@ class UserInfo(FunctionsHandler):
             "system": user.system,
         }
         if isinstance(user, disnake.Member):
-            params["timeout"] = int(user.current_timeout.timestamp())
+            params["timeout"] = ""
+            if user.current_timeout:
+                params["timeout"] = int(user.current_timeout.timestamp())
             params["joined"] = int(user.joined_at.timestamp())
             params["status"] = user.status
 
