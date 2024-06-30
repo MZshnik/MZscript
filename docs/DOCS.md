@@ -70,9 +70,9 @@ bot = MZClient(intents="default")
 Or just go to library code and set intents how you want or need:)
 > In __init__ methode from __MZClient__ class
 ## Lets talk about commands
-All commands invoked when user type same name of command in the chat. But, if you want to invoke command when somebody send message, just set empty name:
+All commands invoked when user type same name of command in the chat. But, if you want to invoke command when somebody send message, just use events:
 ```py
-bot.add_command(name="", code="$sendMessage[Use send message? I too!]")
+bot.add_event(name="message", code="$sendMessage[Use send message? I too!]")
 ```
 ### [For commands you can use all this functions](/README.md?tab=readme-ov-file#list-of-all-functions)
 > Remember, more functions will be added in time
@@ -87,6 +87,7 @@ Tags is some under settings to function. They are provided after all arguments o
 Now we have only 2 tags on 1 function, this is a description:
 - #addButton - adds button to $sendMessage, args: `style, label, is disabled, customID, url, emoji, row`
 - #addField - adds field to embed in $sendMessage, args: `name, value, is inline`
+- #addReaction - adds reaction to message, args: `channel, message, emoji`
 More tags will be added soon
 ### [Events](/README.md?tab=readme-ov-file#list-of-events)
 Events is more important thing in bot developering. You can add event in your code easily:
@@ -96,5 +97,40 @@ $console[Some guy send message in $channelInfo[name]]
 """
 ```
 > It is worth saying that some events used by library by default. You can edit events in lib code if you want to control events by self
+### Load commands
+If you dont want write all commands in one file, use `bot.load_command(path)` or `bot.load_commands(dir)`, this is example of loaded file:
+```py
+from MZscript import MZClient
+# import and set client argument to MZClient is not nessecary
+def setup(client: MZClient):
+    client.add_command(
+    name="!command",
+    code="""
+    $sendMessage[Hello!]
+    """)
+
+    client.add_command(
+    name="!command2",
+    code="""
+    $sendMessage[Hello 2!]
+    """)
+```
+Example loading from path, test bot folder:  
+/MyBot  
+//Commands  
+///command.py  
+///another.py  
+
+#### Loading with `bot.load_command`
+```py
+# in main.py file in your folder
+bot.load_command("Commands.command")
+```
+Load only provided file path
+#### Loading with `bot.load_commands`
+```py
+bot.load_commands("Commands")
+```
+Load provided directory of files
 ## Now what about contributing?
 View [this](/docs/CONTRIBUTING.md) file what describes what you need to contributing and made your own functions and events or modify library.

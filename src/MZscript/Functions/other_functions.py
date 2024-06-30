@@ -80,6 +80,8 @@ class Functions(FunctionsHandler):
 
         if check_expression(args.strip()):
             try:
+                # add support in future
+                from math import sqrt, ceil, floor
                 return str(eval(args.strip()))
             except:
                 raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")

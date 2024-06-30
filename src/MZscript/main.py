@@ -1,4 +1,6 @@
 import asyncio
+import os
+import importlib.util
 
 import disnake
 from disnake.ext import commands
@@ -68,6 +70,35 @@ class MZClient:
         for i in chunks:
             if i.startswith("$"):
                 self.exec_on_start.append(len(self.user_commands)-1)
+
+    def load_command(self, path):
+        try:
+            spec = importlib.util.find_spec(path)
+            lib = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(lib)
+        except:
+            print(f"Cannot import commands from path \"{path}\"")
+
+        try:
+            lib.setup(self)
+        except:
+            print(f"Cannot find setup function for commands in \"{path}\"")
+
+    def load_commands(self, dir):
+        for folder in [i for i in os.walk(dir) if i != "__pycache__"]:
+            for file in [i for i in folder[2] if i.endswith(".py")]:
+                try:
+                    export = folder[0].replace("\\", ".")+"."+file[:-3]
+                    spec = importlib.util.find_spec(export)
+                    lib = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(lib)
+                except:
+                    print(f"Cannot import commands from path \"{export}\"")
+
+                try:
+                    lib.setup(self)
+                except:
+                    print(f"Cannot find setup function for commands in \"{folder[0]}\"")
 
     def add_event(self, name: str, code: str):
         if name in self.user_events.keys():
