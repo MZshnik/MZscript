@@ -37,6 +37,9 @@ class Functions(FunctionsHandler):
         return ""
 
     async def func_getvar(self, ctx, args: str):
+        """
+        `$getVar[name]`
+        """
         result = await self.handler.database.get_global_var(await self.is_have_functions(args, ctx))
         if result:
             return result
@@ -45,21 +48,42 @@ class Functions(FunctionsHandler):
         return ""
 
     async def func_setvar(self, ctx, args: str):
+        """
+        `$setVar[name;value]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        if len(args_list) < 2:
-            raise ValueError(f"$setVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) != 2:
+            error_msg = f"$setVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         await self.handler.database.set_global_var(args_list[0], args_list[1])
 
     async def func_delvar(self, ctx, args: str):
+        """
+        `$delVar[name]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        if len(args_list) < 1:
-            raise ValueError(f"$setVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) != 1:
+            error_msg = "$delVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         await self.handler.database.set_global_var(args_list[0])
 
     async def func_getmembervar(self, ctx, args: str):
+        """
+        `$getMemberVar[name;(user;guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        if len(args_list) < 1:
-            raise ValueError(f"$getMemberVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) < 1 or len(args_list) > 3:
+            error_msg = f"$getMemberVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         if len(args_list) == 2:
@@ -72,9 +96,16 @@ class Functions(FunctionsHandler):
         return ""
 
     async def func_setmembervar(self, ctx, args: str):
+        """
+        `$setMemberVar[name;value;(user;guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        if len(args_list) < 2:
-            raise ValueError(f"$setMemberVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+        if len(args_list) < 2 or len(args_list) > 4:
+            error_msg = "$setMemberVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 2:
             args_list.append(ctx.author.id)
         if len(args_list) == 3:
@@ -82,9 +113,16 @@ class Functions(FunctionsHandler):
         await self.handler.database.set_value_of_member(args_list[3], args_list[2], args_list[0], args_list[1])
 
     async def func_delmembervar(self, ctx, args: str):
+        """
+        `$delMemberVar[name;(user;guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$detMemberVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$delMemberVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         if len(args_list) == 2:
@@ -92,9 +130,16 @@ class Functions(FunctionsHandler):
         await self.handler.database.del_value_of_member(args_list[2], args_list[1], args_list[0])
 
     async def func_getguildvar(self, ctx, args: str):
+        """
+        `$getGuildVar[name;(guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$getGuildVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$getGuildVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.guild.id)
         result = await self.handler.database.get_value_from_guild(args_list[1], args_list[0])
@@ -105,25 +150,46 @@ class Functions(FunctionsHandler):
         return ""
 
     async def func_setguildvar(self, ctx, args: str):
+        """
+        `$setGuildVar[name;(guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$setGuildVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 2:
             args_list.append(ctx.guild.id)
         await self.handler.database.set_value_of_guild(args_list[2], args_list[0], args_list[1])
 
     async def func_delguildvar(self, ctx, args: str):
+        """
+        `$delGuildVar[name;(guild)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$setVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$delGuildVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.guild.id)
         await self.handler.database.del_value_of_guild(args_list[1], args_list[0])
 
     async def func_getuservar(self, ctx, args: str):
+        """
+        `$getUserVar[name;(user)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$getUserVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$getUserVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         result = await self.handler.database.get_value_from_user(args_list[1], args_list[0])
@@ -134,17 +200,31 @@ class Functions(FunctionsHandler):
         return ""
 
     async def func_setuservar(self, ctx, args: str):
+        """
+        `$setUserVar[name;value;(user)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 2:
-            raise ValueError(f"$setUserVar: Needs 2 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$setUserVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 2:
             args_list.append(ctx.author.id)
         await self.handler.database.set_value_of_user(args_list[2], args_list[0], args_list[1])
 
     async def func_deluservar(self, ctx, args: str):
+        """
+        `$delUserVar[name;(user)]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            raise ValueError(f"$setUserVar: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\"")
+            error_msg = f"$delUserVar: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
         if len(args_list) == 1:
             args_list.append(ctx.author.id)
         await self.handler.database.del_value_of_user(args_list[1], args_list[0])

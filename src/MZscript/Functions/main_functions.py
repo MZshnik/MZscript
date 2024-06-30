@@ -59,6 +59,9 @@ class Functions(FunctionsHandler):
         """
         return "$elif[true]"
 
+    async def func_stop(self, ctx):
+        return True
+
     async def func_eval(self, ctx, args: str): # its unstability function. try not use it
         """
         `$eval[code to eval]`\n

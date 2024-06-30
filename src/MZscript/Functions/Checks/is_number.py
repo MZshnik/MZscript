@@ -10,14 +10,16 @@ class Functions(FunctionsHandler):
         self.bot = handler.client.bot
 
     async def func_isnumber(self, ctx: disnake.Message, args: str):
+        """
+        `$isNumber[text]`
+        """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
-        if len(args_list) > 1:
-            error_msg = "$upperCase: Too many args provided"
+        if len(args_list) != 1:
+            error_msg = "$isNumber: Too many args provided"
             if self.handler.debug_console:
                 raise ValueError(error_msg)
-            else:
-                await ctx.channel.send(error_msg)
-                return True
+            await ctx.channel.send(error_msg)
+            return True
 
         if len(args_list) != 0:
             try:
@@ -25,8 +27,7 @@ class Functions(FunctionsHandler):
                 return "true"
             except:
                 return "false"
-        else:
-            return "false"
+        return "false"
 
 def setup(handler):
     return Functions(handler)

@@ -19,7 +19,7 @@ class Functions(FunctionsHandler):
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) < 1:
-            error_msg = f"$sendMessage: Needs 1 arguments, but only {len(args_list)} provided: \"{args}\""
+            error_msg = f"$sendMessage: Too many or no args provided"
             if self.handler.debug_console:
                 raise ValueError(error_msg)
             else:

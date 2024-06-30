@@ -9,6 +9,7 @@ class FunctionsHandler:
             "$if",
             "$elif",
             "$else",
+            "$stop",
             "$eval",
 
             "$guildinfo",
@@ -59,9 +60,9 @@ class FunctionsHandler:
             "$console"
         ]
         # dont touch this list
-        self.logic_funcs = ["$if", "$elif", "$else", "$stop", "$endif"]
+        self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         # add if func dont want to get args with []
-        self.no_arg_funcs = ["$else", "$customid", "$defer"]
+        self.no_arg_funcs = ["$else", "$stop", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
         self.can_be_no_arg = ["$message", "$updatecommands"]
         # dict. with func names and func_<func-name> methods, generated automaticly
@@ -314,12 +315,6 @@ class FunctionsHandler:
                     new_chunks = await self.finds_elif(new_chunks, main_if, main_endif, ctx)
                     break
                 else:
-                    if chunk.lower().startswith("$stop"):
-                        new_chunks[count] = ""
-                        del new_chunks[count-1:]
-                        while new_chunks.count("") > 0:
-                            new_chunks.remove("")
-                        return "".join(new_chunks)
                     for i in self.all_funcs:
                         if chunk.lower().startswith(i.lower()):
                             new_chunks[count] = await self.execute_function(chunk, ctx)
