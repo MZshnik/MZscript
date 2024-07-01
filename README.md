@@ -121,56 +121,293 @@ $setUserVar[lvl;$calculate[$getUserVar[lvl]+1]]
 $endif
 """)
 ```
+## Content
+<details><summary><b>List of all functions</b></summary>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th align="center">Full support</th>
+<th align="center">No args</th>
+<th align="center">Can be no/with args</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$if</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$elif</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$else</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$stop</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$endif</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$eval</td>
+<td align="right">-</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$guildInfo</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$channelInfo</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$roleInfo</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$userInfo</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$hasRole</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isMemberExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isRoleExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isUserExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isGuildExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isNumber</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$sendMessage</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$addReaction</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$message</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$text</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$replaceText</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$ban</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$unban</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$kick</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$lowerCase</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$upperCase</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$titleCase</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$customID</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$defer</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$var</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$getVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$setVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$delVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$getMemberVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$setMemberVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$delMemberVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$gelGuildVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$setGuildVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$delGuildVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$getUserVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$setUserVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$delUserVar</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$updateCommands</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">+</td>
+</tr>
+<tr>
+<td>$calculate</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$console</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+</tbody>
+</table>
+<p>Full support means is function 100% works/tested</p>
+</details>
 
-#### List of all functions
-| Function        | Full support | No args | Can be no/with args |
-| :-------------- |------------: | :-: | :- |
-|$if|+|-|-
-|$elif|+|-|-
-|$else|+|+|-
-|$stop|+|+|-
-|$endif|+|+|-
-|$eval|-|-|-
-|$guildInfo|+|-|-
-|$channelInfo|+|-|-
-|$roleInfo|+|-|-
-|$userInfo|+|-|-
-|$hasRole|+|-|-
-|$isMemberExists|+|-|-
-|$isRoleExists|+|-|-
-|$isUserExists|+|-|-
-|$isGuildExists|+|-|-
-|$isNumber|+|-|-
-|$sendMessage|+|-|-
-|$addReaction|+|-|-
-|$message|+|-|-
-|$text|+|-|-
-|$replaceText|+|-|-
-|$ban|+|-|-
-|$unban|+|-|-
-|$kick|+|-|-
-|$lowerCase|+|-|-
-|$upperCase|+|-|-
-|$titleCase|+|-|-
-|$customID|+|+|-
-|$defer|+|+|-
-|$var|+|-|-
-|$getVar|+|-|-
-|$setVar|+|-|-
-|$delVar|+|-|-
-|$getMemberVar|+|-|-
-|$setMemberVar|+|-|-
-|$delMemberVar|+|-|-
-|$gelGuildVar|+|-|-
-|$setGuildVar|+|-|-
-|$delGuildVar|+|-|-
-|$getUserVar|+|-|-
-|$setUserVar|+|-|-
-|$delUserVar|+|-|-
-|$updateCommands|+|-|+
-|$calculate|+|-|-
-|$console|+|-|-
-> Full support means is function 100% works/tested
 #### List of functions tags:
 | Function | Tags |
 | -------- | ---- |
