@@ -102,8 +102,6 @@ class Functions(FunctionsHandler):
             embed.title = args_list[2]
         if len(args_list) > 3 and len(args_list[3]) > 0:
             embed.description = args_list[3]
-            if not embed.description:
-                raise SyntaxError(f"$sendMessage: Cannot send embed without description: {args}")
         if len(args_list) > 4 and len(args_list[4]) > 0:
             icon_url = None
             if len(args_list) > 5 and len(args_list[5]) > 0:

@@ -61,9 +61,11 @@ class UserInfo(FunctionsHandler):
             "id": user.id,
             "dm": user.dm_channel,
             "system": user.system,
+            "timeout": "",
+            "joined": "",
+            "status": ""
         }
         if isinstance(user, disnake.Member):
-            params["timeout"] = ""
             if user.current_timeout:
                 params["timeout"] = int(user.current_timeout.timestamp())
             params["joined"] = int(user.joined_at.timestamp())
