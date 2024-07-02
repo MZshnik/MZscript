@@ -22,12 +22,13 @@ class MZClient:
         self.user_commands = []
         self.user_command_names = []
         self.exec_on_start = []
-        self.user_events = {"message": None, "button": None}
+        self.user_events = {"message": None, "button": None, "interaction": None}
         self.bot = commands.InteractionBot(intents=intents)
         self.funcs = FunctionsCore(self, db_warns, debug_log, debug_console)
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
         self.bot.add_listener(self.on_button_click, disnake.Event.button_click)
+        self.bot.add_listener(self.on_intreaction, disnake.Event.interaction)
 
     async def update_commands(self):
         """
@@ -103,6 +104,8 @@ class MZClient:
     def add_event(self, name: str, code: str):
         if name in self.user_events.keys():
             self.user_events[name] = code
+        else:
+            raise SyntaxError(f"\"{name}\" event dosnot exists.")
 
     async def on_ready(self):
         if self.user_on_ready:
@@ -110,19 +113,35 @@ class MZClient:
         await self.update_commands()
 
     async def on_message(self, message: disnake.Message):
+        """
+        `message` event
+        Executed when someone send message(and bots)
+        """
         if self.user_events["message"]:
             await self.run_code(self.user_events["message"], message)
-        if message.author == self.bot.user:
+        if message.author.bot:
             return
-        splited_command = message.content.split(" ")
+        splitted_command = message.content.split(" ")
         for i in self.user_commands:
-            if splited_command[0] == i[0]:
-                message.content = " ".join(splited_command[1:])
+            if splitted_command[0] == i[0]:
+                message.content = " ".join(splitted_command[1:])
                 await self.run_code(i[1], message)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
+        """
+        `button` event
+        Executed when someone clicked button
+        """
         if self.user_events["button"]:
             await self.run_code(self.user_events["button"], inter)
+
+    async def on_intreaction(self, inter: disnake.MessageInteraction):
+        """
+        `interaction` event
+        Executed when some of interactions(buttons/menus and etc.) are invoked
+        """
+        if self.user_events["interaction"]:
+            await self.run_code(self.user_events["interaction"], inter)
 
     def run(self, token: str):
         self.bot.run(asyncio.run(self.funcs.is_have_functions(token)))

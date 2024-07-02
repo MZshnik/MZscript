@@ -39,6 +39,7 @@ class FunctionsHandler:
             "$titlecase",
 
             "$customid",
+            "$value",
             "$defer",
 
             "$var",
@@ -64,7 +65,7 @@ class FunctionsHandler:
         # add if func dont want to get args with []
         self.no_arg_funcs = ["$else", "$stop", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
-        self.can_be_no_arg = ["$message", "$updatecommands"]
+        self.can_be_no_arg = ["$message", "$updatecommands", "$value"]
         # dict. with func names and func_<func-name> methods, generated automaticly
         self.funcs = {}
 
@@ -125,18 +126,18 @@ class FunctionsHandler:
         #### Output `"Hello World!"`
         """
         result = None
-        splited = entry.split("[")
+        splitted = entry.split("[")
         try:
-            if len(splited) > 1:
-                if splited[0].lower() in self.can_be_no_arg or splited[0].lower() in self.logic_funcs:
-                    result = await self.funcs[splited[0].lower()](ctx, "[".join(splited[1:])[:-1])
+            if len(splitted) > 1:
+                if splitted[0].lower() in self.can_be_no_arg or splitted[0].lower() in self.logic_funcs:
+                    result = await self.funcs[splitted[0].lower()](ctx, "[".join(splitted[1:])[:-1])
                 else:
-                    result = await self.funcs[splited[0].lower()](ctx, "[".join(splited[1:])[:-1])
+                    result = await self.funcs[splitted[0].lower()](ctx, "[".join(splitted[1:])[:-1])
             else:
-                if splited[0].lower() in self.no_arg_funcs or splited[0].lower() in self.can_be_no_arg:
-                    result = await self.funcs[splited[0].lower()](ctx)
+                if splitted[0].lower() in self.no_arg_funcs or splitted[0].lower() in self.can_be_no_arg:
+                    result = await self.funcs[splitted[0].lower()](ctx)
         except:
-            raise SyntaxError(f"Cant complete this function: {splited[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly. Most useful message in top of error.")
+            raise SyntaxError(f"Cant complete this function: {splitted[0]}\n\nCheck that all parentheses are closed and that you are writed the function correctly. Most useful message in top of error.")
         if result:
             return result
         return ""
@@ -331,3 +332,12 @@ class FunctionsHandler:
         while new_chunks.count("") > 0:
             new_chunks.remove("")
         return "".join(new_chunks)
+
+    async def exec_tags(self, chunks: list, tags: list):
+        counter = len(chunks)
+        for i in chunks.copy()[::-1]:
+            counter -= 1
+            for tag in tags.keys():
+                if str(i).lower().startswith(tag.lower()):
+                    await tags[tag](i[len(tag)+1:-1])
+                    chunks.pop(counter)

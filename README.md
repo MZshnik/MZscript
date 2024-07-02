@@ -411,7 +411,7 @@ $endif
 #### List of functions tags:
 | Function | Tags |
 | -------- | ---- |
-|$sendMessage | #addButton, #addField, #addReaction |
+|$sendMessage | #addButton, #addMenu, #addOption, #addField, #addReaction |
 #### List of events:
 | Name | Description |
 | -------- | ---- |

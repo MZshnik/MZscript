@@ -11,7 +11,7 @@ class Functions(FunctionsHandler):
 
     async def func_sendmessage(self, ctx: disnake.Message, args: str):
         """
-        `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon)]`
+        `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon;return id)]`
         #### Example:
         `$sendMessage[hello]`
         #### Example 2:
@@ -44,11 +44,11 @@ class Functions(FunctionsHandler):
         view = disnake.ui.View(timeout=None)
 
         async def add_button(entry: str):
-            args_splited = await self.get_args(entry, ctx)
-            style = args_splited[0]
-            label = args_splited[1]
-            disabled = args_splited[2]
-            custom_id = args_splited[3]
+            args_splitted = await self.get_args(entry, ctx)
+            style = args_splitted[0]
+            label = args_splitted[1]
+            disabled = args_splitted[2]
+            custom_id = args_splitted[3]
             url = None
             emoji = None
             row = None
@@ -67,14 +67,49 @@ class Functions(FunctionsHandler):
                 raise ValueError("$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type.")
             view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
 
+        async def add_menu(entry: str):
+            args_splitted = await self.get_args(await self.is_have_functions(entry), ctx)
+            await self.exec_tags(args_splitted, {"#addoption": exec_option})
+            placeholder = args_splitted[0]
+            custom_id = args_splitted[1]
+            min_values = int(args_splitted[2]) if len(args_splitted[2]) != 0 else 1
+            max_values = int(args_splitted[3]) if len(args_splitted[3]) != 0 else 1
+            disabled = "true" if args_splitted[4].lower() == "true" else "false"
+            row = int(args_splitted[5]) if len(args_splitted[5]) != 0 else None
+            options = []
+
+            async def exec_option(option: str):
+                args = await self.get_args(await self.is_have_functions(option), ctx)
+                label = args[0]
+                value = args[1]
+                description = args[2] if len(args) > 2 and len(args[2]) != 0 else None
+                emoji = args[3] if len(args) > 3 and len(args[3]) != 0 else None
+                default = args[4].lower() == "true" if len(args) > 4 and len(args[4]) != 0 else False
+                nonlocal options
+                options.append(disnake.SelectOption(label=label, value=value, description=description, emoji=emoji, default=default))
+
+            class NewMenu(disnake.ui.StringSelect):
+                def __init__(self):
+                    super().__init__(
+                        custom_id=custom_id,
+                        placeholder=placeholder,
+                        min_values=min_values,
+                        max_values=max_values,
+                        options=options,
+                        disabled=disabled,
+                        row=row
+                    )
+
+            view.add_item(NewMenu())
+
         async def add_field(entry: str):
-            args_splited = await self.get_args(entry, ctx)
-            if len(args_splited) < 2:
+            args_splitted = await self.get_args(entry, ctx)
+            if len(args_splitted) < 2:
                 raise ValueError("$sendMessage: #addField: Name and value of field are required.")
             inline = False
-            if len(args_splited) > 2:
-                inline = args_splited[2].lower() == "true"
-            embed.add_field(args_splited[0], args_splited[1], inline=inline)
+            if len(args_splitted) > 2:
+                inline = args_splitted[2].lower() == "true"
+            embed.add_field(args_splitted[0], args_splitted[1], inline=inline)
 
         isAddReaction = False
         reactions = []
@@ -86,15 +121,10 @@ class Functions(FunctionsHandler):
         tag_funcs = {
             "#addfield": add_field,
             "#addbutton": add_button,
+            "#addmenu": add_menu,
             "#addreaction": add_reaction
             }
-        counter = len(args_list)
-        for i in args_list.copy()[::-1]:
-            counter -= 1
-            for tag in tag_funcs.keys():
-                if str(i).lower().startswith(tag.lower()):
-                    await tag_funcs[tag](i[len(tag)+1:-1])
-                    args_list.pop(counter)
+        await self.exec_tags(args_list, tag_funcs)
         content = None
         if len(args_list) > 1 and len(args_list[1]) > 0:
             content = args_list[1]
@@ -121,6 +151,9 @@ class Functions(FunctionsHandler):
             if len(args_list) > 11 and len(args_list[11]) > 0:
                 icon_url = args_list[11]
             embed.set_author(name=args_list[9], url=url, icon_url=icon_url)
+        return_id = False
+        if len(args_list) > 12 and len(args_list[12]) > 0:
+            return_id = True
 
         if not embed.description:
             embed = None
@@ -128,6 +161,8 @@ class Functions(FunctionsHandler):
         if isAddReaction:
             for i in reactions:
                 await message.add_reaction(i)
+        if return_id:
+            return message.id
 
 def setup(handler):
     return Functions(handler)

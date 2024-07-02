@@ -38,6 +38,11 @@ class Functions(FunctionsHandler):
         """
         return ctx.component.custom_id
 
+    async def func_value(self, ctx: disnake.MessageInteraction, args: str = None):
+        if args and len(args) != 0:
+            return ctx.values[int(await self.get_args(await self.is_have_functions(args)))]
+        return ctx.values[0]
+
     async def func_defer(self, ctx: disnake.MessageInteraction, args: str = None):
         """
         `$defer`\n

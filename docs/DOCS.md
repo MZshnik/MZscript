@@ -65,14 +65,21 @@ Now you can `python main.py` or run your code or file how you want or can.
 You can test your first command by typing `!help` in the channel where bot can send and view messages.  
 By default, MZClient uses all the intents that discord bots have, but you can configure it like this:
 ```py
-bot = MZClient(intents="default")
+bot = MZClient(intents="all") # best way is not set intents
 ```
-Or just go to library code and set intents how you want or need:)
-> In __init__ methode from __MZClient__ class
+Or just set intents how you want or need:)
+```py
+from disnake import Intents
+intents = Intents.all()
+intents.members = False # not recomened
+bot = MZClient(intents=intents)
+```
 ## Lets talk about commands
 All commands invoked when user type same name of command in the chat. But, if you want to invoke command when somebody send message, just use events:
 ```py
-bot.add_event(name="message", code="$sendMessage[Use send message? I too!]")
+bot.add_event(name="message", code="""
+$sendMessage[Use send message? I too!]
+""")
 ```
 ### [For commands you can use all this functions](/README.md?tab=readme-ov-file#list-of-all-functions)
 > Remember, more functions will be added in time
@@ -84,11 +91,11 @@ About some functions:
 > I think now a lot of functions is not usable, but later will change
 ### [Functions tags](/README.md?tab=readme-ov-file#list-of-functions-tags)
 Tags is some under settings to function. They are provided after all arguments of function.
-Now we have only 2 tags on 1 function, this is a description:
+Now we have more than 3 in only 1 function, this is a description:
 - #addButton - adds button to $sendMessage, args: `style, label, is disabled, customID, url, emoji, row`
 - #addField - adds field to embed in $sendMessage, args: `name, value, is inline`
 - #addReaction - adds reaction to message, args: `channel, message, emoji`
-More tags will be added soon
+More tags for functions will be added soon
 ### [Events](/README.md?tab=readme-ov-file#list-of-events)
 Events is more important thing in bot developering. You can add event in your code easily:
 ```py
@@ -97,7 +104,7 @@ $console[Some guy send message in $channelInfo[name]]
 """
 ```
 > It is worth saying that some events used by library by default. You can edit events in lib code if you want to control events by self
-### Load commands
+### Load commands (or "Cogs" / export module)
 If you dont want write all commands in one file, use `bot.load_command(path)` or `bot.load_commands(dir)`, this is example of loaded file:
 ```py
 from MZscript import MZClient
@@ -106,14 +113,14 @@ def setup(client: MZClient):
     client.add_command(
     name="!command",
     code="""
-    $sendMessage[Hello!]
-    """)
+$sendMessage[Hello!]
+""")
 
     client.add_command(
     name="!command2",
     code="""
-    $sendMessage[Hello 2!]
-    """)
+$sendMessage[Hello 2!]
+""")
 ```
 Example loading from path, test bot folder:  
 /MyBot  
