@@ -11,6 +11,7 @@ class FunctionsHandler:
             "$else",
             "$stop",
             "$eval",
+            "$pyeval",
 
             "$guildinfo",
             "$channelinfo",
@@ -40,6 +41,7 @@ class FunctionsHandler:
 
             "$customid",
             "$value",
+            "$options",
             "$defer",
 
             "$var",
@@ -56,8 +58,10 @@ class FunctionsHandler:
             "$setuservar",
             "$deluservar",
 
-            "$updatecommands",
             "$calculate",
+            "$loop",
+            "$updatecommands",
+            "$docs",
             "$console"
         ]
         # dont touch this list
@@ -77,8 +81,8 @@ class FunctionsHandler:
         ## Check if entry text has functions to execute.
         Usually used for execute arguments in functions like $sendMessage[$message] < $message is argument what will be executed
         ### Example:
-        #### Input `"Hello, and $message!"`
-        #### Output `"Hello, and welcome to the guild!"`
+        ### Input `"Hello, and $message!"`
+        ### Output `"Hello, and welcome to the guild!"`
         """
         chunks = await self.get_chunks(entry)
         for i in chunks:
@@ -87,12 +91,12 @@ class FunctionsHandler:
         else:
             return entry
 
-    async def get_args(self, entry: str, ctx = None):
+    async def get_args(self, entry: str, ctx = None): # ctx not needed but many entrys what provide ctx
         """
         ## Gets args from function
         ### Example:
-        #### Input `"1234567890987654321;Hello World!"`
-        #### Output `["1234567890987654321", "Hello World!"]`
+        ### Input `"1234567890987654321;Hello World!"`
+        ### Output `["1234567890987654321", "Hello World!"]`
         """
         args_list = []
         brackets = 0
@@ -118,12 +122,12 @@ class FunctionsHandler:
         """
         ## Execute function and return his result
         ### Example:
-        #### Input `"$sendMessage[Hello World!]"`
-        #### Output `"" (empty string)`
+        ### Input `"$sendMessage[Hello World!]"`
+        ### Output `"" (empty string)`
         It is because $sendMessage only send message.
         ### Example 2:
-        #### Input `"$text[Hello World!]"`
-        #### Output `"Hello World!"`
+        ### Input `"$text[Hello World!]"`
+        ### Output `"Hello World!"`
         """
         result = None
         splitted = entry.split("[")
@@ -146,8 +150,8 @@ class FunctionsHandler:
         """
         ## Check if all $if blocks closed or writed correctly
         ### Example:
-        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye]"`
-        #### Output `(SyntaxError) The amount of $endif must be equal to the amount of $if`
+        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye]"`
+        ### Output `(SyntaxError) The amount of $endif must be equal to the amount of $if`
         """
         ifs = 0
         elses = 0
@@ -178,8 +182,8 @@ class FunctionsHandler:
         ## Return first find command in the entry
         ## and edit entry by deleting then command
         ### Example:
-        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
-        #### Output ` $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif`
+        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
+        ### Output ` $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif`
         """
         addCommand = ""
         brackets = 0
@@ -206,8 +210,8 @@ class FunctionsHandler:
         """
         ## Return all chunks of code by splitting it with $ and []
         ### Example:
-        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
-        #### Output `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
+        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
+        ### Output `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
         """
         chunks = []
         checkCommands = True
@@ -244,8 +248,8 @@ class FunctionsHandler:
         """
         ## Find and return index of $endif in the chunks(list) by check if all $if's closed
         ### Example:
-        #### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
-        #### Output `4 (index in the list)`
+        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
+        ### Output `4 (index in the list)`
         """
         unclosedifs = 0
         counter = -1
@@ -266,8 +270,8 @@ class FunctionsHandler:
         If $if return True but $elif not found - $if and $endif deleting from chunks(list).\n
         If $elif return False - all $if block from $if to $endif deleting.
         ### Example:
-        #### Input `"$if[False] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
-        #### Output `["$if[True]", "$sendMessage[Bye bye]", "$endif"]`
+        ### Input `"$if[False] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
+        ### Output `["$if[True]", "$sendMessage[Bye bye]", "$endif"]`
         """
         unclosedifs = 0
         this_count = -1
@@ -300,8 +304,8 @@ class FunctionsHandler:
         """
         ## Execute all chunks
         ### Example:
-        #### Input `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
-        #### Output `` (if $message[0] == hello send message "Hello World!")
+        ### Input `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
+        ### Output `` (if $message[0] == hello send message "Hello World!")
         """
         new_chunks = old_chunks.copy()
         while new_chunks:

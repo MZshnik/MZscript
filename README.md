@@ -170,6 +170,12 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$pyeval</td>
+<td align="right">-</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$guildInfo</td>
 <td align="right">+</td>
 <td align="center">-</td>
@@ -302,6 +308,18 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$value</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$options</td>
+<td align="right">-</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$defer</td>
 <td align="right">+</td>
 <td align="center">+</td>
@@ -386,13 +404,25 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$calculate</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$loop</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$updateCommands</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">+</td>
 </tr>
 <tr>
-<td>$calculate</td>
+<td>$docs</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -423,8 +453,7 @@ $endif
 - Documentation
 - Сontributing
 ## In the Future🚀
-- Most usefull $eval
-- $pyeval
+- Most usefull $eval/$pyeval
 - Support of mods
 
 #### Repository and first lines of code by [MZshnik](https://github.com/MZshnik)

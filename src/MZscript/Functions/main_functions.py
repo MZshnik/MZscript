@@ -13,7 +13,7 @@ class Functions(FunctionsHandler):
         """
         `$if[condition]`\n
         Compares 2 provided values between them
-        #### Example:
+        ### Example:
         `$if[$userInfo[id]==700061502089986139]`
         """
         if args.lower() == "true":
@@ -45,7 +45,7 @@ class Functions(FunctionsHandler):
         """
         `$elif[condition]`\n
         Copy of $if
-        #### Example:
+        ### Example:
         `$elif[$message[0]==hello]`
         """
         return await self.func_if(ctx, args)
@@ -54,7 +54,7 @@ class Functions(FunctionsHandler):
         """
         `$else`\n
         No args. Copy of $elif[true]
-        #### Example:
+        ### Example:
         `$if[$message==hello] $sendMessage[Hello!] $else $sendMessage[Password?] $endif`
         """
         return "$elif[true]"
@@ -66,7 +66,7 @@ class Functions(FunctionsHandler):
         """
         `$eval[code to eval]`\n
         Execute provided code
-        #### Example:
+        ### Example:
         `$eval[$sendMessage[$message]]`
         """
         chunks = await self.get_chunks(args)
@@ -76,6 +76,16 @@ class Functions(FunctionsHandler):
                 return await self.handler.client.run_code(args, ctx)
         else:
             return args
+
+    async def func_pyeval(self, ctx, args: str):
+        command = """for i in args:
+    for j in i:
+        globals()[j] = i[j]\n"""
+        command = "\n".join(["    "+i for i in (command+await self.is_have_functions(args, ctx)).split("\n")])
+        command = "async def __ex(args):\n"+command
+        exec(command, globals(), locals())
+        result = await locals()["__ex"]((globals(), locals()))
+        return result if result else ""
 
 def setup(handler):
     return Functions(handler)

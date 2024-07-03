@@ -12,9 +12,9 @@ class GuildInfo(FunctionsHandler):
     async def func_guildinfo(self, ctx: disnake.Message, args: str):
         """
         `$guildInfo[(guild);param]`
-        #### Example:
+        ### Example:
         `$guildInfo[name]`
-        #### Example 2:
+        ### Example 2:
         `$guildInfo[796504104565211187;icon]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)

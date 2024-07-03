@@ -12,9 +12,9 @@ class Functions(FunctionsHandler):
     async def func_message(self, ctx: disnake.Message, args: str = ""):
         """
         `$message[(arg number)]`
-        #### Example:
+        ### Example:
         `$message`
-        #### Example 2:
+        ### Example 2:
         `$message[0]`
         """
         if len(args) == 0:
@@ -24,7 +24,7 @@ class Functions(FunctionsHandler):
     async def func_text(self, ctx: disnake.Message, args: str):
         """
         `$text[text]`
-        #### Example:
+        ### Example:
         `$text[$sendMessage[this function like text]]`
         """
         return args
@@ -33,7 +33,7 @@ class Functions(FunctionsHandler):
         """
         `$customID`\n
         No args. Return $customID of component
-        #### Example:
+        ### Example:
         `$if[$customID==button1] $sendMessage[Button pressed] $endif`
         """
         return ctx.component.custom_id
@@ -43,35 +43,31 @@ class Functions(FunctionsHandler):
             return ctx.values[int(await self.get_args(await self.is_have_functions(args)))]
         return ctx.values[0]
 
+    async def func_options(self, inter: disnake.AppCmdInter, args: str):
+        print("Options:")
+        print(inter.data.options)
+        return inter.data.options
+
     async def func_defer(self, ctx: disnake.MessageInteraction, args: str = None):
         """
         `$defer`\n
         No args. Defer interaction
-        #### Example:
+        ### Example:
         `$defer $sendMessage[Button pressed]`
         """
         await ctx.response.defer()
         return ""
 
-    async def func_updatecommands(self, ctx, args: str = None):
-        """
-        `$updateCommands`\n
-        No args. Return nothing. Update code of command triggers
-        #### Example:
-        `$updateCommands $sendMessage[Commands updated]`
-        """
-        await self.handler.client.update_commands()
-
     async def func_calculate(self, ctx, args: str):
         """
         `$calculate[expression]`
-        #### Example:
+        ### Example:
         `$calculate[1+1]`
-        #### Example 2:
+        ### Example 2:
         `$calculate[$getVar[commands]+1]`
-        #### Example 3:
+        ### Example 3:
         `$calculate[2*2]`
-        #### Example 4:
+        ### Example 4:
         `$calculate[5*3/3+1]`
         """
         args = await self.is_have_functions(args, ctx)
@@ -93,10 +89,47 @@ class Functions(FunctionsHandler):
         else:
             raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
 
+    async def func_loop(self, ctx, args):
+        """
+        `$loop[condition;iteration code]`
+        ### Example:
+        `$var[set;msg;1]`\n
+        `$loop[$var[msg]==11111;`\n
+        `$var[set;gay;$var[msg]1]]`\n
+        `$sendMessage[$var[msg]]`
+        """
+        args_list = await self.get_args(args, ctx)
+        iteration_if = args_list[0]
+        iteration_message = args_list[1]
+        while (await self.is_have_functions(f"$if[{iteration_if}] $text[true] $else $text[false] $endif", ctx)).strip() == "false":
+            result = await self.is_have_functions(iteration_message, ctx)
+        return result if result else ""
+
+    async def func_updatecommands(self, ctx, args: str = None):
+        """
+        `$updateCommands`\n
+        No args. Return nothing. Update code of command triggers
+        ### Example:
+        `$updateCommands $sendMessage[Commands updated]`
+        """
+        await self.handler.client.update_commands()
+
+    async def func_docs(self, ctx, args: str):
+        """
+        `$docs[$func]`
+        ### Example:
+        `$docs[docs]`
+        """
+        func = await self.is_have_functions(args)
+        if "$"+func in self.funcs:
+            return self.funcs["$"+func].__doc__
+        else:
+            return ""
+
     async def func_console(self, ctx, args: str = None):
         """
         `$console[message]`
-        #### Example:
+        ### Example:
         `$console[Bot is ready]`
         """
         if args is None or len(args) == 0:

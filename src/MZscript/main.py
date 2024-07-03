@@ -19,11 +19,14 @@ class MZClient:
         else:
             raise ValueError("In intents you need to select \"all\" or \"default\" value")
         self.user_on_ready = on_ready
+        sync_commands = commands.CommandSyncFlags.default()
+        sync_commands.sync_commands_debug = debug_log
         self.user_commands = []
         self.user_command_names = []
         self.exec_on_start = []
+        self.user_slash_commands = []
         self.user_events = {"message": None, "button": None, "interaction": None}
-        self.bot = commands.InteractionBot(intents=intents)
+        self.bot = commands.InteractionBot(intents=intents, command_sync_flags=sync_commands)
         self.funcs = FunctionsCore(self, db_warns, debug_log, debug_console)
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
@@ -43,11 +46,11 @@ class MZClient:
         """
         ## Async run provided code
 
-        #### Args:
+        ### Args:
             code (`str`): Code with functions (example: `$getVar[prefix]`, `$if[1==1] $text[text1] $else $text[text2] $endif`)
             ctx (`disnake.Message`): Context, default is None
 
-        #### Returns:
+        ### Returns:
             `str`: result of executed functions
         """
         chunks = await self.funcs.get_chunks(code)
@@ -61,7 +64,7 @@ class MZClient:
         """
         ## Add command to handlering
 
-        #### Args:
+        ### Args:
             name (`str`): Trigger what execute command if any person type it in chat. Can execute functions like name of command `$getVar[prefix]help` and finale command name will be view like `!help`
             code (`str`): Code for execute when command invoked. For send message always use $sendMessage - plain text not send. Check docs for info about stable functions.
         """
@@ -71,6 +74,31 @@ class MZClient:
         for i in chunks:
             if i.startswith("$"):
                 self.exec_on_start.append(len(self.user_commands)-1)
+
+    def add_slash(self, name: str, code: str, description: str = None, options: list = None, onlyguild: bool = False, isnsfw: bool = False):
+        """
+        ## Add slash command
+
+        ### Args:
+            name (`str`): Equals "name" in add_command, name of slash.
+            code (`str`): Code for execute when command invoked.
+            description (`str`): Description for slash command.
+            options (`list`): List of options in slash command.
+            onlyguild (`bool`): Is slash can work only in guild, (by default) False if anywhere.
+            isnsfw (`bool`): Is slash can work only in NSFW channels.
+        """
+        self.bot.add_slash_command(
+            commands.InvokableSlashCommand(
+                func=self.on_slash,
+                name=name,
+                description=description,
+                options=options,
+                dm_permission=onlyguild,
+                nsfw=isnsfw,
+                auto_sync=True,
+                )
+            )
+        self.user_slash_commands.append([name, code])
 
     def load_command(self, path):
         try:
@@ -142,6 +170,13 @@ class MZClient:
         """
         if self.user_events["interaction"]:
             await self.run_code(self.user_events["interaction"], inter)
+
+    async def on_slash(self, inter: disnake.AppCmdInter):
+        for i in self.user_slash_commands:
+            if i[0] == inter.application_command.name:
+                # disnake.interactions.application_command.ApplicationCommandInteraction
+                # disnake.interactions.application_command.ApplicationCommandInteractionData
+                await self.run_code(i[1], inter)
 
     def run(self, token: str):
         self.bot.run(asyncio.run(self.funcs.is_have_functions(token)))

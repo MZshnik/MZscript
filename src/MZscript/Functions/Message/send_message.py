@@ -12,9 +12,9 @@ class Functions(FunctionsHandler):
     async def func_sendmessage(self, ctx: disnake.Message, args: str):
         """
         `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon;return id)]`
-        #### Example:
+        ### Example:
         `$sendMessage[hello]`
-        #### Example 2:
+        ### Example 2:
         `$sendMessage[$userInfo[dm];;Welcome!;Welcome to new guild "$guildInfo[name]";;;0058CF]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
@@ -28,16 +28,12 @@ class Functions(FunctionsHandler):
 
         channel = ctx.channel
         if args_list[0].isdigit() and len(args_list) > 1:
-            try:
-                channel = self.bot.get_channel(int(args_list[0]))
-                if not channel:
-                    channel = await self.bot.fetch_channel(int(args_list[0]))
-                if not channel:
-                    channel = ctx.channel
-                    args_list.insert(0, channel)
-            except Exception as e:
-                print(e)
-                raise SyntaxError(f"$sendMessage: Cannot find channel \"{args_list[0]}\"")
+            channel = self.bot.get_channel(int(args_list[0]))
+            if not channel:
+                channel = await self.bot.fetch_channel(int(args_list[0]))
+            if not channel:
+                channel = ctx.channel
+                args_list.insert(0, channel)
         else:
             args_list.insert(0, channel)
         embed = disnake.Embed()
@@ -64,17 +60,68 @@ class Functions(FunctionsHandler):
             elif style.lower() == "link":
                 style = disnake.ButtonStyle.link
             else:
-                raise ValueError("$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type.")
+                error_msg = "$sendMessage: #addButton: Style incorrect type\n\nPlease, select secondary/success/danger/primary or link type."
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
             view.add_item(disnake.ui.Button(style=style, label=label, disabled=disabled.lower() == "true", custom_id=custom_id, url=url, emoji=emoji, row=row))
 
         async def add_menu(entry: str):
             args_splitted = await self.get_args(await self.is_have_functions(entry), ctx)
             await self.exec_tags(args_splitted, {"#addoption": exec_option})
+            if len(args_splitted) < 2:
+                error_msg = "$sendMessage: #addMenu: Placeholder and/or customID does not set.\n\nPlease, provide it."
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
             placeholder = args_splitted[0]
             custom_id = args_splitted[1]
-            min_values = int(args_splitted[2]) if len(args_splitted[2]) != 0 else 1
-            max_values = int(args_splitted[3]) if len(args_splitted[3]) != 0 else 1
-            disabled = "true" if args_splitted[4].lower() == "true" else "false"
+            min_values = 1
+            if len(args_splitted) > 2 and len(args_splitted[2]) != 0:
+                if not args_splitted[2].isdigit():
+                    error_msg = "$sendMessage: #addMenu: Min. values argument incorrect type.\n\nPlease, check if you provide integer."
+                    if self.handler.debug_console:
+                        raise ValueError(error_msg)
+                    else:
+                        await ctx.channel.send(error_msg)
+                        return True
+                min_values = int(args_splitted[2])
+            max_values = 1
+            if len(args_splitted) > 3 and len(args_splitted[3]) != 0:
+                if not args_splitted[3].isdigit():
+                    error_msg = "$sendMessage: #addMenu: Max. values argument incorrect type.\n\nPlease, check if you provide integer."
+                    if self.handler.debug_console:
+                        raise ValueError(error_msg)
+                    else:
+                        await ctx.channel.send(error_msg)
+                        return True
+                if int(args_splitted[3]) < min_values:
+                    error_msg = "$sendMessage: #addMenu: Max. values argument most be grather or equals than min. value.\n\nPlease, set correct value."
+                    if self.handler.debug_console:
+                        raise ValueError(error_msg)
+                    else:
+                        await ctx.channel.send(error_msg)
+                        return True
+
+                max_values = int(args_splitted[3])
+            disabled = False
+            if len(args_splitted) > 4 and len(args_splitted[4]) != 0:
+                if args_splitted[4].lower() not in ["true", "false"]:
+                    error_msg = "$sendMessage: #addMenu: Incorrect value of disabled argument.\n\nPlease, check if yout provide true/false value."
+                    if self.handler.debug_console:
+                        raise ValueError(error_msg)
+                    else:
+                        await ctx.channel.send(error_msg)
+                        return True
+
+                disabled = args_splitted[4].lower() == "true"
+
             row = int(args_splitted[5]) if len(args_splitted[5]) != 0 else None
             options = []
 
@@ -157,7 +204,21 @@ class Functions(FunctionsHandler):
 
         if not embed.description:
             embed = None
-        message = await channel.send(content=content, embed=embed, view=view)
+        message = None
+        try:
+            if not isinstance(ctx, disnake.AppCmdInter) or channel != ctx.channel:
+                message = await channel.send(content=content, embed=embed, view=view)
+            else:
+                if embed:
+                    message = await ctx.send(content=content, embed=embed, view=view)
+                else:
+                    message = await ctx.send(content=content, view=view)
+        except disnake.errors.HTTPException as e:
+            if self.handler.debug_console:
+                print(f"$send Message: {e.text}")
+            else:
+                await ctx.channel.send(f"$sendMessage: {e.text}")
+            return True
         if isAddReaction:
             for i in reactions:
                 await message.add_reaction(i)

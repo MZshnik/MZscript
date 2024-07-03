@@ -12,7 +12,7 @@ class Functions(FunctionsHandler):
     async def func_hasrole(self, ctx: disnake.Message, args: str):
         """
         `$hasRole[(guild;user);role]`
-        #### Example:
+        ### Example:
         `$hasRole[855478215266533426]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))

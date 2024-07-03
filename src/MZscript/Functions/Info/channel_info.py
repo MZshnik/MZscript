@@ -12,9 +12,9 @@ class ChannelInfo(FunctionsHandler):
     async def func_channelinfo(self, ctx: disnake.Message, args: str):
         """
         `$channelInfo[(channel);param]`
-        #### Example:
+        ### Example:
         `$channelInfo[id]`
-        #### Example 2:
+        ### Example 2:
         `$channelInfo[951193622429184000;name]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)

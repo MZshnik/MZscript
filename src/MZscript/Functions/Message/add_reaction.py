@@ -12,7 +12,7 @@ class AddReaction(FunctionsHandler):
     async def func_addreaction(self, ctx: disnake.Message, args: str):
         """
         `$addReaction[(channel;message);emoji]`
-        #### Example:
+        ### Example:
         `$addReaction[😎]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx))

@@ -12,13 +12,13 @@ class Functions(FunctionsHandler):
     async def func_var(self, ctx, args: str):
         """
         `$var[(mode);name;(newvalue);time]`
-        #### Example:
+        ### Example:
         `$var[lastuser]`
-        #### Example 2:
+        ### Example 2:
         `$var[owner;global]`
-        #### Example 3:
+        ### Example 3:
         `$var[set;owner;$userInfo[id]]`
-        #### Example 4:
+        ### Example 4:
         `$var[del;owner;$userInfo[id];global]`
         """
         args_list = await self.get_args(await self.is_have_functions(args))
