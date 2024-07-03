@@ -120,9 +120,12 @@ class Functions(FunctionsHandler):
         ### Example:
         `$docs[docs]`
         """
-        func = await self.is_have_functions(args)
+        import re
+        func = re.sub("[[|]]", "", (await self.is_have_functions(args, ctx)).lower())
         if "$"+func in self.funcs:
-            return self.funcs["$"+func].__doc__
+            docs = self.funcs["$"+func].__doc__
+            docs = docs.replace("    ", "")
+            return self.funcs["$"+func].__doc__.replace("    ", "")
         else:
             return ""
 
