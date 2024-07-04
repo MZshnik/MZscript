@@ -4,7 +4,7 @@ class FunctionsHandler:
     #### Check docs for better explaining what you need to do if you want add command
     """
     def __init__(self):
-        # every function from this list need to have same self.func_functionname
+        # every function from this list need to have same self.func_functionname, else - warning in console
         self.all_funcs = [
             "$if",
             "$elif",
@@ -12,38 +12,38 @@ class FunctionsHandler:
             "$stop",
             "$eval",
             "$pyeval",
-
+            # info
             "$guildinfo",
             "$channelinfo",
             "$roleinfo",
             "$userinfo",
             "$hasrole",
-
+            # checks
             "$ismemberexists",
             "$isroleexists",
             "$isuserexists",
             "$isguildexists",
             "$isnumber",
-
+            # messages
             "$sendmessage",
             "$message",
             "$addreaction",
-            "$text",
-            "$replacetext",
-
+            # moderation
             "$ban",
             "$unban",
             "$kick",
-
+            # text
+            "$text",
+            "$replacetext",
             "$lowercase",
             "$uppercase",
             "$titlecase",
-
+            # interactions
             "$customid",
             "$value",
             "$options",
             "$defer",
-
+            # variables
             "$var",
             "$getvar",
             "$setvar",
@@ -57,7 +57,7 @@ class FunctionsHandler:
             "$getuservar",
             "$setuservar",
             "$deluservar",
-
+            # other
             "$calculate",
             "$loop",
             "$updatecommands",
@@ -73,23 +73,44 @@ class FunctionsHandler:
         # dict. with func names and func_<func-name> methods, generated automaticly
         self.funcs = {}
 
-    def sync_functions(self, functions):
+    def sync_functions(self, functions: dict):
+        """
+        ## Sync functions from FunctionCore original class
+        By default `self.funcs` is empty, and all function generated in main class FunctionCore.
+        After FunctionCore generate it, for i in FunctionsHandler copys invoke this methode with dictinary
+        """
         self.funcs = functions
 
-    async def is_have_functions(self, entry: str, ctx = None):
+    async def check_ifs(self, chunks: list):
         """
-        ## Check if entry text has functions to execute.
-        Usually used for execute arguments in functions like $sendMessage[$message] < $message is argument what will be executed
+        ## Check if all $if blocks closed or writed correctly
         ### Example:
-        ### Input `"Hello, and $message!"`
-        ### Output `"Hello, and welcome to the guild!"`
+        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye]"`
+        ### Output `(SyntaxError) The amount of $endif must be equal to the amount of $if`
         """
-        chunks = await self.get_chunks(entry)
-        for i in chunks:
-            if i.startswith("$"):
-                return await self.execute_chunks(chunks, ctx)
-        else:
-            return entry
+        ifs = 0
+        elses = 0
+        ends = 0
+        for func in self.logic_funcs:
+            for cmd in chunks:
+                if cmd.startswith(func):
+                    if func == "$if":
+                        ifs += 1
+                    elif func == "$elif":
+                        if ifs == 0:
+                            raise SyntaxError("$elif has been declared before $if")
+                    elif func == "$else":
+                        if ifs == 0:
+                            raise SyntaxError("$else has been declared before $if")
+                        elses += 1
+                    elif func == "$endif":
+                        if ifs == 0:
+                            raise SyntaxError("$endif has been declared before $if")
+                        ends += 1
+        if ifs != ends:
+            raise SyntaxError("The amount of $endif must be equal to the amount of $if")
+        if ifs < elses:
+            raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
     async def get_args(self, entry: str, ctx = None): # ctx not needed but many entrys what provide ctx
         """
@@ -145,37 +166,6 @@ class FunctionsHandler:
         if result:
             return result
         return ""
-
-    async def check_ifs(self, chunks: list):
-        """
-        ## Check if all $if blocks closed or writed correctly
-        ### Example:
-        ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye]"`
-        ### Output `(SyntaxError) The amount of $endif must be equal to the amount of $if`
-        """
-        ifs = 0
-        elses = 0
-        ends = 0
-        for func in self.logic_funcs:
-            for cmd in chunks:
-                if cmd.startswith(func):
-                    if func == "$if":
-                        ifs += 1
-                    elif func == "$elif":
-                        if ifs == 0:
-                            raise SyntaxError("$elif has been declared before $if")
-                    elif func == "$else":
-                        if ifs == 0:
-                            raise SyntaxError("$else has been declared before $if")
-                        elses += 1
-                    elif func == "$endif":
-                        if ifs == 0:
-                            raise SyntaxError("$endif has been declared before $if")
-                        ends += 1
-        if ifs != ends:
-            raise SyntaxError("The amount of $endif must be equal to the amount of $if")
-        if ifs < elses:
-            raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
     async def finds_function(self, entry: str, chunks: list):
         """
@@ -345,3 +335,18 @@ class FunctionsHandler:
                 if str(i).lower().startswith(tag.lower()):
                     await tags[tag](i[len(tag)+1:-1])
                     chunks.pop(counter)
+
+    async def is_have_functions(self, entry: str, ctx = None):
+        """
+        ## Check if entry text has functions to execute.
+        Usually used for execute arguments in functions like $sendMessage[$message] < $message is argument what will be executed
+        ### Example:
+        ### Input `"Hello, and $message!"`
+        ### Output `"Hello, and welcome to the guild!"`
+        """
+        chunks = await self.get_chunks(entry)
+        for i in chunks:
+            if i.startswith("$"):
+                return await self.execute_chunks(chunks, ctx)
+        else:
+            return entry

@@ -1,7 +1,10 @@
 # MZscript
 ## Improved BDFD interpreter in Python
 ### [Documentation](/docs/DOCS.md)
-#### [Docs site](https://mzscript.vercel.app)
+### [Docs site](https://mzscript.vercel.app)
+> [Repository](https://github.com/flash4ki/mzscriptdocs)
+### [Discord](https://discord.gg/gfix-bot-community-mz-796504104565211187)
+> for contact with @MZshnik ([mzshnik](https://discord.com/channels/@me/700061502089986139)/MZecker)
 ### [Contribution](/docs/CONTRIBUTING.md)
 #### Works on (tested) Python 3.10 and newer
 ## Instaling💻
