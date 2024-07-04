@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "MZscript"
-version = "0.1.7"
+version = "1.0.0"
 dependencies = [
   "disnake>=2.9.2"
 ]
@@ -14,9 +14,13 @@ authors = [
 ]
 description = "Improved BDFD interpreter in Python"
 readme = "README.md"
+license = {text = "MIT License"}
 classifiers = [
   "Programming Language :: Python"
 ]
 
 [project.urls]
 Homepage = "https://github.com/MZshnik/MZscript"
+Documentation = "https://mzscript.vercel.app/"
+Repository = "https://github.com/MZshnik/MZscript"
+Issues = "https://github.com/MZshnik/MZscript/issues"

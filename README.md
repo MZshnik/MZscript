@@ -450,6 +450,7 @@ $endif
 | -------- | ---- |
 |message | Activated when anyone send message |
 |button | Activated when anyone press button from bot |
+|interaction | Activated when anyone use interaction from bot (button/menu/slashe) |
 ## In Developing🔨
 - More functions from BDFD
 - More custom functions
