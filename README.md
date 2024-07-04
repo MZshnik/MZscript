@@ -1,5 +1,6 @@
 # MZscript
 ## Improved BDFD interpreter in Python
+### [PyPi](https://pypi.org/project/MZscript)
 ### [Documentation](/docs/DOCS.md)
 ### [Docs site](https://mzscript.vercel.app)
 > [Repository](https://github.com/flash4ki/mzscriptdocs)
@@ -9,11 +10,11 @@
 #### Works on (tested) Python 3.10 and newer
 ## Instaling💻
 ```
-pip install git+https://github.com/MZshnik/MZscript
+pip install MZscript
 ```
 ## Updating📥
 ```
-pip install --upgrade git+https://github.com/MZshnik/MZscript
+pip install --upgrade MZscript
 ```
 
 ## First steps🎉
