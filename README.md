@@ -245,6 +245,12 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$editMessage</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$addReaction</td>
 <td align="right">+</td>
 <td align="center">-</td>

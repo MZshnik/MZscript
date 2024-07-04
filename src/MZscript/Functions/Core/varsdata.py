@@ -21,7 +21,7 @@ class Functions(FunctionsHandler):
         ### Example 4:
         `$var[del;owner;$userInfo[id];global]`
         """
-        args_list = await self.get_args(await self.is_have_functions(args))
+        args_list = await self.get_args(await self.is_have_functions(args, ctx))
         time = "global" if args_list[-1] == "global" else "temp"
         result = None
         if args_list[0] not in ["get", "set", "del"]:

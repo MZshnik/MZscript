@@ -26,6 +26,7 @@ class FunctionsHandler:
             "$isnumber",
             # messages
             "$sendmessage",
+            "$editmessage",
             "$message",
             "$addreaction",
             # moderation
