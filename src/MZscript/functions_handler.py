@@ -31,6 +31,7 @@ class FunctionsHandler:
             "$addreaction",
             # administration
             "$addrole",
+            "$removerole",
             # moderation
             "$ban",
             "$unban",
