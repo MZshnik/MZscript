@@ -36,7 +36,7 @@ class GuildInfo(FunctionsHandler):
             args_list.insert(0, guild)
 
         params = {
-            "afk_channel": guild.afk_channel.id,
+            "afk_channel": "",
             "banner": guild.banner,
             "categories": guild.categories,
             "channels": guild.channels,
@@ -56,7 +56,6 @@ class GuildInfo(FunctionsHandler):
             "boosters": guild.premium_subscribers,
             "boosts": guild.premium_subscription_count,
             "boost_level": guild.premium_tier,
-            "region": guild.region,
             "rules_channel": guild.rules_channel.id,
             "safety_channel": guild.safety_alerts_channel.id,
             "stages": guild.stage_channels,
@@ -67,6 +66,8 @@ class GuildInfo(FunctionsHandler):
             "widget_channel": guild.widget_channel_id,
             "widget": guild.widget_enabled
         }
+        if guild.afk_channel:
+            params["afk_channel"] = guild.afk_channel.id
 
         return str(params[args_list[1]])
 

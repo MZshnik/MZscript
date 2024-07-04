@@ -29,6 +29,8 @@ class FunctionsHandler:
             "$editmessage",
             "$message",
             "$addreaction",
+            # administration
+            "$addrole",
             # moderation
             "$ban",
             "$unban",

@@ -42,7 +42,7 @@ class isRoleExists(FunctionsHandler):
             args_list.insert(1, guild)
 
         if not args_list[1].isdigit():
-            error_msg = f"$isRoleExists: Cannot find role \"{args_list[1]}\""
+            error_msg = f"$isRoleExists: Role id most be integer \"{args_list[1]}\""
             if self.handler.debug_console:
                 raise SyntaxError(error_msg)
             await ctx.channel.send(error_msg)
