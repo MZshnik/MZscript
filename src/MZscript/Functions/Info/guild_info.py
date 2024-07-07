@@ -52,14 +52,14 @@ class GuildInfo(FunctionsHandler):
             "name": guild.name,
             "ownerid": guild.owner.id,
             "boost_progress_bar": guild.premium_progress_bar_enabled,
-            "boost_role": guild.premium_subscriber_role.id,
+            "boost_role": "",
             "boosters": guild.premium_subscribers,
             "boosts": guild.premium_subscription_count,
             "boost_level": guild.premium_tier,
-            "rules_channel": guild.rules_channel.id,
-            "safety_channel": guild.safety_alerts_channel.id,
+            "rules_channel": "",
+            "safety_channel": "",
             "stages": guild.stage_channels,
-            "system_channel": guild.system_channel.id,
+            "system_channel": "",
             "sticker_limit": guild.sticker_limit,
             "stickers": guild.stickers,
             "verification_level": guild.verification_level,
@@ -68,6 +68,14 @@ class GuildInfo(FunctionsHandler):
         }
         if guild.afk_channel:
             params["afk_channel"] = guild.afk_channel.id
+        if guild.premium_subscriber_role:
+            params["boost_role"] = guild.premium_subscriber_role.id
+        if guild.rules_channel:
+            params["rules_channel"] = guild.rules_channel.id
+        if guild.safety_alerts_channel:
+            params["safet_channel"] = guild.safety_alerts_channel.id
+        if guild.system_channel:
+            params["system_channel"] = guild.system_channel.id
 
         return str(params[args_list[1]])
 
