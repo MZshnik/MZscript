@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: unit test
-        run:
+        run: |
           cd tests
           python -m unittest
           cd ../
