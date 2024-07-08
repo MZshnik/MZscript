@@ -1,23 +1,24 @@
 import asyncio
 import os
 import importlib.util
+import logging
 
 import disnake
 from disnake.ext import commands
 
-from .functions_collector import FunctionsCore
+from functions_collector import FunctionsCore
 
 
 class MZClient:
-    def __init__(self, intents: str = "all", on_ready: str = "$console[Bot is ready]", db_warns: bool = False, debug_log: bool = False, debug_console: bool = True):
-        if isinstance(intents, disnake.Intents):
-            pass
-        elif intents.lower() == "all":
-            intents = disnake.Intents.all()
-        elif intents.lower() == "default":
-            intents = disnake.Intents.default()
-        else:
-            raise ValueError("In intents you need to select \"all\" or \"default\" value")
+    def __init__(
+        self,
+        intents: str = "all",
+        on_ready: str = "$console[Bot is ready]",
+        db_warns: bool = False,
+        debug_log: bool = False,
+        debug_console: bool = True,
+    ):
+        self.intents = self._get_intents(intents)
         self.user_on_ready = on_ready
         sync_commands = commands.CommandSyncFlags.default()
         sync_commands.sync_commands_debug = debug_log
@@ -26,23 +27,36 @@ class MZClient:
         self.exec_on_start = []
         self.user_slash_commands = []
         self.user_events = {"message": None, "button": None, "interaction": None}
-        self.bot = commands.InteractionBot(intents=intents, command_sync_flags=sync_commands)
+        self.bot = commands.InteractionBot(
+            intents=self.intents, command_sync_flags=sync_commands
+        )
         self.funcs = FunctionsCore(self, db_warns, debug_log, debug_console)
+        self._register_listeners()
+
+    def _get_intents(self, intents: str) -> disnake.Intents:
+        if isinstance(intents, disnake.Intents):
+            return intents
+        elif intents.lower() == "all":
+            return disnake.Intents.all()
+        elif intents.lower() == "default":
+            return disnake.Intents.default()
+        else:
+            raise ValueError('Intents should be "all" or "default".')
+
+    def _register_listeners(self):
         self.bot.add_listener(self.on_ready, disnake.Event.ready)
         self.bot.add_listener(self.on_message, disnake.Event.message)
         self.bot.add_listener(self.on_button_click, disnake.Event.button_click)
-        self.bot.add_listener(self.on_intreaction, disnake.Event.interaction)
+        self.bot.add_listener(self.on_interaction, disnake.Event.interaction)
 
     async def update_commands(self):
-        """
-        ## Updating command names which have $function in the name.
-        ### Example input name: `$getVar[prefix]help`
-        ### Output: `!help`
-        """
+        """Update command names which have $function in the name."""
         for i in self.exec_on_start:
-            self.user_commands[i][0] = await self.funcs.is_have_functions(self.user_command_names[i], disnake.Message)
+            self.user_commands[i][0] = await self.funcs.is_have_functions(
+                self.user_command_names[i], disnake.Message
+            )
 
-    async def run_code(self, code: str, ctx: disnake.Message = None):
+    async def run_code(self, code: str, ctx: disnake.Message = None) -> str:
         """
         ## Async run provided code
 
@@ -56,9 +70,7 @@ class MZClient:
         chunks = await self.funcs.get_chunks(code)
         await self.funcs.check_ifs(chunks)
         chunks = await self.funcs.execute_chunks(chunks, ctx)
-        if chunks or len(chunks) > 0:
-            return "".join(chunks)
-        return "" 
+        return "".join(chunks) if chunks else ""
 
     def add_command(self, name: str, code: str):
         """
@@ -71,11 +83,19 @@ class MZClient:
         self.user_commands.append([name, code])
         self.user_command_names.append(name)
         chunks = asyncio.run(self.funcs.get_chunks(name))
-        for i in chunks:
-            if i.startswith("$"):
-                self.exec_on_start.append(len(self.user_commands)-1)
+        for chunk in chunks:
+            if chunk.startswith("$"):
+                self.exec_on_start.append(len(self.user_commands) - 1)
 
-    def add_slash(self, name: str, code: str, description: str = None, options: list = None, onlyguild: bool = False, isnsfw: bool = False):
+    def add_slash(
+        self,
+        name: str,
+        code: str,
+        description: str = None,
+        options: list = None,
+        onlyguild: bool = False,
+        isnsfw: bool = False,
+    ):
         """
         ## Add slash command
 
@@ -96,44 +116,34 @@ class MZClient:
                 dm_permission=onlyguild,
                 nsfw=isnsfw,
                 auto_sync=True,
-                )
             )
+        )
         self.user_slash_commands.append([name, code])
 
-    def load_command(self, path):
+    def load_command(self, path: str):
         try:
             spec = importlib.util.find_spec(path)
             lib = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(lib)
-        except:
-            print(f"Cannot import commands from path \"{path}\"")
-
-        try:
             lib.setup(self)
-        except:
-            print(f"Cannot find setup function for commands in \"{path}\"")
+        except ImportError:
+            logging.error(f'Cannot import commands from path "{path}"')
+        except AttributeError:
+            logging.error(f'Cannot find setup function for commands in "{path}"')
 
-    def load_commands(self, dir):
-        for folder in [i for i in os.walk(dir) if i != "__pycache__"]:
-            for file in [i for i in folder[2] if i.endswith(".py")]:
-                try:
-                    export = folder[0].replace("\\", ".")+"."+file[:-3]
-                    spec = importlib.util.find_spec(export)
-                    lib = importlib.util.module_from_spec(spec)
-                    spec.loader.exec_module(lib)
-                except:
-                    print(f"Cannot import commands from path \"{export}\"")
-
-                try:
-                    lib.setup(self)
-                except:
-                    print(f"Cannot find setup function for commands in \"{folder[0]}\"")
+    def load_commands(self, dir: str):
+        for folder, _, files in os.walk(dir):
+            if folder.endswith("__pycache__"):
+                continue
+            for file in files:
+                if file.endswith(".py"):
+                    self.load_command(os.path.join(folder, file))
 
     def add_event(self, name: str, code: str):
-        if name in self.user_events.keys():
+        if name in self.user_events:
             self.user_events[name] = code
         else:
-            raise SyntaxError(f"\"{name}\" event dosnot exists.")
+            raise ValueError(f'Event "{name}" does not exist.')
 
     async def on_ready(self):
         if self.user_on_ready:
@@ -150,10 +160,10 @@ class MZClient:
         if message.author.bot:
             return
         splitted_command = message.content.split(" ")
-        for i in self.user_commands:
-            if splitted_command[0] == i[0]:
+        for command_name, command_code in self.user_commands:
+            if splitted_command[0] == command_name:
                 message.content = " ".join(splitted_command[1:])
-                await self.run_code(i[1], message)
+                await self.run_code(command_code, message)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
         """
@@ -163,7 +173,7 @@ class MZClient:
         if self.user_events["button"]:
             await self.run_code(self.user_events["button"], inter)
 
-    async def on_intreaction(self, inter: disnake.MessageInteraction):
+    async def on_interaction(self, inter: disnake.MessageInteraction):
         """
         `interaction` event
         Executed when some of interactions(buttons/menus and etc.) are invoked
@@ -172,11 +182,9 @@ class MZClient:
             await self.run_code(self.user_events["interaction"], inter)
 
     async def on_slash(self, inter: disnake.AppCmdInter):
-        for i in self.user_slash_commands:
-            if i[0] == inter.application_command.name:
-                # disnake.interactions.application_command.ApplicationCommandInteraction
-                # disnake.interactions.application_command.ApplicationCommandInteractionData
-                await self.run_code(i[1], inter)
+        for name, code in self.user_slash_commands:
+            if name == inter.application_command.name:
+                await self.run_code(code, inter)
 
     def run(self, token: str):
         self.bot.run(asyncio.run(self.funcs.is_have_functions(token)))
