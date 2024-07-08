@@ -95,6 +95,7 @@ class FunctionsHandler:
         ifs = 0
         elses = 0
         ends = 0
+        raise SyntaxError("Test syntax error for github actions")
         for cmd in chunks:
             for func in self.logic_funcs:
                 if cmd.startswith(func):
