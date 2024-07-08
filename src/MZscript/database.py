@@ -1,7 +1,7 @@
 import json
 import os
-import aiosqlite
-import asyncio
+import sqlite3
+
 
 class Database:
     """
@@ -45,93 +45,98 @@ class Database:
             with open("variables.json", 'w') as f:
                 self.json = {"temp": {}, "global": {}}
                 json.dump(self.json, f, indent=4)
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.init_db())
-
-    async def init_db(self):
-        self.connection = await aiosqlite.connect("database.db")
-        self.cursor = await self.connection.cursor()
-        await self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(
+        self.connection = sqlite3.connect("database.db")
+        self.cursor = self.connection.cursor()
+        self.cursor.execute("""CREATE TABLE IF NOT EXISTS users(
             guild_id INT,
             user_id INT,
             var_name VARCHAR,
             var_value VARCHAR
             )""")
-        await self.connection.commit()
 
     async def get_json_var(self, key: str, time: str = "temp"):
-        return self.json[time].get(key, "")
+        if self.json[time].get(key):
+            return self.json[time][key]
+        return ""
 
     async def set_json_var(self, key: str, value, time: str = "temp"):
-        self.json[time][key] = str(value)
         with open("variables.json", 'w') as f:
+            self.json[time][key] = str(value)
             json.dump(self.json, f, indent=4)
 
     async def del_json_var(self, key: str, time: str = "temp"):
-        self.json[time].pop(key, None)
         with open("variables.json", 'w') as f:
+            self.json[time].pop(key)
             json.dump(self.json, f, indent=4)
 
     async def get_global_var(self, var_name: str):
-        async with self.connection.execute("SELECT var_value FROM users WHERE user_id = ? AND var_name = ? AND guild_id = ?", (0, var_name, 0)) as cursor:
-            result = await cursor.fetchone()
-            return result[0] if result else False
+        result = self.cursor.execute("SELECT var_value FROM users WHERE user_id = ? AND var_name = ? AND guild_id = ?", (0, var_name, 0)).fetchone()
+        if result:
+            return result[0]
+        else:
+            return False
 
     async def get_value_from_member(self, guild_id: str, user_id: int, var_name: str):
-        async with self.connection.execute("SELECT var_value FROM users WHERE guild_id = ? AND user_id = ? AND var_name = ?", (guild_id, user_id, var_name)) as cursor:
-            result = await cursor.fetchone()
-            return result[0] if result else False
+        result = self.cursor.execute("SELECT var_value FROM users WHERE guild_id = ? AND user_id = ? AND var_name = ?", (guild_id, user_id, var_name)).fetchone()
+        if result:
+            return result[0]
+        else:
+            return False
 
     async def get_value_from_guild(self, guild_id: int, var_name: str):
-        async with self.connection.execute("SELECT var_value FROM users WHERE guild_id = ? AND var_name = ? AND user_id = ?", (guild_id, var_name, 0)) as cursor:
-            result = await cursor.fetchone()
-            return result[0] if result else False
+        result = self.cursor.execute("SELECT var_value FROM users WHERE guild_id = ? AND var_name = ? AND user_id = ?", (guild_id, var_name, 0)).fetchone()
+        if result:
+            return result[0]
+        else:
+            return False
 
     async def get_value_from_user(self, user_id: int, var_name: str):
-        async with self.connection.execute("SELECT var_value FROM users WHERE user_id = ? AND var_name = ? AND guild_id = ?", (user_id, var_name, 0)) as cursor:
-            result = await cursor.fetchone()
-            return result[0] if result else False
+        result = self.cursor.execute("SELECT var_value FROM users WHERE user_id = ? AND var_name = ? AND guild_id = ?", (user_id, var_name, 0)).fetchone()
+        if result:
+            return result[0]
+        else:
+            return False
 
     async def set_global_var(self, var_name: str, var_value: str):
         if await self.get_global_var(var_name):
-            await self.connection.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, 0, 0))
+            self.cursor.execute("UPDATE users SET var_value = ? WHERE var_name = ?", (var_value, var_name))
         else:
-            await self.connection.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (0, 0, var_name, var_value))
-        await self.connection.commit()
+            self.cursor.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (0, 0, var_name, var_value))
+        self.connection.commit()
 
     async def set_value_of_member(self, guild_id: str, user_id: str, var_name: str, var_value: str):
         if await self.get_value_from_member(guild_id, user_id, var_name):
-            await self.connection.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, guild_id, user_id))
+            self.cursor.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, guild_id, user_id))
         else:
-            await self.connection.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (guild_id, user_id, var_name, var_value))
-        await self.connection.commit()
+            self.cursor.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (guild_id, user_id, var_name, var_value))
+        self.connection.commit()
 
     async def set_value_of_guild(self, guild_id: str, var_name: str, var_value: str):
         if await self.get_value_from_guild(guild_id, var_name):
-            await self.connection.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, guild_id, 0))
+            self.cursor.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, guild_id, 0))
         else:
-            await self.connection.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (guild_id, 0, var_name, var_value))
-        await self.connection.commit()
+            self.cursor.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (guild_id, 0, var_name, var_value))
+        self.connection.commit()
 
     async def set_value_of_user(self, user_id: str, var_name: str, var_value: str):
         if await self.get_value_from_user(user_id, var_name):
-            await self.connection.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, 0, user_id))
+            self.cursor.execute("UPDATE users SET var_value = ? WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_value, var_name, 0, user_id))
         else:
-            await self.connection.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (0, user_id, var_name, var_value))
-        await self.connection.commit()
+            self.cursor.execute("INSERT INTO users(guild_id, user_id, var_name, var_value) VALUES(?, ?, ?, ?)", (0, user_id, var_name, var_value))
+        self.connection.commit()
 
     async def del_global_var(self, var_name: str):
-        await self.connection.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, 0, 0))
-        await self.connection.commit()
+        self.cursor.execute("DELETE FROM users WHERE var_name = ?", (var_name))
+        self.connection.commit()
 
     async def del_value_of_member(self, guild_id: str, user_id: str, var_name: str):
-        await self.connection.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, user_id))
-        await self.connection.commit()
+        self.cursor.execute("DELETE FROM user WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, user_id))
+        self.connection.commit()
 
     async def del_value_of_guild(self, guild_id: str, var_name: str):
-        await self.connection.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, 0))
-        await self.connection.commit()
+        self.cursor.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, guild_id, 0))
+        self.connection.commit()
 
     async def del_value_of_user(self, user_id: str, var_name: str):
-        await self.connection.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, 0, user_id))
-        await self.connection.commit()
+        self.cursor.execute("DELETE FROM users WHERE var_name = ? AND guild_id = ? AND user_id = ?", (var_name, 0, user_id))
+        self.connection.commit()
