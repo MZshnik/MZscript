@@ -95,8 +95,8 @@ class FunctionsHandler:
         ifs = 0
         elses = 0
         ends = 0
-        for func in self.logic_funcs:
-            for cmd in chunks:
+        for cmd in chunks:
+            for func in self.logic_funcs:
                 if cmd.startswith(func):
                     if func == "$if":
                         ifs += 1
@@ -191,7 +191,7 @@ class FunctionsHandler:
                     return entry[len(addCommand):]
             elif (addCommand+i).lower() in self.no_arg_funcs or (addCommand+i).lower() in ["$stop", "$endif"] or ((addCommand+i).lower() in self.can_be_no_arg and len(addCommand+i)==len(entry)):
                 if (addCommand+i).lower() == "$else":
-                    chunks.append((addCommand+i).replace("$else", "$elif[True]"))
+                    chunks.append((addCommand+i).replace("$else", "$elif[true]"))
                 else:
                     chunks.append(addCommand+i)
                 return entry[len(addCommand):]
@@ -205,7 +205,7 @@ class FunctionsHandler:
         ## Return all chunks of code by splitting it with $ and []
         ### Example:
         ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
-        ### Output `["$if[$message[0]==hello]", "$sendMessage[Hello World!]", "$else", "$sendMessage[Bye bye]", "$endif"]`
+        ### Output `["$if[$message[0]==hello]", " ", "$sendMessage[Hello World!]", " ", "$else", " ", "$sendMessage[Bye bye]", " ", "$endif"]`
         """
         chunks = []
         checkCommands = True

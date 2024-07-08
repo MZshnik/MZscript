@@ -20,7 +20,7 @@ etc.
 - ### $elif
 > $else but with conditione like $if
 - ### $else
-$else uses for say to code what if $if return False, we go to block of $else. You dont see, but $else is $elif[True] in the library code. If $if return True - code from block $else to $endif disappear. It is works with $elif but if $elif return False - all block from $if to $endif disappears. 
+$else uses for say to code what if $if return False, we go to block of $else. You dont see, but $else is $elif[true] in the library code. If $if return True - code from block $else to $endif disappear. It is works with $elif but if $elif return False - all block from $if to $endif disappears. 
 - ### $endif
 Needs for end $if block. If you write $if - you need to write after him $endif. Its necessary.
 
