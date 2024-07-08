@@ -6,9 +6,10 @@ class TestHandler(unittest.IsolatedAsyncioTestCase):
         funcs = FunctionsHandler()
         check_ifs = funcs.check_ifs
         get_chunks = funcs.get_chunks
-        result = await get_chunks("$endif $if[1!=1] $console[Okay] $console[Good] $else")
-        self.assertEqual(result, ["$endif", " ", "$if[1!=1]", " ", "$console[Okay]", " ", "$console[Good]", " ", "$elif[True]"])
-        await check_ifs(result)
+        # result = await get_chunks("$endif $if[1!=1] $console[Okay] $console[Good] $else")
+        # self.assertEqual(result, ["$endif", " ", "$if[1!=1]", " ", "$console[Okay]", " ", "$console[Good]", " ", "$elif[True]"])
+        # await check_ifs(result)
+        raise SyntaxError("гитхаб")
 
         result = await get_chunks("$if[1==1] $console[Okay] $else $console[Good] $endif")
         self.assertEqual(result, ["$if[1==1]", " ", "$console[Okay]", " ", "$elif[True]", " ", "$console[Good]", " ", "$endif"])
