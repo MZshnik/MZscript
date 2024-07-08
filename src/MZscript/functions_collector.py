@@ -1,5 +1,7 @@
 import inspect
 import os
+import logging
+import importlib.util
 
 from .database import Database
 from .Functions import *
@@ -14,30 +16,41 @@ class FunctionsCore(FunctionsHandler):
         self.debug_console = debug_console
         self.client = client
         self.database = Database()
+        self.funcs = {}
         self.load_functions()
 
     def load_functions(self):
         functions = []
-        tempmods = []
-        self.all_funcs = [i.lower() for i in self.all_funcs]
-        for i in os.walk(os.path.dirname(__file__)+"/Functions"):
-            for j in i[2]:
-                if j.endswith(".py") and j != "__init__.py":
-                    exec(f"""
-tempmod = {j[:-3]}.setup(self)
-tempmods.append(tempmod)
-for k in inspect.getmembers(tempmod, inspect.ismethod):
-    functions.append(k)""")
-        for line in self.all_funcs:
-            try:
-                for i in functions:
-                    if i[0][5:].lower() == line[1:]:
-                        self.funcs[line] = i[1]
-                        break
-                else:
-                    print(f"WARNING: For function \"{line}\" not exists command found.")
-            except NameError as e:
-                print(f"WARNING: For function \"{line}\" not exists command found.")
+        modules = []
+        self.all_funcs = [func.lower() for func in self.all_funcs]
+
+        functions_path = os.path.join(os.path.dirname(__file__), "Functions")
+        for root, _, files in os.walk(functions_path):
+            for file in files:
+                if file.endswith(".py") and file != "__init__.py":
+                    module_name = file[:-3]
+                    module_path = os.path.join(root, file)
+                    spec = importlib.util.spec_from_file_location(module_name, module_path)
+                    if spec and spec.loader:
+                        module = importlib.util.module_from_spec(spec)
+                        spec.loader.exec_module(module)
+                        modules.append(module)
+
+                        if hasattr(module, 'setup'):
+                            module.setup(self)
+
+                        for name, method in inspect.getmembers(module, inspect.isfunction):
+                            functions.append((name, method))
+
+        for func_name in self.all_funcs:
+            func_key = func_name[1:]
+            matched_func = next((method for name, method in functions if name.lower() == func_key), None)
+            if matched_func:
+                self.funcs[func_name] = matched_func
+            else:
+                logging.warning(f'WARNING: No command found for function "{func_name}".')
+
         self.sync_functions(self.funcs)
-        for i in tempmods:
-            i.sync_functions(self.funcs)
+        for module in modules:
+            if hasattr(module, 'sync_functions'):
+                module.sync_functions(self.funcs)
