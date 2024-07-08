@@ -23,6 +23,7 @@ jobs:
       - name: unit test
         run: |
           cd tests
+          python --version
           python -m unittest
           cd ../
       - name: build project
