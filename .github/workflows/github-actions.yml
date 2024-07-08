@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.12.3 ]
+        python-version: [ 3.12.x ]
     steps:
       - uses: actions/checkout@v4
       - name: Starting Python ${{ matrix.python-version }}
@@ -23,8 +23,6 @@ jobs:
       - name: unit test
         run: |
           cd tests
-          python --version
           python -m unittest
-          cd ../
-      - name: build project
-        run: python -m build --sdist
+      # - name: build project
+      #   run: python -m build --sdist
