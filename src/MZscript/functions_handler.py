@@ -76,7 +76,7 @@ class FunctionsHandler:
         if ifs < elses:
             raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
-    async def get_args(self, entry: str, ctx=None):  # ctx not needed but many entries provide ctx
+    async def get_args(self, entry: str, ctx = None):  # ctx not needed but many entries provide ctx
         """
         ## Gets args from function
         ### Example:

@@ -52,5 +52,20 @@ class TestHandler(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, ["$console[Okay]"])
         self.assertEqual(await check_ifs(result), None)
 
+    async def test_get_args(self):
+        funcs = FunctionsHandler()
+        get_args = funcs.get_args
+        self.assertEqual(await get_args("1234567890987654321;Hello World!"), ["1234567890987654321", "Hello World!"])
+        self.assertEqual(await get_args("$sendMessage[];Hello World!"), ["$sendMessage[]", "Hello World!"])
+        self.assertEqual(await get_args("$sendMessage;Hello World!"), ["$sendMessage", "Hello World!"])
+        self.assertEqual(await get_args("Hello World!;$sendMessage[]"), ["Hello World!", "$sendMessage[]"])
+        self.assertEqual(await get_args("Hello World!;$sendMessage"), ["Hello World!", "$sendMessage"])
+        self.assertEqual(await get_args("Hello World!;$sendMessage[]!"), ["Hello World!", "$sendMessage[]!"])
+        self.assertEqual(await get_args("Hello World!;$sendMessage!"), ["Hello World!", "$sendMessage!"])
+        self.assertEqual(await get_args("Hello World!;$sendMessage;;"), ["Hello World!", "$sendMessage", ""])
+        self.assertEqual(await get_args(";;Hello World!;$sendMessage"), ["", "", "Hello World!", "$sendMessage"])
+        self.assertEqual(await get_args(";Hello World!;$sendMessage!;"), ["", "Hello World!", "$sendMessage!"])
+        self.assertEqual(await get_args(" ;Hello World!;$sendMessage!; "), [" ", "Hello World!", "$sendMessage!", " "])
+
 if __name__ == "__main__":
     unittest.main()
