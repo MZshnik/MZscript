@@ -111,6 +111,7 @@ class FunctionsHandler:
                         if ifs == 0:
                             raise SyntaxError("$endif has been declared before $if")
                         ends += 1
+                    break
         if ifs != ends:
             raise SyntaxError("The amount of $endif must be equal to the amount of $if")
         if ifs < elses:
