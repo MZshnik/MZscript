@@ -121,7 +121,7 @@ class Functions(FunctionsHandler):
         `$docs[docs]`
         """
         import re
-        func = re.sub("[[|]]", "", (await self.is_have_functions(args, ctx)).lower())
+        func = re.sub(r"\[\[|\]\]", "", (await self.is_have_functions(args, ctx)).lower())
         if "$"+func in self.funcs:
             docs = self.funcs["$"+func].__doc__
             docs = docs.replace("    ", "")
