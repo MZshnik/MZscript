@@ -95,7 +95,7 @@ class MZClient:
         options: list = None,
         onlyguild: bool = False,
         isnsfw: bool = False,
-        ):
+    ):
         """
         ## Add slash command
 
@@ -116,8 +116,8 @@ class MZClient:
                 dm_permission=onlyguild,
                 nsfw=isnsfw,
                 auto_sync=True,
-                )
             )
+        )
         self.user_slash_commands.append([name, code])
 
     def load_command(self, path: str):
