@@ -443,6 +443,12 @@ $endif
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
+<tr>
+<td>$request</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
 </tbody>
 </table>
 <p>Full support means is function 100% works/tested</p>
