@@ -25,7 +25,7 @@ class FunctionsHandler:
             "$var", "$getvar", "$setvar", "$delvar", "$getmembervar", "$setmembervar", "$delmembervar",
             "$getguildvar", "$setguildvar", "$delguildvar", "$getuservar", "$setuservar", "$deluservar",
             # other
-            "$calculate", "$loop", "$updatecommands", "$docs", "$console"
+            "$calculate", "$loop", "$updatecommands", "$docs", "$console", "$request",
         ]
         # don't touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
