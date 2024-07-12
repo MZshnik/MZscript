@@ -8,7 +8,7 @@ class FunctionsHandler:
         self.all_funcs = [
             "$if", "$elif", "$else", "$stop", "$eval", "$pyeval",
             # info
-            "$guildinfo", "$channelinfo", "$roleinfo", "$userinfo", "$hasrole",
+            "$botinfo", "$guildinfo", "$channelinfo", "$roleinfo", "$userinfo", "$hasrole",
             # checks
             "$ismemberexists", "$isroleexists", "$isuserexists", "$isguildexists", "$isnumber",
             # messages
@@ -25,14 +25,14 @@ class FunctionsHandler:
             "$var", "$getvar", "$setvar", "$delvar", "$getmembervar", "$setmembervar", "$delmembervar",
             "$getguildvar", "$setguildvar", "$delguildvar", "$getuservar", "$setuservar", "$deluservar",
             # other
-            "$calculate", "$loop", "$updatecommands", "$docs", "$console", "$request"
+            "$calculate", "$wait", "$loop", "$for", "$updatecommands", "$uptime", "$docs", "$console", "$request"
         ]
         # don't touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         # add if func don't want to get args with []
         self.no_arg_funcs = ["$else", "$stop", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
-        self.can_be_no_arg = ["$message", "$updatecommands", "$value"]
+        self.can_be_no_arg = ["$message", "$value", "$updatecommands", "$uptime"]
         # dict. with func names and func_<func-name> methods, generated automatically
         self.funcs = {}
 
@@ -76,13 +76,15 @@ class FunctionsHandler:
         if ifs < elses:
             raise SyntaxError("The amount of $else must be equal or lower to the amount of $if")
 
-    async def get_args(self, entry: str, ctx = None): # ctx not needed but many entrys what provide ctx
+    async def get_args(self, entry, ctx = None): # ctx not needed but many entrys what provide ctx
         """
         ## Gets args from function
         ### Example:
         ### Input `"1234567890987654321;Hello World!"`
         ### Output `["1234567890987654321", "Hello World!"]`
         """
+        if not isinstance(entry, str):
+            return entry
         args_list = []
         brackets = 0
         while len(entry) > 0:
@@ -284,12 +286,31 @@ class FunctionsHandler:
                             del new_chunks[count-1:]
                             while new_chunks.count("") > 0:
                                 new_chunks.remove("")
-                            return "".join(new_chunks)
+
+                            result = None
+                            try:
+                                result = "".join(new_chunks)
+                            except:
+                                if len(new_chunks) > 1:
+                                    result = new_chunks
+                                else:
+                                    return new_chunks[0]
+                            return result
             else:
                 break
+
         while new_chunks.count("") > 0:
             new_chunks.remove("")
-        return "".join(new_chunks)
+
+        result = None
+        try:
+            result = "".join(new_chunks)
+        except:
+            if len(new_chunks) > 1:
+                result = new_chunks
+            else:
+                return new_chunks[0]
+        return result
 
     async def exec_tags(self, chunks: list, tags: list):
         counter = len(chunks)
@@ -311,6 +332,10 @@ class FunctionsHandler:
         chunks = await self.get_chunks(entry)
         for i in chunks:
             if i.startswith("$"):
-                return await self.execute_chunks(chunks, ctx)
+                result = await self.execute_chunks(chunks, ctx)
+                if type(result) in [str, int, float]:
+                    return str(result)
+                else:
+                    return result
         else:
             return entry

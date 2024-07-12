@@ -1,3 +1,5 @@
+import asyncio
+
 import disnake
 
 from ..functions_handler import FunctionsHandler
@@ -44,8 +46,8 @@ class Functions(FunctionsHandler):
         return ctx.values[0]
 
     async def func_options(self, inter: disnake.AppCmdInter, args: str):
-        print("Options:")
-        print(inter.data.options)
+        # print("Options:")
+        # print(inter.data.options)
         return inter.data.options
 
     async def func_defer(self, ctx: disnake.MessageInteraction, args: str = None):
@@ -81,7 +83,7 @@ class Functions(FunctionsHandler):
 
         if check_expression(args.strip()):
             try:
-                # add support in future
+                # TODO: add support in future:
                 from math import sqrt, ceil, floor
                 return str(eval(args.strip()))
             except:
@@ -89,7 +91,51 @@ class Functions(FunctionsHandler):
         else:
             raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
 
-    async def func_loop(self, ctx, args):
+    async def func_wait(self, ctx, args: str):
+        """
+        `$wait[delay;(format)]`
+        ### Example:
+        `$wait[2]`
+        ### Example 2:
+        `$wait[1;m]`
+        ### Example 3:
+        `$wait[30;s]`
+        """
+        args_list = await self.get_args(await self.is_have_functions(args))
+        if len(args_list) > 2 or len(args_list) == 0:
+            error_msg = "$wait: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        is_float = False
+        try:
+            float(args_list[0])
+            is_float = True
+        except:
+            pass
+
+        if not args_list[0].isdigit() and not is_float:
+            error_msg = f"$wait: First argument most be integer: \"{args_list[0]}\""
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        if len(args_list) > 1:
+            if args_list[1] not in ['s', 'm', 'h', 'd']:
+                error_msg = f"$wait: Unsupported time format \"{args_list[1]}\". Select: s, m, h or d"
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+        else:
+            args_list.append('s')
+
+        await asyncio.sleep(int(args_list[0]) * {'s': 1, 'm': 60, 'h': 60*60, 'd': 60*60*24}[args_list[1]])
+
+    async def func_loop(self, ctx, args: str):
         """
         `$loop[condition;iteration code]`
         ### Example:
@@ -99,11 +145,41 @@ class Functions(FunctionsHandler):
         `$sendMessage[$var[msg]]`
         """
         args_list = await self.get_args(args, ctx)
+        if len(args_list) != 3:
+            error_msg = f"$loop: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
         iteration_if = args_list[0]
         iteration_message = args_list[1]
         while (await self.is_have_functions(f"$if[{iteration_if}] $text[true] $else $text[false] $endif", ctx)).strip() == "false":
             result = await self.is_have_functions(iteration_message, ctx)
         return result if result else ""
+
+    async def func_for(self, ctx, args: str):
+        """
+        `$for[iterator name;list;iteration code]`
+        ### Example:
+        `$for[i;`\n
+        `$var[somelist];`\n
+        `$console[$var[i]]]`
+        """
+        args_list = await self.get_args(args, ctx)
+        if len(args_list) != 3:
+            error_msg = f"$for: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        result = await self.is_have_functions(args_list[1])
+        for i in list(result):
+            await self.handler.database.set_json_var(args_list[0], i)
+            await self.is_have_functions(args_list[2])
+        await self.handler.database.del_json_var(args_list[0])
+        return ""
 
     async def func_updatecommands(self, ctx, args: str = None):
         """
@@ -113,6 +189,9 @@ class Functions(FunctionsHandler):
         `$updateCommands $sendMessage[Commands updated]`
         """
         await self.handler.client.update_commands()
+
+    async def func_uptime(self, ctx, args: str = None):
+        return self.handler.python_vars["uptime"]
 
     async def func_docs(self, ctx, args: str):
         """
@@ -136,7 +215,7 @@ class Functions(FunctionsHandler):
         `$console[Bot is ready]`
         """
         if args is None or len(args) == 0:
-            return
+            return ""
         print(await self.is_have_functions(args, ctx))
 
 def setup(handler):

@@ -86,10 +86,7 @@ class MZClient:
         ### Returns:
             `str`: result of executed functions
         """
-        chunks = await self.funcs.get_chunks(code)
-        await self.funcs.check_ifs(chunks)
-        chunks = await self.funcs.execute_chunks(chunks, ctx)
-        return "".join(chunks) if chunks else ""
+        await self.funcs.is_have_functions(code)
 
     def add_command(self, name: str, code: str):
         """

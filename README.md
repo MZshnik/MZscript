@@ -180,6 +180,12 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$botInfo</td>
+<td align="right">-</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$guildInfo</td>
 <td align="right">+</td>
 <td align="center">-</td>
@@ -420,13 +426,32 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<tr>
+<td>$wait</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$loop</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$for</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$updateCommands</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">+</td>
+</tr>
+<tr>
+<td>$uptime</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">+</td>
