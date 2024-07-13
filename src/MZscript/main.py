@@ -86,7 +86,7 @@ class MZClient:
         ### Returns:
             `str`: result of executed functions
         """
-        await self.funcs.is_have_functions(code)
+        await self.funcs.is_have_functions(code, ctx)
 
     def add_command(self, name: str, code: str):
         """

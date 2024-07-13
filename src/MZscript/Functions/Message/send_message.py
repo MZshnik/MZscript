@@ -11,7 +11,7 @@ class Functions(FunctionsHandler):
 
     async def func_sendmessage(self, ctx: disnake.Message, args: str):
         """
-        `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon;return id)]`
+        `$sendMessage[(channel;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon;return id or is ephemeral)]`
         ### Example:
         `$sendMessage[hello]`
         ### Example 2:
@@ -36,6 +36,7 @@ class Functions(FunctionsHandler):
                 args_list.insert(0, channel)
         else:
             args_list.insert(0, channel)
+
         embed = disnake.Embed()
         view = disnake.ui.View(timeout=None)
 
@@ -152,9 +153,15 @@ class Functions(FunctionsHandler):
             view.add_item(NewMenu())
 
         async def add_field(entry: str):
-            args_splitted = await self.get_args(entry, ctx)
+            args_splitted = await self.get_args(entry)
             if len(args_splitted) < 2:
-                raise ValueError("$sendMessage: #addField: Name and value of field are required.")
+                error_msg = "$sendMessage: #addField: Name and value of field are required."
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
             inline = False
             if len(args_splitted) > 2:
                 inline = args_splitted[2].lower() == "true"
@@ -167,11 +174,94 @@ class Functions(FunctionsHandler):
             isAddReaction = True
             reactions.append(entry)
 
+        is_reply = None
+        async def reply_to(entry: str):
+            args_splitted = await self.get_args(entry)
+            if len(args_splitted) > 2:
+                error_msg = "$sendMessage: #reply: Too many args provided."
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
+            channel = ctx.channel
+            if args_list[0].isdigit() and len(args_list) > 2:
+                channel = self.bot.get_channel(int(args_list[0]))
+                if not channel:
+                    channel = await self.bot.fetch_channel(int(args_list[0]))
+                if not channel:
+                    channel = ctx.channel
+                    args_list.insert(0, channel)
+            else:
+                args_list.insert(0, channel)
+
+            message = None
+            error_msg = f"$sendMessage: #reply: Cannot find message \"{args_list[1]}\""
+            try:
+                message = self.bot.get_message(int(args_list[1]))
+                if not message:
+                    message = await channel.fetch_message(int(args_list[1]))
+                if not message:
+                    if self.handler.debug_console:
+                        raise SyntaxError(error_msg)
+                    else:
+                        await ctx.channel.send(error_msg)
+                        return True
+            except:
+                if self.handler.debug_console:
+                    raise SyntaxError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
+            nonlocal is_reply
+            is_reply = message
+
+        is_delete = None
+        async def delete_in(entry: str):
+            args_splitted = await self.get_args(entry)
+            if len(args_splitted) > 2 or len(args_splitted) == 0:
+                error_msg = "$sendMessage: #вудуеу: Too many args provided."
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                else:
+                    await ctx.channel.send(error_msg)
+                    return True
+
+            is_float = False
+            try:
+                float(args_list[0])
+                is_float = True
+            except:
+                pass
+
+            if not args_list[0].isdigit() and not is_float:
+                error_msg = f"$sendMessage: #deleteIn: First argument most be integer: \"{args_list[0]}\""
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+
+            if len(args_list) > 1:
+                if args_list[1] not in ['s', 'm', 'h', 'd']:
+                    error_msg = f"$sendMessage: #deleteIn: Unsupported time format \"{args_list[1]}\". Select: s, m, h or d"
+                    if self.handler.debug_console:
+                        raise ValueError(error_msg)
+                    await ctx.channel.send(error_msg)
+                    return True
+            else:
+                args_list.append('s')
+            nonlocal is_delete
+            is_delete = int(args_list[0]) * {'s': 1, 'm': 60, 'h': 60*60, 'd': 60*60*24}[args_list[1]]
+
         tag_funcs = {
             "#addfield": add_field,
             "#addbutton": add_button,
             "#addmenu": add_menu,
-            "#addreaction": add_reaction
+            "#addreaction": add_reaction,
+            "#reply": reply_to,
+            "#deletein": delete_in 
             }
         await self.exec_tags(args_list, tag_funcs)
         content = None
@@ -204,17 +294,17 @@ class Functions(FunctionsHandler):
         if len(args_list) > 12 and len(args_list[12]) > 0:
             return_id = True
 
-        if not embed.description:
+        if len(embed.to_dict()) < 2:
             embed = None
         message = None
         try:
-            if not isinstance(ctx, disnake.AppCmdInter) or channel != ctx.channel:
-                message = await channel.send(content=content, embed=embed, view=view)
+            if is_reply:
+                message = await is_reply.reply(content=content, embed=embed, view=view)
             else:
-                if embed:
-                    message = await ctx.send(content=content, embed=embed, view=view)
+                if isinstance(ctx, disnake.AppCmdInter) and return_id:
+                    message = await disnake.AppCmdInter.send(content=content, embed=embed, view=view, ephemeral=True, delete_after=is_delete)
                 else:
-                    message = await ctx.send(content=content, view=view)
+                    message = await channel.send(content=content, embed=embed, view=view, delete_after=is_delete)
         except disnake.errors.HTTPException as e:
             if self.handler.debug_console:
                 print(f"$sendMessage: {e.text}")
@@ -224,7 +314,7 @@ class Functions(FunctionsHandler):
         if isAddReaction:
             for i in reactions:
                 await message.add_reaction(i)
-        if return_id:
+        if return_id and not isinstance(ctx, disnake.AppCmdInter):
             return str(message.id)
 
 def setup(handler):

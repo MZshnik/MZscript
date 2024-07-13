@@ -11,7 +11,7 @@ class Functions(FunctionsHandler):
 
     async def func_editmessage(self, ctx, args: str):
         """
-        `$editMessage[(channel;message;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon;return id)]`
+        `$editMessage[(channel;message;content;title;description;footer;footer icon;color;thumbnail;image;author;author url;author icon)]`
         ### Example:
         `$editMessage[hello]`
         ### Example 2:
@@ -61,7 +61,7 @@ class Functions(FunctionsHandler):
         view = disnake.ui.View(timeout=None)
 
         async def add_button(entry: str):
-            args_splitted = await self.get_args(entry, ctx)
+            args_splitted = await self.get_args(entry)
             style = args_splitted[0]
             label = args_splitted[1]
             disabled = args_splitted[2]
@@ -225,11 +225,8 @@ class Functions(FunctionsHandler):
             if len(args_list) > 12 and len(args_list[12]) > 0:
                 icon_url = args_list[12]
             embed.set_author(name=args_list[10], url=url, icon_url=icon_url)
-        return_id = False
-        if len(args_list) > 13 and len(args_list[13]) > 0:
-            return_id = True
 
-        if not embed.description:
+        if len(embed.to_dict()) < 2:
             embed = None
         try:
             if not isinstance(ctx, disnake.AppCmdInter):
@@ -248,8 +245,6 @@ class Functions(FunctionsHandler):
         if isAddReaction:
             for i in reactions:
                 await message.add_reaction(i)
-        if return_id:
-            return message.id
 
 def setup(handler):
     return Functions(handler)

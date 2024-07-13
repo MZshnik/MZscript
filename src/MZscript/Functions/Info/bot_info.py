@@ -31,7 +31,8 @@ class BotInfo(FunctionsHandler):
             "id": info.id,
             "owner": info.owner.id,
             "guilds": len(self.bot.guilds),
-            "users": len([j for i in self.bot.guilds for j in i.members])
+            "users": len([j for i in self.bot.guilds for j in i.members]),
+            "ping": int(self.bot.latency * 1000)
         }
 
         return str(params[args_list[0]])
