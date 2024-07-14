@@ -18,21 +18,22 @@ class FunctionsHandler:
             # moderation
             "$ban", "$unban", "$kick",
             # text
-            "$text", "$replacetext", "$lowercase", "$uppercase", "$titlecase",
+            "$text", "$charcount", "$lowercase", "$replacetext", "$titlecase", "$uppercase",
             # interactions
             "$customid", "$value", "$options", "$defer",
             # variables
             "$var", "$getvar", "$setvar", "$delvar", "$getmembervar", "$setmembervar", "$delmembervar",
             "$getguildvar", "$setguildvar", "$delguildvar", "$getuservar", "$setuservar", "$deluservar",
             # other
-            "$calculate", "$wait", "$loop", "$for", "$updatecommands", "$uptime", "$docs", "$console", "$request"
+            "$request", "$random", "$calculate", "$gettimestamp", "$wait",
+            "$loop", "$for", "$updatecommands", "$uptime", "$docs", "$console"
         ]
         # don't touch this list
         self.logic_funcs = ["$if", "$elif", "$else", "$endif"]
         # add if func don't want to get args with []
         self.no_arg_funcs = ["$else", "$stop", "$customid", "$defer"]
         # if func can be on arg or with args - add it here
-        self.can_be_no_arg = ["$message", "$value", "$updatecommands", "$uptime"]
+        self.can_be_no_arg = ["$message", "$value", "$gettimestamp", "$updatecommands", "$uptime"]
         # dict. with func names and func_<func-name> methods, generated automatically
         self.funcs = {}
 

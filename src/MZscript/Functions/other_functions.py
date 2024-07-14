@@ -1,8 +1,10 @@
 import asyncio
+import random
 
 import disnake
 
 from ..functions_handler import FunctionsHandler
+from datetime import datetime
 
 
 class Functions(FunctionsHandler):
@@ -60,6 +62,32 @@ class Functions(FunctionsHandler):
         await ctx.response.defer()
         return ""
 
+    async def func_random(self, ctx, args: str):
+        """
+        `$random[start;stop;(step;float numbers count)]`
+        ### Example:
+        `$random[0;100]`
+        """
+        args_list = await self.get_args(await self.is_have_functions(args))
+        if len(args_list) > 4 or len(args_list) == 0:
+            error_msg = "$random: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        if len(args_list) < 3:
+            args_list.insert(2, 1)
+
+        if len(args_list) < 4:
+            args_list.insert(2, 1)
+
+        # TODO: Make support of float numbers
+        return str(round(random.randrange(
+            int(args_list[0]), int(args_list[1]),
+            int(args_list[2])), int(args_list[3])
+            ))
+
     async def func_calculate(self, ctx, args: str):
         """
         `$calculate[expression]`
@@ -83,13 +111,16 @@ class Functions(FunctionsHandler):
 
         if check_expression(args.strip()):
             try:
-                # TODO: add support in future:
+                # TODO: Add support in future:
                 from math import sqrt, ceil, floor
                 return str(eval(args.strip()))
             except:
                 raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
         else:
             raise SyntaxError(f"$calculate: Cannot calculate provided expression: {args}")
+
+    async def func_gettimestamp(self, ctx, args: str = None):
+        return str(int(datetime.now().timestamp()))
 
     async def func_wait(self, ctx, args: str):
         """
@@ -184,13 +215,19 @@ class Functions(FunctionsHandler):
     async def func_updatecommands(self, ctx, args: str = None):
         """
         `$updateCommands`\n
-        No args. Return nothing. Update code of command triggers
+        No args. Returns nothing. Update code of command triggers
         ### Example:
         `$updateCommands $sendMessage[Commands updated]`
         """
         await self.handler.client.update_commands()
 
     async def func_uptime(self, ctx, args: str = None):
+        """
+        `$uptime`
+        No args. Returns timestamp uptime of bot working
+        ### Example:
+        `$sendMessage[Uptime: $uptime]`
+        """
         return self.handler.python_vars["uptime"]
 
     async def func_docs(self, ctx, args: str):

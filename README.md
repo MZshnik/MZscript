@@ -258,25 +258,25 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$addReaction</td>
-<td align="right">+</td>
-<td align="center">-</td>
-<td align="left">-</td>
-</tr>
-<tr>
 <td>$message</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$text</td>
+<td>$addReaction</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$replaceText</td>
+<td>$addRole</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$removeRole</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -300,19 +300,37 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$text</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$charCount</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$lowerCase</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$upperCase</td>
+<td>$replaceText</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
 <td>$titleCase</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$upperCase</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -420,12 +438,29 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$request</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$random</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$calculate</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$getTimestamp</td>
+<td align="right">+</td>
+<td align="center">+</td>
+<td align="left">-</td>
+</tr>
 <tr>
 <td>$wait</td>
 <td align="right">+</td>

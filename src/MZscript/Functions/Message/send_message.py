@@ -30,7 +30,10 @@ class Functions(FunctionsHandler):
         if args_list[0].isdigit() and len(args_list) > 1:
             channel = self.bot.get_channel(int(args_list[0]))
             if not channel:
-                channel = await self.bot.fetch_channel(int(args_list[0]))
+                try:
+                    channel = await self.bot.fetch_channel(int(args_list[0]))
+                except:
+                    pass
             if not channel:
                 channel = ctx.channel
                 args_list.insert(0, channel)

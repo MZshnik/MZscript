@@ -12,7 +12,7 @@ class Functions(FunctionsHandler):
     async def func_lowercase(self, ctx: disnake.Message, args: str):
         args_list = await self.get_args(await self.is_have_functions(args, ctx))
         if len(args_list) > 1 or len(args_list) == 0:
-            error_msg = "$upperCase: Too many or no args provided"
+            error_msg = "$lowerCase: Too many or no args provided"
             if self.handler.debug_console:
                 raise ValueError(error_msg)
             else:
@@ -20,6 +20,6 @@ class Functions(FunctionsHandler):
                 return True
 
         return args_list[0].lower()
-        
+
 def setup(handler):
     return Functions(handler)
