@@ -136,7 +136,7 @@ class Functions(FunctionsHandler):
                         await ctx.channel.send(error_msg)
                         return True
                 if int(args_splitted[3]) < min_values:
-                    error_msg = "$editMessage: #addMenu: Max. values argument most be grather or equals than min. value.\n\nPlease, set correct value."
+                    error_msg = "$editMessage: #addMenu: Max. values argument must be grather or equals than min. value.\n\nPlease, set correct value."
                     if self.handler.debug_console:
                         raise ValueError(error_msg)
                     else:

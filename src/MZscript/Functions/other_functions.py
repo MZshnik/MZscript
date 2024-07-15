@@ -47,7 +47,7 @@ class Functions(FunctionsHandler):
             return ctx.values[int(await self.get_args(await self.is_have_functions(args)))]
         return ctx.values[0]
 
-    async def func_options(self, inter: disnake.AppCmdInter, args: str):
+    async def func_options(self, inter: disnake.AppCmdInter, args: str = None):
         # print("Options:")
         # print(inter.data.options)
         return inter.data.options
@@ -61,6 +61,71 @@ class Functions(FunctionsHandler):
         """
         await ctx.response.defer()
         return ""
+
+    async def func_bottyping(self, ctx, args: str):
+        """
+        `$botTyping[(guild;channel);delay]`
+        """
+        args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
+        if len(args_list) > 3 or len(args_list) == 0:
+            error_msg = "$botTyping: Too many or no args provided"
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        guild = ctx.guild
+        if len(args_list) > 2:
+            if not args_list[0].isdigit():
+                error_msg = f"$botTyping: Cannot find guild \"{args_list[0]}\""
+                if self.handler.debug_console:
+                    raise SyntaxError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+            guild = self.bot.get_guild(int(args_list[0]))
+            if not guild:
+                guild = await self.bot.fetch_guild(int(args_list[0]))
+            if not guild:
+                error_msg = f"$botTyping: Cannot find guild \"{args_list[0]}\""
+                if self.handler.debug_console:
+                    raise SyntaxError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+        else:
+            args_list.insert(0, guild)
+
+        channel = ctx.channel
+        if len(args_list) > 2:
+            if not args_list[1].isdigit():
+                error_msg = f"$botTyping: Channel id must be integer \"{args_list[1]}\""
+                if self.handler.debug_console:
+                    raise SyntaxError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+
+            channel = guild.get_channel(int(args_list[1]))
+            if not channel:
+                channel = await guild.fetch_channel(int(args_list[1]))
+            if not channel:
+                error_msg = f"$botTyping: Cannot find channel \"{args_list[0]}\""
+                if self.handler.debug_console:
+                    raise SyntaxError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+        else:
+            args_list.insert(1, ctx.channel)
+
+        try:
+            float(args_list[2])
+        except:
+            error_msg = f"$botTyping: Delay must be number: \"{args_list[2]}\""
+            if self.handler.debug_console:
+                raise ValueError(error_msg)
+            await ctx.channel.send(error_msg)
+            return True
+
+        async with channel.typing():
+            await asyncio.sleep(float(args_list[2]))
 
     async def func_random(self, ctx, args: str):
         """
@@ -76,13 +141,42 @@ class Functions(FunctionsHandler):
             await ctx.channel.send(error_msg)
             return True
 
+        # TODO: Make support of float numbers
+
         if len(args_list) < 3:
             args_list.insert(2, 1)
+        elif len(args_list[2]) > 0:
+            is_float = False
+            # try:
+            #     float(args_list[2])
+            #     is_float = True
+            # except:
+            #     pass
+
+            if not args_list[2].isdigit() and not is_float:
+                error_msg = f"$random: Third argument must be number: \"{args_list[2]}\""
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
 
         if len(args_list) < 4:
-            args_list.insert(2, 1)
+            args_list.insert(3, 1)
+        elif len(args_list[3]) > 0:
+            is_float = False
+            # try:
+            #     float(args_list[2])
+            #     is_float = True
+            # except:
+            #     pass
 
-        # TODO: Make support of float numbers
+            if not args_list[3].isdigit() and not is_float:
+                error_msg = f"$random: Fourth argument must be number: \"{args_list[3]}\""
+                if self.handler.debug_console:
+                    raise ValueError(error_msg)
+                await ctx.channel.send(error_msg)
+                return True
+
         return str(round(random.randrange(
             int(args_list[0]), int(args_list[1]),
             int(args_list[2])), int(args_list[3])
@@ -148,7 +242,7 @@ class Functions(FunctionsHandler):
             pass
 
         if not args_list[0].isdigit() and not is_float:
-            error_msg = f"$wait: First argument most be integer: \"{args_list[0]}\""
+            error_msg = f"$wait: First argument must be number: \"{args_list[0]}\""
             if self.handler.debug_console:
                 raise ValueError(error_msg)
             await ctx.channel.send(error_msg)

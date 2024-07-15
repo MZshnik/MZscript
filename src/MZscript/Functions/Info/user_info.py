@@ -63,13 +63,15 @@ class UserInfo(FunctionsHandler):
             "system": user.system,
             "timeout": "",
             "joined": "",
-            "status": ""
+            "status": "",
+            "perms": ""
         }
         if isinstance(user, disnake.Member):
             if user.current_timeout:
                 params["timeout"] = int(user.current_timeout.timestamp())
             params["joined"] = int(user.joined_at.timestamp())
             params["status"] = user.status
+            params["perms"] = user.guild_permissions
 
         if args_list[1] == "dm":
             if not user.dm_channel:

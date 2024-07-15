@@ -3,7 +3,7 @@ import disnake
 from ...functions_handler import FunctionsHandler
 
 
-class isGuildExists(FunctionsHandler):
+class IsGuildExists(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
         self.handler = handler
@@ -35,4 +35,4 @@ class isGuildExists(FunctionsHandler):
         return "true" if guild else "false"
 
 def setup(handler):
-    return isGuildExists(handler)
+    return IsGuildExists(handler)

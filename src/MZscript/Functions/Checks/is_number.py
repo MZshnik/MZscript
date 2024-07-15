@@ -3,7 +3,7 @@ import disnake
 from ...functions_handler import FunctionsHandler
 
 
-class Functions(FunctionsHandler):
+class IsNumber(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
         self.handler = handler
@@ -30,4 +30,4 @@ class Functions(FunctionsHandler):
         return "false"
 
 def setup(handler):
-    return Functions(handler)
+    return IsNumber(handler)

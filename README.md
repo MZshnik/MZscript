@@ -143,6 +143,16 @@ $endif
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
+<td>$or</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<td>$and</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
 <tr>
 <td>$elif</td>
 <td align="right">+</td>
@@ -156,13 +166,13 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$stop</td>
+<td>$endif</td>
 <td align="right">+</td>
 <td align="center">+</td>
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$endif</td>
+<td>$stop</td>
 <td align="right">+</td>
 <td align="center">+</td>
 <td align="left">-</td>
@@ -186,13 +196,19 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$channelInfo</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$guildInfo</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$channelInfo</td>
+<td>$messageInfo</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -210,13 +226,43 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$hasPerms</td>
+<td align="right">-</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$hasRole</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$isAdmin</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isChannelExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isGuildExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$isMemberExists</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$isNumber</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -229,18 +275,6 @@ $endif
 </tr>
 <tr>
 <td>$isUserExists</td>
-<td align="right">+</td>
-<td align="center">-</td>
-<td align="left">-</td>
-</tr>
-<tr>
-<td>$isGuildExists</td>
-<td align="right">+</td>
-<td align="center">-</td>
-<td align="left">-</td>
-</tr>
-<tr>
-<td>$isNumber</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -288,13 +322,19 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
-<td>$unban</td>
+<td>$clear</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
 <tr>
 <td>$kick</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
+<td>$unban</td>
 <td align="right">+</td>
 <td align="center">-</td>
 <td align="left">-</td>
@@ -444,6 +484,12 @@ $endif
 <td align="left">-</td>
 </tr>
 <tr>
+<td>$botTyping</td>
+<td align="right">+</td>
+<td align="center">-</td>
+<td align="left">-</td>
+</tr>
+<tr>
 <td>$random</td>
 <td align="right">+</td>
 <td align="center">-</td>
@@ -503,12 +549,6 @@ $endif
 <td align="center">-</td>
 <td align="left">-</td>
 </tr>
-<tr>
-<td>$request</td>
-<td align="right">+</td>
-<td align="center">-</td>
-<td align="left">-</td>
-</tr>
 </tbody>
 </table>
 <p>Full support means is function 100% works/tested</p>
@@ -530,7 +570,7 @@ $endif
 - Documentation
 - Сontributing
 ## In the Future🚀
-- Most usefull $eval/$pyeval
+- More usefull $eval/$pyeval
 - Support of mods
 
 #### Repository and first lines of code by [MZshnik](https://github.com/MZshnik)

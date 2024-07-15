@@ -3,7 +3,7 @@ import disnake
 from ...functions_handler import FunctionsHandler
 
 
-class isUserExists(FunctionsHandler):
+class IsUserExists(FunctionsHandler):
     def __init__(self, handler):
         super().__init__()
         self.handler = handler
@@ -31,4 +31,4 @@ class isUserExists(FunctionsHandler):
         return "true" if await self.bot.get_or_fetch_user(int(args_list[0])) else "false"
 
 def setup(handler):
-    return isUserExists(handler)
+    return IsUserExists(handler)

@@ -6,17 +6,17 @@ class FunctionsHandler:
     def __init__(self):
         # every function from this list needs to have the same self.func_functionname, else - warning in console
         self.all_funcs = [
-            "$if", "$elif", "$else", "$stop", "$eval", "$pyeval",
+            "$if", "$or", "$and", "$elif", "$else", "$stop", "$eval", "$pyeval",
             # info
-            "$botinfo", "$guildinfo", "$channelinfo", "$roleinfo", "$userinfo", "$hasrole",
+            "$botinfo", "$channelinfo", "$guildinfo", "$messageinfo", "$roleinfo", "$userinfo", "$hasperms", "$hasrole",
             # checks
-            "$ismemberexists", "$isroleexists", "$isuserexists", "$isguildexists", "$isnumber",
+            "$isadmin", "$ischannelexists", "$isguildexists", "$ismemberexists", "$isnumber", "$isroleexists", "$isuserexists", 
             # messages
             "$sendmessage", "$editmessage", "$message", "$addreaction",
             # administration
             "$addrole", "$removerole",
             # moderation
-            "$ban", "$unban", "$kick",
+            "$ban", "$clear", "$kick", "$unban",
             # text
             "$text", "$charcount", "$lowercase", "$replacetext", "$titlecase", "$uppercase",
             # interactions
@@ -25,7 +25,7 @@ class FunctionsHandler:
             "$var", "$getvar", "$setvar", "$delvar", "$getmembervar", "$setmembervar", "$delmembervar",
             "$getguildvar", "$setguildvar", "$delguildvar", "$getuservar", "$setuservar", "$deluservar",
             # other
-            "$request", "$random", "$calculate", "$gettimestamp", "$wait",
+            "$request", "$bottyping", "$random", "$calculate", "$gettimestamp", "$wait",
             "$loop", "$for", "$updatecommands", "$uptime", "$docs", "$console"
         ]
         # don't touch this list
@@ -203,7 +203,7 @@ class FunctionsHandler:
 
     async def finds_endif(self, chunks: list):
         """
-        ## Find and return index of $endif in the chunks(list) by check if all $if's closed
+        ## Find and return index of $endif in the chunks(list) by checking if all $if's closed
         ### Example:
         ### Input `"$if[$message[0]==hello] $sendMessage[Hello World!] $else $sendMessage[Bye bye] $endif"`
         ### Output `4 (index in the list)`
@@ -214,7 +214,7 @@ class FunctionsHandler:
             counter += 1
             if i.startswith("$endif"):
                 unclosedifs -= 1
-                if unclosedifs == 0:
+                if unclosedifs < 1:
                     return counter
             elif i.startswith("$if"):
                 unclosedifs += 1
@@ -241,13 +241,14 @@ class FunctionsHandler:
                 unclosedifs -= 1
             elif i.startswith("$elif"):
                 if unclosedifs == 1:
-                    main_elif = (await self.execute_function(i, ctx), this_count, ctx)
+                    main_elif = (await self.execute_function(i, ctx), this_count)
                     if main_if[0]:
                         return_chunks = chunks[:main_elif[1]] + chunks[main_endif+1:]
                         return_chunks.pop(main_if[1])
                     else:
+                        return_chunks.pop(main_endif)
                         return_chunks[main_elif[1]] = return_chunks[main_elif[1]].replace("$elif", "$if")
-                        return_chunks = return_chunks[:main_if[1]] + return_chunks[main_elif[1]:]
+                        return_chunks = return_chunks[:main_if[1]] + return_chunks[main_elif[1]+1:]
                     return return_chunks
         else:
             if main_if[0]:

@@ -32,8 +32,7 @@ class ChannelInfo(FunctionsHandler):
             if len(args_list) == 1:
                 args_list.insert(0, channel)
             else:
-                id = int(args_list[0].replace("<#", "").replace(">", ""))
-                channel = await self.bot.fetch_channel(id)
+                channel = await self.bot.fetch_channel(args_list[0])
 
         params = {
             "category": channel.category.id,

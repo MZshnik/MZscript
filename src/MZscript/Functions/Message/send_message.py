@@ -119,7 +119,7 @@ class Functions(FunctionsHandler):
                         await ctx.channel.send(error_msg)
                         return True
                 if int(args_splitted[3]) < min_values:
-                    error_msg = "$sendMessage: #addMenu: Max. values argument most be grather or equals than min. value.\n\nPlease, set correct value."
+                    error_msg = "$sendMessage: #addMenu: Max. values argument must be grather or equals than min. value.\n\nPlease, set correct value."
                     if self.handler.debug_console:
                         raise ValueError(error_msg)
                     else:
@@ -232,15 +232,10 @@ class Functions(FunctionsHandler):
                     await ctx.channel.send(error_msg)
                     return True
 
-            is_float = False
             try:
                 float(args_list[0])
-                is_float = True
             except:
-                pass
-
-            if not args_list[0].isdigit() and not is_float:
-                error_msg = f"$sendMessage: #deleteIn: First argument most be integer: \"{args_list[0]}\""
+                error_msg = f"$sendMessage: #deleteIn: First argument must be number: \"{args_list[0]}\""
                 if self.handler.debug_console:
                     raise ValueError(error_msg)
                 await ctx.channel.send(error_msg)

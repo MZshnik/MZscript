@@ -16,6 +16,7 @@ class Functions(FunctionsHandler):
         ### Example:
         `$if[$userInfo[id]==700061502089986139]`
         """
+        args = await self.is_have_functions(args, ctx)
         if args.lower() == "true":
             return True
         elif args.lower() == "false":
@@ -33,13 +34,29 @@ class Functions(FunctionsHandler):
             if i in args:
                 vals = args.split(i)
                 if i in ["==", "!="]:
-                    val1 = await self.is_have_functions(vals[0].strip(), ctx)
-                    val2 = await self.is_have_functions(vals[1].strip(), ctx)
+                    val1 = vals[0].strip()
+                    val2 = vals[1].strip()
                 else:
-                    val1 = int(await self.is_have_functions(vals[0], ctx))
-                    val2 = int(await self.is_have_functions(vals[1], ctx))
+                    val1 = int(vals[0])
+                    val2 = int(vals[1])
                 return operator_mapping.get(i, lambda x, y: None)(val1, val2)
         return False
+
+    async def func_or(self, ctx, args: str):
+        args_list = await self.get_args(args)
+        for i in args_list:
+            if await self.func_if(ctx, i):
+                return "true"
+        else:
+            return "false"
+
+    async def func_and(self, ctx, args: str):
+        args_list = await self.get_args(args)
+        for i in args_list:
+            if not await self.func_if(ctx, i):
+                return "false"
+        else:
+            return "true"
 
     async def func_elif(self, ctx, args: str): # return result from $if (DRY)
         """
