@@ -9,6 +9,7 @@ from disnake.ext import commands
 from .functions_collector import FunctionsCore
 
 
+
 class MZClient:
     """
     ## Welcome to MZscript!
@@ -35,6 +36,7 @@ class MZClient:
         sync_commands.sync_commands_debug = debug_log
         self.user_commands = []
         self.user_command_names = []
+        self.plugins = []
         self.exec_on_start = []
         self.user_slash_commands = []
         self.user_events = {"message": None, "button": None, "interaction": None}
@@ -90,7 +92,7 @@ class MZClient:
 
     def add_command(self, name: str, code: str):
         """
-        ## Add command to handlering
+        ## Add command to handling
 
         ### Args:
             name (`str`): Trigger what execute command if any person type it in chat. Can execute functions like name of command `$getVar[prefix]help` and finale command name will be view like `!help`
@@ -187,10 +189,22 @@ class MZClient:
         else:
             raise ValueError(f"\"{name}\" event does not exists.")
 
+    def add_plugin(self, plugin):
+        """
+        ## Add plugin to bot
+
+        ### Args:
+            plugin: The plugin instance to add
+        """
+        self.plugins.append(plugin)
+        plugin.setup(self.bot)
+
     async def on_ready(self):
         if self.user_on_ready:
             await self.run_code(self.user_on_ready)
         await self.update_commands()
+        for plugin in self.plugins:
+            await plugin.on_ready()
 
     async def on_message(self, message: disnake.Message):
         """
@@ -206,6 +220,8 @@ class MZClient:
             if splitted_command[0] == command_name:
                 message.content = " ".join(splitted_command[1:])
                 await self.run_code(command_code, message)
+        for plugin in self.plugins:
+            await plugin.on_message(message)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
         """
@@ -214,6 +230,8 @@ class MZClient:
         """
         if self.user_events["button"]:
             await self.run_code(self.user_events["button"], inter)
+        for plugin in self.plugins:
+            await plugin.on_button_click(inter)
 
     async def on_interaction(self, inter: disnake.MessageInteraction):
         """
@@ -222,11 +240,21 @@ class MZClient:
         """
         if self.user_events["interaction"]:
             await self.run_code(self.user_events["interaction"], inter)
+        for plugin in self.plugins:
+            await plugin.on_interaction(inter)
 
     async def on_slash(self, inter: disnake.AppCmdInter):
         for name, code in self.user_slash_commands:
             if name == inter.application_command.name:
                 await self.run_code(code, inter)
+        for plugin in self.plugins:
+            await plugin.on_slash(inter)
 
     def run(self, token: str):
-        self.bot.run(asyncio.run(self.funcs.is_have_functions(token)))
+        loop = asyncio.get_event_loop()
+        loop.create_task(self._run_plugins())
+        loop.run_until_complete(self.bot.start(token))
+
+    async def _run_plugins(self):
+        for plugin in self.plugins:
+            await plugin.run()
