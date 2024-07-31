@@ -253,7 +253,7 @@ class MZClient:
     def run(self, token: str):
         loop = asyncio.get_event_loop()
         loop.create_task(self._run_plugins())
-        loop.run_until_complete(self.bot.start(token))
+        loop.run_until_complete(self.bot.run(token))
 
     async def _run_plugins(self):
         for plugin in self.plugins:
