@@ -29,6 +29,7 @@ class BotInfo(FunctionsHandler):
             "description": info.description,
             "icon": info.icon.url if info.icon else "",
             "id": info.id,
+            "name": info.name,
             "owner": info.owner.id,
             "guilds": len(self.bot.guilds),
             "users": len([j for i in self.bot.guilds for j in i.members]),

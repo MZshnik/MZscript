@@ -86,7 +86,7 @@ class MZClient:
         ### Returns:
             `str`: result of executed functions
         """
-        await self.funcs.is_have_functions(code, ctx)
+        return await self.funcs.is_have_functions(code, ctx)
 
     def add_command(self, name: str, code: str):
         """
@@ -201,10 +201,10 @@ class MZClient:
             await self.run_code(self.user_events["message"], message)
         if message.author.bot:
             return
-        splitted_command = message.content.split(" ")
+        user_command = message.content.split(" ")[0]
         for command_name, command_code in self.user_commands:
-            if splitted_command[0] == command_name:
-                message.content = " ".join(splitted_command[1:])
+            if user_command == command_name:
+                message.content = message.content[len(command_name)+1:]
                 await self.run_code(command_code, message)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
