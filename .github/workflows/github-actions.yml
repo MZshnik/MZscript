@@ -20,9 +20,9 @@ jobs:
         run:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: unit test
+      - name: unit tests
         run: |
-          cd tests
-          python -m unittest
+          python -m unittest tests/test_client.py
+          python -m unittest tests/test_handler.py
       # - name: build project
       #   run: python -m build --sdist

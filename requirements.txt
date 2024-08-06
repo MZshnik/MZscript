@@ -1,3 +1,2 @@
 disnake>=2.9.2
-MZscript @ git+https://github.com/MZshnik/MZscript@main
 twine>=5.1.0

@@ -8,3 +8,4 @@ Improved BDFD interpreter in Python
 
 from .database import Database
 from .main import MZClient
+from .base_plugin import BasePlugin

@@ -569,8 +569,9 @@ $endif
 - More custom functions
 - Documentation
 - Сontributing
+- Plugins (mods)
 ## In the Future🚀
 - More usefull $eval/$pyeval
-- Support of mods
+- Compiled version or support for other langs
 
 #### Repository and first lines of code by [MZshnik](https://github.com/MZshnik)

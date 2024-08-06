@@ -74,6 +74,10 @@ def setup(handler):
 3. Register new folder in [`__init__.py`](/src/MZscript/Functions/__init__.py) like other modules or in `__init__.py` file of folder if you dont create new folder, only file  
 Next steps writed in this [header](https://github.com/MZshnik/MZscript/blob/main/docs/CONTRIBUTING.md#creating-new-function)
 ### What about events
-This topic will be created later
+Now, events taked from basic disnake lib. Its just `on_ready`, `on_message` and other. MZClient only wrap it with beautiful MZscript code
+
+This topic is not ended, but you can help end up it!
 ### Modify library
-This topic will be created later
+In this context we talking about library how low-level functionality and code: interpreter, parser, database and etc.  
+If you dont know how library works, please, dont change anything: best way is say anyone your idea or create pull request with changes - its a very frail layer.  
+However, this code has amout of doc stings, comments and instruments what interdement developer (maybe) know so you actually can understand this massive work and help us imvprove some things or add new!

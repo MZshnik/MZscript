@@ -1,5 +1,5 @@
 import unittest
-from MZscript import MZClient
+from src.MZscript import MZClient
 
 class TestClient(unittest.TestCase):
     def test_init(self):

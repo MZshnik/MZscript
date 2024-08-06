@@ -1,2 +1,2 @@
-from . import testclient
-from . import testhandler
+from . import test_client
+from . import test_handler

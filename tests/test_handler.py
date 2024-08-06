@@ -1,5 +1,5 @@
 import unittest
-from MZscript.functions_handler import FunctionsHandler
+from src.MZscript.functions_handler import FunctionsHandler
 
 class TestHandler(unittest.IsolatedAsyncioTestCase):
     async def test_chunks_and_ifs(self):

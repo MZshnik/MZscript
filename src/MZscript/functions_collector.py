@@ -18,6 +18,7 @@ class FunctionsCore(FunctionsHandler):
         self.debug_log = debug_log
         self.debug_console = debug_console
         self.client = client
+        self.loaded_mods = []
         self.python_vars = {"uptime": datetime.now().timestamp()}
         self.database = Database()
         self.funcs = {}
@@ -28,7 +29,7 @@ class FunctionsCore(FunctionsHandler):
         ## Load functions from "Functions" directory
         """
         functions = []
-        tempmods = []
+        self.loaded_mods = []
         self.all_funcs = [i.lower() for i in self.all_funcs]
         # get all files of directory .Functions
         for i in os.walk(os.path.dirname(__file__)+"/Functions"):
@@ -40,7 +41,7 @@ class FunctionsCore(FunctionsHandler):
                     # and we get this class from setup function
                     exec(f"""
 tempmod = {j[:-3]}.setup(self)
-tempmods.append(tempmod)
+self.loaded_mods.append(tempmod)
 for k in inspect.getmembers(tempmod, inspect.ismethod):
     functions.append(k)""")
 
@@ -56,5 +57,20 @@ for k in inspect.getmembers(tempmod, inspect.ismethod):
             except NameError:
                 logging.warning(f"WARNING: For function \"{line}\" not exists command found.")
         self.sync_functions(self.funcs)
-        for i in tempmods:
+        for i in self.loaded_mods:
+            i.sync_functions(self.funcs)
+
+    def add_function(self, func_name: str, func_method):
+        # TODO: Make chosing type of function (logic/no arg/can be no arg)
+        """
+        ## Adds new $function to handlering
+        
+        ### Args:
+            func_name (`str`): Name of function with $ in lowercase
+            func_method (`function`): Function method to execute
+        """
+        self.funcs[func_name] = func_method
+        self.all_funcs.append(func_name)
+        self.sync_functions(self.funcs)
+        for i in self.loaded_mods:
             i.sync_functions(self.funcs)

@@ -1,13 +1,13 @@
 import asyncio
-import os
 import importlib.util
 import logging
+import os
 
 import disnake
 from disnake.ext import commands
 
+from .base_plugin import BasePlugin
 from .functions_collector import FunctionsCore
-
 
 
 class MZClient:
@@ -21,6 +21,8 @@ class MZClient:
     In rare cases, when your bot very huge, you can use this methods:
     #### `load_command`
     #### `load_commands`
+    Or if you have plugins:
+    #### `add_plugin`
     ### Check [docs](https://mzscript.vercel.app/) and [repository](https://github.com/MZshnik/MZscript) for more information
     """
     def __init__(
@@ -57,7 +59,7 @@ class MZClient:
         elif entry.lower() == "default":
             return disnake.Intents.default()
         else:
-            raise ValueError('Intents should be "all" or "default".')
+            raise ValueError("Intents should be \"all\" or \"default\".")
 
     def _register_listeners(self):
         """
@@ -86,7 +88,7 @@ class MZClient:
             ctx (`disnake.Message`): Context, default is None
 
         ### Returns:
-            `str`: result of executed functions
+            `str`: Result of executed code
         """
         return await self.funcs.is_have_functions(code, ctx)
 
@@ -95,8 +97,10 @@ class MZClient:
         ## Add command to handling
 
         ### Args:
-            name (`str`): Trigger what execute command if any person type it in chat. Can execute functions like name of command `$getVar[prefix]help` and finale command name will be view like `!help`
-            code (`str`): Code for execute when command invoked. For send message always use $sendMessage - plain text not send. Check docs for info about stable functions.
+            name (`str`): Trigger what execute command if any person type it in chat.
+            Can execute functions like name of command `$getVar[prefix]help` and finale command name will be view like `!help`
+            code (`str`): Code for execute when command invoked. For send message always use $sendMessage - plain text not send.
+            Check docs for info about stable functions.
         """
         self.user_commands.append([name, code])
         self.user_command_names.append(name)
@@ -130,6 +134,30 @@ class MZClient:
                 )
             )
         self.user_slash_commands.append([name, code])
+
+    def add_event(self, name: str, code: str):
+        """
+        ## Add event code to handlering
+
+        ### Args:
+            name (`str`): Event name (like "message"/"button" and etc.). You can see list of all supported events in docs.
+            code (`str`): Code for execute when event invoked. For send message always use $sendMessage - plain text not send.
+            Check docs for info about stable functions.
+        """
+        if name in self.user_events:
+            self.user_events[name] = code
+        else:
+            raise ValueError(f"\"{name}\" event does not exists.")
+
+    def add_plugin(self, plugin: BasePlugin):
+        """
+        ## Add plugin to MZClient
+
+        ### Args:
+            plugin (`BasePlugin`): The plugin instance to add, must be inherited from `BasePlugin` class
+        """
+        plugin.setup(self)
+        self.plugins.append(plugin)
 
     def load_command(self, path: str):
         """
@@ -176,30 +204,11 @@ class MZClient:
                 if file.endswith(".py") and file != "__init__.py":
                     self.load_command(os.path.join(folder, file))
 
-    def add_event(self, name: str, code: str):
-        """
-        ## Add event code to handlering
-
-        ### Args:
-            name (`str`): Event name (like "message"/"button" and etc.). You can see list of all supported events in docs.
-            code (`str`): Code for execute when event invoked. For send message always use $sendMessage - plain text not send. Check docs for info about stable functions.
-        """
-        if name in self.user_events:
-            self.user_events[name] = code
-        else:
-            raise ValueError(f"\"{name}\" event does not exists.")
-
-    def add_plugin(self, plugin):
-        """
-        ## Add plugin to bot
-
-        ### Args:
-            plugin: The plugin instance to add
-        """
-        self.plugins.append(plugin)
-        plugin.setup(self.bot)
-
     async def on_ready(self):
+        """
+        ## `on_ready` event
+        ### Invoked when bot is ready to use
+        """
         if self.user_on_ready:
             await self.run_code(self.user_on_ready)
         await self.update_commands()
@@ -208,9 +217,11 @@ class MZClient:
 
     async def on_message(self, message: disnake.Message):
         """
-        `message` event
+        ## `message` event
         Executed when someone send message(and bots)
         """
+        for plugin in self.plugins:
+            await plugin.on_message(message)
         if self.user_events["message"]:
             await self.run_code(self.user_events["message"], message)
         if message.author.bot:
@@ -220,41 +231,46 @@ class MZClient:
             if user_command == command_name:
                 message.content = message.content[len(command_name)+1:]
                 await self.run_code(command_code, message)
-        for plugin in self.plugins:
-            await plugin.on_message(message)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
         """
-        `button` event
+        ## `button` event
         Executed when someone clicked button
         """
-        if self.user_events["button"]:
-            await self.run_code(self.user_events["button"], inter)
         for plugin in self.plugins:
             await plugin.on_button_click(inter)
+        if self.user_events["button"]:
+            await self.run_code(self.user_events["button"], inter)
 
     async def on_interaction(self, inter: disnake.MessageInteraction):
         """
-        `interaction` event
+        ## `interaction` event
         Executed when some of interactions(buttons/menus and etc.) are invoked
         """
-        if self.user_events["interaction"]:
-            await self.run_code(self.user_events["interaction"], inter)
         for plugin in self.plugins:
             await plugin.on_interaction(inter)
+        if self.user_events["interaction"]:
+            await self.run_code(self.user_events["interaction"], inter)
 
     async def on_slash(self, inter: disnake.AppCmdInter):
+        """
+        ## `slash` event
+        Executed when someone use any slash of bot
+        """
+        for plugin in self.plugins:
+            await plugin.on_slash(inter)
         for name, code in self.user_slash_commands:
             if name == inter.application_command.name:
                 await self.run_code(code, inter)
-        for plugin in self.plugins:
-            await plugin.on_slash(inter)
 
     def run(self, token: str):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._run_plugins())
-        loop.run_until_complete(self.bot.run(token))
+        """
+        ## Runs bot with provided token
+        ### We recommend to save it in global vars in `variables.json` file, and get it like:
+        `$var[token;global]`
 
-    async def _run_plugins(self):
-        for plugin in self.plugins:
-            await plugin.run()
+        ### Args:
+            token (`str`): Token of discord bot or $function what returns bot token
+        """
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(self.bot.run(asyncio.run(self.funcs.is_have_functions(token))))
