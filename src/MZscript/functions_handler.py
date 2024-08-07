@@ -24,6 +24,8 @@ class FunctionsHandler:
             # variables
             "$var", "$getvar", "$setvar", "$delvar", "$getmembervar", "$setmembervar", "$delmembervar",
             "$getguildvar", "$setguildvar", "$delguildvar", "$getuservar", "$setuservar", "$deluservar",
+            # extras
+            "$hash",
             # other
             "$request", "$bottyping", "$random", "$calculate", "$gettimestamp", "$wait",
             "$loop", "$for", "$updatecommands", "$uptime", "$docs", "$console"
@@ -41,7 +43,7 @@ class FunctionsHandler:
         """
         ## Sync functions from FunctionCore original class
         By default `self.funcs` is empty, and all function generated in main class FunctionCore.
-        After FunctionCore generate it, for i in FunctionsHandler copys invoke this methode with dictinary
+        After FunctionCore generate it, for i in FunctionsHandler copys invoke this method with dictinary
         """
         self.funcs = functions
 

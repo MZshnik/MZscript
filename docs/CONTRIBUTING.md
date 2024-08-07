@@ -31,13 +31,13 @@ Name of functions what looks like $function (important -->) builds by this templ
         return "" # returning empty string by default
 ```
 __All funcs return `str` type: result of executing or empty string__, interpreter can replace None type to str, but not recommended
-This methode writs in lowercase only in Functions file class.  
-After adding function, __ONLY after adding, register it__ in `__init__` methode of FunctionsHandler class from [functions_handler](/src/MZscript/functions_handler.py?FunctionsHandler). Add function to `self.all_funcs` after all and if your function no arg or can be no arg - add it to same lists(`self.no_arg_funcs` and `self.can_be_no_arg`).
+This method writs in lowercase only in Functions file class.  
+After adding function, __ONLY after adding, register it__ in `__init__` method of FunctionsHandler class from [functions_handler](/src/MZscript/functions_handler.py?FunctionsHandler). Add function to `self.all_funcs` after all and if your function no arg or can be no arg - add it to same lists(`self.no_arg_funcs` and `self.can_be_no_arg`).
 
 From template you can see `args: str` argument in simple function, `str` type for arguments is always provided. `ctx` argument can be `disnake.Message`(by default) or other context-exists types. So, please, dont set type `disnake.Message` if your command can work without it - set `ctx = None`, or if it is interaction function - set `ctx: disnake.AppCmdInter` (` = None` if not required). Delet `args` param if your function in `no_arg_funcs` or set `args: str = None` if it can be no args.
 
 For creating $function you can use some methods to save time and easily job:
-|`self.`Methode|Description|
+|`self.`Method|Description|
 |--|--|
 |`await self.is_have_functions`|Execute provided `args` argument how code|
 |`await self.get_args`|Gets a list of args spllited by ; correctly. Usually uses after `is_have_functions`|

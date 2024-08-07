@@ -116,7 +116,7 @@ Now you can view how to create your own plugin, follow me:
 We use MZClient to get code highlighting
 3. Create new class and inherit `BasePlugin` to your class, like `class MyPlugin(BasePlugin)`  
 Use `def __init__` to configure your plugin  
-`BasePlugin` class required to implement method `setup` where your plugin getting `MZClient` class. Save it to class `self.` var 
+`BasePlugin` class required to implement sync method `setup` where your plugin getting `MZClient` class. Save it to class `self.` var 
 
 Example of adding new function in the plugin class
 ```py

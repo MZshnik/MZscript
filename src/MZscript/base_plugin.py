@@ -1,13 +1,16 @@
+from abc import ABC, abstractmethod
+
 import disnake
 
 
-class BasePlugin:
+class BasePlugin(ABC):
     """
     ## Base class for creating MZscript plugins
     ### This class discribes events what MZClient can call
     ### Only 1 method is required - `setup`. If it ignored, raises NotImplementedError
     """
 
+    @abstractmethod
     def setup(self, client):
         """
         ## Setup plugin
