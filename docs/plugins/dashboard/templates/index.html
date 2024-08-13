@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="{{ url_for('static', filename='index.css') }}" rel="stylesheet" />
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Commands</h1>
+    <div class="wrapper">
+        {% for i in commands[:-1] %}
+            <div class="cell">
+                <h2 style="margin-block-start: 0;margin-block-end: 0;display: inline;">{{ i[0] }}</h2>
+                <button class="edit-button" onclick="editCode(this, 'command')">Edit</button>
+                <pre class="command" style="white-space: pre-wrap;">{{ i[1] }}</pre>
+            </div>
+        {% endfor %}
+        <div class="lastcell">
+            <h2 style="margin-block-start: 0;margin-block-end: 0;display: inline;">{{ commands[-1:][0][0] }}</h2>
+            <button class="edit-button" onclick="editCode(this, 'command')">Edit</button>
+            <pre class="command" style="white-space: pre-wrap;">{{ commands[-1:][0][1] }}</pre>
+        </div>
+    </div>
+    <div class="line"></div>
+    <button class="button newcmd">Create new command</button>
+    <h1>Events</h1>
+    <div class="wrapper">
+        {% for i in events[:-1] %}
+            <div class="cell">
+                <h2 style="margin-block-start: 0;margin-block-end: 0;display: inline;">{{ i[0] }}</h2>
+                <button class="edit-button" onclick="editCode(this, 'event')">Edit</button>
+                <pre class="event" style="white-space: pre-wrap;">{{ i[1] }}</pre>
+            </div>
+        {% endfor %}
+        <div class="lastcell">
+            <h2 style="margin-block-start: 0;margin-block-end: 0;display: inline;">{{ events[-1:][0][0] }}</h2>
+            <button class="edit-button" onclick="editCode(this, 'event')">Edit</button>
+            <pre class="event" style="white-space: pre-wrap;">{{ events[-1:][0][1] }}</pre>
+        </div>
+    </div>
+    <div class="line"></div>
+    <button class="button newevn">Create new event</button>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+</body>
+</html>

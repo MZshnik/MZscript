@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="{{ url_for('static', filename='editcode.css') }}" rel="stylesheet" />
+    <title>Edit {{ type }}</title>
+</head>
+<body>
+    <h1>Edit "{{ name }}" {{ type }}</h1>
+    <input class="name" type="text" placeholder="name" value="{{ name }}">
+    <textarea rows="1" class="code" style="width: 100%;" placeholder="code">{{ code }}</textarea>
+    <button class="button save-button">Save</button>
+    <script src="{{ url_for('static', filename='editcode.js') }}"></script>
+</body>
+</html>

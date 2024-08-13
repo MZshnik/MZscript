@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link href="{{ url_for('static', filename='newcode.css') }}" rel="stylesheet" />
+    <title>Create new {{ code }}</title>
+</head>
+<body>
+    <h1>Creat new {{ code }}</h1>
+    <input class="name" type="text" placeholder="name">
+    <textarea rows="1" class="code" style="width: 100%;" placeholder="code">$sendMessage[Hello World]</textarea>
+    <button class="button create-button">Create</button>
+    <script src="{{ url_for('static', filename='newcode.js') }}"></script>
+</body>
+</html>

@@ -108,6 +108,27 @@ class MZClient:
         for chunk in chunks:
             if chunk.startswith("$"):
                 self.exec_on_start.append(len(self.user_commands) - 1)
+                break
+
+    def edit_command(self, name: str, code: str):
+        """
+        ## Edit code of provided command by name
+        
+        ### Args:
+            name (`str`): Trigger of command.
+            code (`str`): New code of command.
+        """
+        code_index = self.user_command_names.index(name)
+        self.user_commands[code_index] = [name, code]
+        self.user_command_names[code_index] = name
+        chunks = asyncio.run(self.funcs.get_chunks(name))
+        for chunk in chunks:
+            if chunk.startswith("$"):
+                if code_index in self.exec_on_start:
+                    self.exec_on_start.remove(code_index)
+                else:
+                    self.exec_on_start.append(len(self.user_commands) - 1)
+                break
 
     def add_slash( # TODO: Make full support of slash commands and options
         self, name: str, code: str,
@@ -145,6 +166,19 @@ class MZClient:
             Check docs for info about stable functions.
         """
         if name in self.user_events:
+            self.user_events[name] = code
+        else:
+            raise ValueError(f"\"{name}\" event does not exists.")
+
+    def edit_event(self, name: str, code: str):
+        """
+        ## Edit code of provided event
+        
+        ### Args:
+            name (`str`): Event name.
+            code (`str`): New code of event.
+        """
+        if name in self.user_events: # TODO: Migrate add_event and edit_event to set_event, DRY
             self.user_events[name] = code
         else:
             raise ValueError(f"\"{name}\" event does not exists.")

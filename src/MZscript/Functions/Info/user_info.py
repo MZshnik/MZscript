@@ -59,7 +59,7 @@ class UserInfo(FunctionsHandler):
             "display_name": user.display_name,
             "global_name": user.global_name,
             "id": user.id,
-            "dm": user.dm_channel,
+            "dm": "",
             "system": user.system,
             "timeout": "",
             "joined": "",
@@ -73,9 +73,11 @@ class UserInfo(FunctionsHandler):
             params["status"] = user.status
             params["perms"] = user.guild_permissions
 
-        if args_list[1] == "dm":
+        if args_list[2] == "dm":
             if not user.dm_channel:
                 user.create_dm()
+            else:
+                params[args_list[2]] = user.dm_channel
             return str(params[args_list[2]].id)
         return str(params[args_list[2]])
 

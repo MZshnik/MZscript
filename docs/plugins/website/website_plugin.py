@@ -3,8 +3,8 @@
 
 # Use quart - this async flask
 from quart import Quart, jsonify
-# need for types
-from src.MZscript import MZClient, BasePlugin
+
+from MZscript import BasePlugin, MZClient
 
 
 class WebsitePlugin(BasePlugin): # name of plugin
