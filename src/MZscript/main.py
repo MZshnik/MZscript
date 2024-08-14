@@ -104,11 +104,8 @@ class MZClient:
         """
         self.user_commands.append([name, code])
         self.user_command_names.append(name)
-        chunks = asyncio.run(self.funcs.get_chunks(name))
-        for chunk in chunks:
-            if chunk.startswith("$"):
-                self.exec_on_start.append(len(self.user_commands) - 1)
-                break
+        if '$' in name:
+            self.exec_on_start.append(len(self.user_commands) - 1)
 
     def edit_command(self, name: str, code: str):
         """
@@ -121,14 +118,11 @@ class MZClient:
         code_index = self.user_command_names.index(name)
         self.user_commands[code_index] = [name, code]
         self.user_command_names[code_index] = name
-        chunks = asyncio.run(self.funcs.get_chunks(name))
-        for chunk in chunks:
-            if chunk.startswith("$"):
-                if code_index in self.exec_on_start:
-                    self.exec_on_start.remove(code_index)
-                else:
-                    self.exec_on_start.append(len(self.user_commands) - 1)
-                break
+        if '$' in name:
+            if code_index in self.exec_on_start:
+                self.exec_on_start.remove(code_index)
+            else:
+                self.exec_on_start.append(len(self.user_commands) - 1)
 
     def add_slash( # TODO: Make full support of slash commands and options
         self, name: str, code: str,

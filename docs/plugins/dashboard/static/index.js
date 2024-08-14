@@ -9,25 +9,9 @@ document.getElementsByClassName("newevn").item(0).onclick = () => {
 function editCode(cmd, type) {
     const name = cmd.parentElement.getElementsByTagName("h2")[0].textContent;
     const code = cmd.parentElement.getElementsByTagName("pre")[0].textContent;
-
-    fetch("edit-code", {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: name,
-            code: code,
-            type: type
-        })
-    })
-    .then(response => response.text())
-    .then(data => {
-        const newPage = document.implementation.createHTMLDocument();
-        newPage.documentElement.innerHTML = data;
-        document.documentElement.replaceWith(newPage.documentElement);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    const queryParams = new URLSearchParams();
+    queryParams.append('name', name);
+    queryParams.append('code', code);
+    queryParams.append('type', type);
+    window.location.href = `edit-code?${queryParams.toString()}`;
 }

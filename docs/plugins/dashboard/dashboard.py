@@ -1,7 +1,7 @@
 import logging
 
 from MZscript import BasePlugin, MZClient
-from quart import Quart, jsonify, render_template, request
+from quart import Quart, jsonify, render_template, redirect, request
 
 
 class Dashboard(BasePlugin):
@@ -47,24 +47,21 @@ class Dashboard(BasePlugin):
                 self.client.add_event(content["name"], content["code"])
             return Quart.response_class()
 
-        @self.app.post("/edit-code")
+        @self.app.get("/edit-code")
         async def edit_code_page():
-            content = await request.json
             return await render_template(
                 "editcode.html",
-                name=content["name"],
-                code=content["code"],
-                type=content["type"]
+                name=request.args.get("name"),
+                code=request.args.get("code"),
+                type=request.args.get("type")
                 )
 
         @self.app.post("/api/edit-code")
         async def edit_code():
             content = await request.json
             if content["type"] == "command":
-                print("edit command")
                 self.client.edit_command(content["name"], content["code"])
             else:
-                print("edit event")
                 self.client.edit_event(content["name"], content["code"])
             return Quart.response_class()
 

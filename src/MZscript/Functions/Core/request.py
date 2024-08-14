@@ -81,6 +81,7 @@ class FuncRequest(FunctionsHandler):
                     'text': await response.text()
                     }
 
+            # TODO: Add head, options and patch methods
             if method == "get":
                 async with session.get(url, json=payload, headers=headers) as response:
                     await read_response(response)
@@ -94,7 +95,7 @@ class FuncRequest(FunctionsHandler):
                 async with session.delete(url, json=payload, headers=headers) as response:
                     await read_response(response)
             else:
-                error_msg = f"$request: Unsupported method \"{method}\"" # TODO: Add head, options and patch methods
+                error_msg = f"$request: Unsupported method \"{method}\""
                 if self.handler.debug_console:
                     raise ValueError(error_msg)
                 else:
