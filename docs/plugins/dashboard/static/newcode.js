@@ -1,7 +1,7 @@
 const codeType = document.title == "Create new Command" ? "command" : "event";
 
-nameinput = document.getElementsByClassName("name").item(0);
-codeinput = document.getElementsByClassName("code").item(0);
+let nameinput = document.getElementsByClassName("name").item(0);
+let codeinput = document.getElementsByClassName("code").item(0);
 if (codeType == "command") {
     nameinput.value = "!help"
     codeinput.value = "$sendMessage[Hello World]"
@@ -25,5 +25,17 @@ document.getElementsByClassName("create-button").item(0).onclick = () => {
             code: codeinput.value,
             type: codeType
         })
+    })
+    .then(() => {
+        window.location.href = "/";
+    })
+    .catch(() => {
+        let notif = document.createElement("div");
+        notif.className = "notification";    
+        notif.innerHTML = "Failed!";
+        document.body.append(notif);
+        setTimeout(() => {
+            notif.remove();
+        }, 3000);
     });
 };

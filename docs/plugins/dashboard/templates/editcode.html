@@ -11,7 +11,11 @@
     <h1>Edit "{{ name }}" {{ type }}</h1>
     <input class="name" type="text" placeholder="name" value="{{ name }}">
     <textarea rows="1" class="code" style="width: 100%;" placeholder="code">{{ code }}</textarea>
-    <button class="button save-button">Save</button>
+    <div class="wrapper">
+        <button class="button save-button">Save</button>
+        <button class="button return-button">Exit</button>
+        <button class="button delete-button">Delete</button>
+    </div>
     <script src="{{ url_for('static', filename='editcode.js') }}"></script>
 </body>
 </html>
