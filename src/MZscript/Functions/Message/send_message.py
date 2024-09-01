@@ -225,7 +225,7 @@ class Functions(FunctionsHandler):
         async def delete_in(entry: str):
             args_splitted = await self.get_args(entry)
             if len(args_splitted) > 2 or len(args_splitted) == 0:
-                error_msg = "$sendMessage: #вудуеу: Too many args provided."
+                error_msg = "$sendMessage: #deleteIn: Too many args provided."
                 if self.handler.debug_console:
                     raise ValueError(error_msg)
                 else:

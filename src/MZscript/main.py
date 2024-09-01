@@ -33,19 +33,28 @@ class MZClient:
         debug_log: bool = False,
         debug_console: bool = True,
         ):
-        self.user_on_ready = on_ready
         sync_commands = commands.CommandSyncFlags.default()
         sync_commands.sync_commands_debug = debug_log
-        self.user_commands = []
-        self.user_command_names = []
-        self.plugins = []
+        self.user_commands: list = []
+        self.user_command_names: list = []
+        self.plugins: list[BasePlugin] = []
         self.exec_on_start = []
-        self.user_slash_commands = []
-        self.user_events = {"message": None, "button": None, "interaction": None}
+        self.user_slash_commands: list = []
+        self.user_events: dict = {
+            "on_ready": on_ready,
+            "message": None,
+            "button": None,
+            "interaction": None,
+            "slash": None,
+            "invoked": {},
+            "check": {}
+            }
         self.bot = commands.InteractionBot(
             intents=self._get_intents(intents), command_sync_flags=sync_commands
             )
-        self.funcs = FunctionsCore(self, db_warns, debug_log, debug_console)
+        self.funcs = FunctionsCore(
+            self, db_warns, debug_log, debug_console
+            )
         self._register_listeners()
 
     def _get_intents(self, entry: str):
@@ -237,8 +246,8 @@ class MZClient:
         ## `on_ready` event
         ### Invoked when bot is ready to use
         """
-        if self.user_on_ready:
-            await self.run_code(self.user_on_ready)
+        if self.user_events["on_ready"]:
+            await self.run_code(self.user_events["on_ready"], disnake.MessageInteraction)
         await self.update_commands()
         for plugin in self.plugins:
             await plugin.on_ready()
@@ -257,8 +266,17 @@ class MZClient:
         user_command = message.content.split(" ")[0]
         for command_name, command_code in self.user_commands:
             if user_command == command_name:
-                message.content = message.content[len(command_name)+1:]
-                await self.run_code(command_code, message)
+                command = {
+                    "name": command_name,
+                    "code": command_code,
+                    "message": message,
+                    "type": "command"
+                    }
+                if await self.check(command):
+                    message.content = message.content[len(command_name)+1:]
+                    result = await self.run_code(command_code, message)
+                    # await self.invoked(result, command_name, command_code, message)
+                    await self.invoked(command)
 
     async def on_button_click(self, inter: disnake.MessageInteraction):
         """
@@ -290,6 +308,29 @@ class MZClient:
         for name, code in self.user_slash_commands:
             if name == inter.application_command.name:
                 await self.run_code(code, inter)
+
+    async def invoked(self, command: dict): # TODO: Check event work
+        """
+        ## `invoked` event
+        Executed when command or slash of bot invoked
+        """
+        for plugin in self.plugins:
+            await plugin.invoked(command)
+        for i in self.user_events["invoked"]:
+            await self.run_code(self.user_events["invoked"][i], command["message"])
+
+    async def check(self, command: dict): # TODO: Check event work
+        """
+        ## `check` event
+        Executed when command or slash of bot invoked. Uses for command check before executed
+        """
+        for plugin in self.plugins:
+            if await plugin.check(command) == False:
+                return False
+        for i in self.user_events["check"]:
+            if await self.run_code(self.user_events["check"][i], command["message"]) == False:
+                return False
+        return True
 
     def run(self, token: str):
         """

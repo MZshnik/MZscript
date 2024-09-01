@@ -12,7 +12,7 @@ class FunctionsHandler:
             # checks
             "$isadmin", "$ischannelexists", "$isguildexists", "$ismemberexists", "$isnumber", "$isroleexists", "$isuserexists", 
             # messages
-            "$sendmessage", "$editmessage", "$message", "$addreaction",
+            "$sendmessage", "$editmessage", "$message", "$addreaction", "$deletecommand",
             # administration
             "$addrole", "$removerole",
             # moderation

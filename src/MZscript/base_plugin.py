@@ -35,3 +35,9 @@ class BasePlugin(ABC):
 
     async def on_slash(self, inter: disnake.MessageInteraction):
         pass
+
+    async def invoked(self, command: dict):
+        pass
+
+    async def check(self, command: dict):
+        pass
