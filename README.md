@@ -561,9 +561,12 @@ $endif
 #### List of events:
 | Name | Description |
 | -------- | ---- |
+|on_ready | Activated when bot ready to work |
 |message | Activated when anyone send message |
 |button | Activated when anyone press button from bot |
-|interaction | Activated when anyone use interaction from bot (button/menu/slashe) |
+|interaction | Activated when anyone use interaction from bot (button/menu/slash) |
+|check | Checker for command execution(beta) |
+|invoked | Invoked when command executed(beta) |
 ## In Developing🔨
 - More functions from BDFD
 - More custom functions
