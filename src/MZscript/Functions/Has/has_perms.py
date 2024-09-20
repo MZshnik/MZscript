@@ -71,7 +71,7 @@ class Functions(FunctionsHandler):
             	"deafen_members": user.guild_permissions.deafen_members,
             	"embed_links": user.guild_permissions.embed_links,
             	"external_emojis": user.guild_permissions.external_emojis,
-            	"external_stickers,": user.guild_permissions.external_stickers,
+            	"external_stickers": user.guild_permissions.external_stickers,
             	"kick_members": user.guild_permissions.kick_members,
             	"manage_channels": user.guild_permissions.manage_channels,
             	"manage_emojis": user.guild_permissions.manage_emojis,
