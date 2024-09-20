@@ -11,11 +11,11 @@ class RoleInfo(FunctionsHandler):
 
     async def func_roleinfo(self, ctx: disnake.Message, args: str):
         """
-        `$userInfo[(guild;user);param]`
+        `$roleInfo[(guild;role);param]`
         ### Example:
-        `$userInfo[id]`
+        `$roleInfo[id]`
         ### Example 2:
-        `$userInfo[700061502089986139;name]`
+        `$roleInfo[700061502089986139;name]`
         """
         args_list = await self.get_args(await self.is_have_functions(args, ctx), ctx)
         if len(args_list) > 3 or len(args_list) == 0:
