@@ -68,7 +68,6 @@ class Functions(FunctionsHandler):
             	"create_private_threads": user.guild_permissions.create_private_threads,
             	"create_public_threads": user.guild_permissions.create_public_threads,
 		"deafen_members": user.guild_permissions.deafen_members,
-            	"deafen_members": user.guild_permissions.deafen_members,
             	"embed_links": user.guild_permissions.embed_links,
             	"external_emojis": user.guild_permissions.external_emojis,
             	"external_stickers": user.guild_permissions.external_stickers,
