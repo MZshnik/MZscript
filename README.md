@@ -576,5 +576,7 @@ $endif
 ## In the Future🚀
 - More usefull $eval/$pyeval
 - Compiled version or support for other langs
+### MZscript not developering
+Closed for better time. If anyone interested to contribute or has ideas - join [Discord](https://discord.gg/gfix-bot-community-mz-796504104565211187) server and/or DM [mzshnik](https://discord.com/channels/@me/700061502089986139)
 
 #### Repository and first lines of code by [MZshnik](https://github.com/MZshnik)
